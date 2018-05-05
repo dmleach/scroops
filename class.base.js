@@ -17,7 +17,7 @@ class BaseClass {
         let gameObject = Game.getObjectById(id);
 
         if (!gameObject) {
-            throw new Error "Could not find object with id " + id;
+            throw new Error("Could not find object with id " + id);
         }
 
         return new BaseClass(gameObject);
@@ -40,7 +40,7 @@ class BaseClass {
             return this.gameObject.pos;
         }
 
-        throw new Error "Only room objects have a position value";
+        throw new Error("Only room objects have a position value");
     }
 }
 

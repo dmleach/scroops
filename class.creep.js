@@ -1,14 +1,16 @@
-class CreepClass {
+var BaseClass = require('class.base');
+
+class CreepClass extends BaseClass {
 
     constructor(creep) {
-        this.creepObject = creep;
+        super();
     }
 
     static createByName(name) {
         let creep = Game.creeps[name];
 
         if (!creep) {
-            throw 'Could not find creep with name ' + name;
+            throw new Error('Could not find creep with name ' + name);
         }
 
         return new CreepClass(creep);
@@ -46,7 +48,7 @@ class CreepClass {
             return require(classFile);
         }
 
-        throw 'Could not find class file for creep with id ' + id;
+        throw new Error('Could not find class file for creep with id ' + id);
     }
 
     static get minimumCount() {
