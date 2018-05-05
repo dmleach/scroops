@@ -1,5 +1,3 @@
-// const CREEP_HARVESTER = 0;
-
 class CreepClass {
 
     constructor(creep) {
@@ -16,15 +14,6 @@ class CreepClass {
         throw 'Could not find class file for creep with id ' + id;
     }
 
-    static get creepFileNames() {
-        let C = require('constants');
-
-        let fileNames = new Map();
-        fileNames.set(C.ROLE_HARVESTER, 'class.harvester');
-
-        return fileNames;
-    }
-
     static createByName(name) {
         let creep = Game.creeps[name];
 
@@ -33,6 +22,19 @@ class CreepClass {
         }
 
         return new CreepClass(creep);
+    }
+
+    static get classFileMap() {
+        let C = require('constants');
+
+        let fileMap = new Map();
+        fileMap.set(C.ROLE_HARVESTER, 'class.harvester');
+
+        return fileMap;
+    }
+
+    static get classFiles() {
+        return CreepClass.classFileMap.values();
     }
 
     static get description() {

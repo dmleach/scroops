@@ -10,6 +10,10 @@ class HarvesterClass extends CreepClass {
         return 'Harvester';
     }
 
+    static get minimumCount() {
+        return 1;
+    }
+
 }
 
 module.exports = HarvesterClass;
