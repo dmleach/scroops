@@ -2,22 +2,12 @@ var BaseClass = require('class.base');
 
 class CreepClass extends BaseClass {
 
-    constructor(creep) {
-        super();
+    act() {
+        throw new Error('act method has not been defined for ' + this.name);
     }
 
     static get body() {
-        return [];
-    }
-
-    static createByName(name) {
-        let creep = Game.creeps[name];
-
-        if (!creep) {
-            throw new Error('Could not find creep with name ' + name);
-        }
-
-        return new CreepClass(creep);
+        throw new Error('body method has not been defined for ' + this.name);
     }
 
     static get count() {
@@ -26,7 +16,7 @@ class CreepClass extends BaseClass {
         for (let creepName in Game.creeps) {
             // A creep's role is defined by the beginning of its name. A creep
             // whose name starts with "Harvester" is a Harvester
-            if (creepName.slice(0, this.description.length) == this.description) {
+            if (this.getRole(creepName) == this.role) {
                 count++;
             }
         }
@@ -34,19 +24,8 @@ class CreepClass extends BaseClass {
         return count;
     }
 
-    static get creepClasses() {
-        return [
-            'class.harvester',
-            'class.distributor',
-        ];
-    }
-
-    static get description() {
-        return 'Base';
-    }
-
-    static getClassByRole(id) {
-        let classFile = CreepClass.creepClasses[id];
+    static getClassByFileId(id) {
+        let classFile = CreepClass.creepClassFiles[id];
 
         if (classFile) {
             return require(classFile);
@@ -57,6 +36,14 @@ class CreepClass extends BaseClass {
 
     static get minimumCount() {
         return 0;
+    }
+
+    static get role() {
+        throw new Error('The base creep class does not have a role');
+    }
+
+    get role() {
+        return this.constructor.role;
     }
 
 }

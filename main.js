@@ -9,4 +9,12 @@ module.exports.loop = function () {
         spawn.manageCreeps();
     }
 
+    // Iterate through all the friendly creeps and have them take an action
+    let CreepHelper = require('helper.creep');
+
+    for (var creepName in Game.creeps) {
+        let creep = CreepHelper.createCreepByName(creepName);
+        creep.act();
+    }
+
 }

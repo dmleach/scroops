@@ -2,20 +2,19 @@ let CreepClass = require('class.creep');
 
 class DistributorClass extends CreepClass {
 
-    constructor() {
-        super();
+    act() {
     }
 
     static get body() {
         return [MOVE, CARRY];
     }
 
-    static get description() {
-        return 'Distributor';
-    }
-
     static get minimumCount() {
         return 1;
+    }
+
+    static get role() {
+        return 'Distributor';
     }
 
 }
