@@ -9,9 +9,10 @@ class SpawnClass extends BaseClass {
     manageCreeps() {
         let BaseCreepClass = require('class.creep');
 
-        for (var classFile of BaseCreepClass.classFiles) {
-            let creepClass = require(classFile);
-            console.log('There should be at least ' + creepClass.minimumCount + ' ' + creepClass.description);
+        for (var roleId in BaseCreepClass.creepClasses) {
+            let creepClass = BaseCreepClass.getClassByRole(roleId);
+            console.log(creepClass.count);
+
         }
     }
 

@@ -4,16 +4,6 @@ class CreepClass {
         this.creepObject = creep;
     }
 
-    static classByRoleId(id) {
-        let classFile = CreepClass.creepFileNames.get(id);
-
-        if (classFile) {
-            return require(classFile);
-        }
-
-        throw 'Could not find class file for creep with id ' + id;
-    }
-
     static createByName(name) {
         let creep = Game.creeps[name];
 
@@ -24,21 +14,38 @@ class CreepClass {
         return new CreepClass(creep);
     }
 
-    static get classFileMap() {
-        let C = require('constants');
+    static get count() {
+        let count = 0;
 
-        let fileMap = new Map();
-        fileMap.set(C.ROLE_HARVESTER, 'class.harvester');
+        for (let creepName in Game.creeps) {
+            // A creep's role is defined by the beginning of its name. A creep
+            // whose name starts with "Harvester" is a Harvester
+            if (creepName.slice(0, this.description.length) == this.description) {
+                count++;
+            }
+        }
 
-        return fileMap;
+        return count;
     }
 
-    static get classFiles() {
-        return CreepClass.classFileMap.values();
+    static get creepClasses() {
+        return [
+            'class.harvester'
+        ];
     }
 
     static get description() {
         return 'Base';
+    }
+
+    static getClassByRole(id) {
+        let classFile = CreepClass.creepClasses[id];
+
+        if (classFile) {
+            return require(classFile);
+        }
+
+        throw 'Could not find class file for creep with id ' + id;
     }
 
     static get minimumCount() {
