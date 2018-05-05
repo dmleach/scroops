@@ -11,7 +11,7 @@ class SpawnClass extends BaseClass {
 
         for (var roleId in BaseCreepClass.creepClasses) {
             let creepClass = BaseCreepClass.getClassByRole(roleId);
-            console.log(creepClass.count);
+            console.log(creepClass.description + ' count is ' + creepClass.count);
 
         }
     }

@@ -30,7 +30,8 @@ class CreepClass {
 
     static get creepClasses() {
         return [
-            'class.harvester'
+            'class.harvester',
+            'class.distributor',
         ];
     }
 
@@ -53,7 +54,5 @@ class CreepClass {
     }
 
 }
-
-Object.defineProperty(CreepClass, 'CREEP_HARVESTER', { value: 0, writable: false, enumerable: true });
 
 module.exports = CreepClass;
