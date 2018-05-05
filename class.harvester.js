@@ -6,6 +6,10 @@ class HarvesterClass extends CreepClass {
         super();
     }
 
+    static get body() {
+        return [MOVE, CARRY, WORK];
+    }
+
     static get description() {
         return 'Harvester';
     }

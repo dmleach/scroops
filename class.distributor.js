@@ -6,6 +6,10 @@ class DistributorClass extends CreepClass {
         super();
     }
 
+    static get body() {
+        return [MOVE, CARRY];
+    }
+
     static get description() {
         return 'Distributor';
     }

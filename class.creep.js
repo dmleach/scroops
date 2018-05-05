@@ -6,6 +6,10 @@ class CreepClass extends BaseClass {
         super();
     }
 
+    static get body() {
+        return [];
+    }
+
     static createByName(name) {
         let creep = Game.creeps[name];
 
