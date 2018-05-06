@@ -44,6 +44,7 @@ class CreepHelper {
             'class.harvester',
             'class.distributor',
             'class.upgrader',
+            'class.builder',
         ];
     }
 
