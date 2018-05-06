@@ -66,10 +66,21 @@ class CreepClass extends BaseClass {
     }
 
     moveByPath(path) {
+        let positionBeforeMove = this.pos
         let moveResult = this.gameObject.moveByPath(path);
 
         if (moveResult !== OK) {
             console.log(this.name + ' moveByPath result is ' + moveResult);
+        }
+
+        // As a backup so creeps don't get stuck: if the cached path is blocked,
+        // go ahead and find a new one
+        if (this.pos == positionBeforeMove) {
+            let actionSite = Game.getObjectById(this.cachedActionSiteId);
+
+            if (actionSite) {
+                this.gameObject.moveTo(actionSite.pos);
+            }
         }
     }
 
@@ -79,6 +90,14 @@ class CreepClass extends BaseClass {
 
     get role() {
         return this.constructor.role;
+    }
+
+    static get shouldSpawn() {
+        if (this.count < this.minimumCount) {
+            return true;
+        }
+
+        return false;
     }
 
 }

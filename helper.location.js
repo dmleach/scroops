@@ -55,6 +55,79 @@ class LocationHelper {
         return resultIds;
     }
 
+    static getOpenSpacesAroundCount(position) {
+        let result = 0;
+        let objects = false;
+
+        for (let idxX = position.x - 1; idxX <= position.x + 1; idxX++) {
+            for (let idxY = position.y - 1; idxY <= position.y + 1; idxY++) {
+                if (idxX !== position.x || idxY !== position.y) {
+                    if (this.isSpaceOpen(new RoomPosition(idxX, idxY, position.roomName))) {
+                        result++;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    static isSpaceOpen(position) {
+        if (!this.isSpaceWalkable(position)) {
+            return false;
+        }
+
+        let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
+
+        for (let idxObjects in objects) {
+            let object = objects[idxObjects];
+
+            if (['creep'].indexOf(object.type) !== -1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static isSpaceWalkable(position) {
+        let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
+
+        for (let idxObjects in objects) {
+            let object = objects[idxObjects];
+
+            if (['creep','resource','tombstone'].indexOf(object.type) !== -1) {
+                return true;
+            }
+
+            if (object.type == 'structure') {
+                if (['constructedWall','controller','wall'].indexOf(object.structure.structureType) !== -1) {
+                    return false;
+                }
+
+                if (['road'].indexOf(object.structure.structureType) !== -1) {
+                    return true;
+                }
+
+                console.log('Unsure of passability of structure ' + object.structure.structureType);
+            }
+
+            if (object.type == 'terrain') {
+                if (['wall'].indexOf(object.terrain) !== -1) {
+                    return false;
+                }
+
+                if (['plain','swamp'].indexOf(object.terrain) !== -1) {
+                    return true;
+                }
+
+                console.log('Unsure of passability of terrain ' + object.terrain);
+            }
+        }
+
+        return false;
+    }
+
     static readFromCache(findType) {
         if (!Memory.findResults) {
             return undefined;

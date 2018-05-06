@@ -35,7 +35,7 @@ class SpawnClass extends BaseClass {
         for (var fileId in CreepHelper.creepClassFiles) {
             let creepClass = CreepHelper.getCreepClassByFileId(fileId);
 
-            if (creepClass.count < creepClass.minimumCount) {
+            if (creepClass.shouldSpawn) {
                 try {
                     this.spawn(creepClass);
                 } catch(error) {
