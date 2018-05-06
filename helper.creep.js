@@ -43,6 +43,7 @@ class CreepHelper {
         return [
             'class.harvester',
             'class.distributor',
+            'class.upgrader',
         ];
     }
 
