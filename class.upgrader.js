@@ -44,6 +44,29 @@ class UpgraderClass extends CreepClass {
      * Upgrade the room's controller
      */
     doUpgrade() {
+        let upgradeSite = Game.getObjectById(this.upgradeSiteId);
+
+        if (!upgradeSite) {
+            return false;
+        }
+
+        // If the upgrader is more than three spaces away from the site, it
+        // needs to move to the site
+        if (this.pos.getRangeTo(upgradeSite.pos) > 3) {
+            let PathHelper = require('helper.path');
+            this.moveByPath(PathHelper.find(this.pos, upgradeSite.pos));
+        }
+
+        // If the upgrader is within three spaces of the controller, it can
+        // upgrade it
+        if (this.pos.getRangeTo(upgradeSite.pos) <= 3) {
+            let upgradeResult = this.gameObject.upgradeController(upgradeSite);
+        }
+
+        // If the upgrader is now out of energy, clear the action site from cache
+        if (this.carriedEnergy == 0) {
+            this.clearCachedActionSiteId();
+        }
     }
 
     /**
@@ -65,15 +88,31 @@ class UpgraderClass extends CreepClass {
 
         // If the upgrader is exactly one space away from the source, it can
         // withdraw energy from the source
+        let withdrawResult = false;
+
         if (this.pos.getRangeTo(withdrawSite.pos) == 1) {
             if (withdrawSite instanceof Resource) {
-                let withdrawResult = this.gameObject.pickup(withdrawSite);
+                withdrawResult = this.gameObject.pickup(withdrawSite);
             }
 
             if (withdrawSite instanceof StructureContainer) {
-                let withdrawResult = this.gameObject.withdraw(withdrawSite, RESOURCE_ENERGY);
+                withdrawResult = this.gameObject.withdraw(withdrawSite, RESOURCE_ENERGY);
             }
         }
+
+        // If the withdrawal was successful, clear the action site from cache
+        if (withdrawResult == OK) {
+            this.clearCachedActionSiteId();
+        }
+    }
+
+    /**
+     * Computes whether a given site if valid for controller upgrade
+     */
+    isValidUpgradeSiteId(id) {
+        let site = Game.getObjectById(id);
+
+        return site instanceof StructureController;
     }
 
     /**
@@ -105,6 +144,39 @@ class UpgraderClass extends CreepClass {
      */
     static get role() {
         return 'Upgrader';
+    }
+
+    /**
+     * Finds the closest room controller
+     */
+    get upgradeSiteId() {
+        // First check to see if there's a location in the upgrader's cache
+        let upgradeSiteId = this.cachedActionSiteId;
+
+        if (this.isValidUpgradeSiteId(upgradeSiteId)) {
+            return upgradeSiteId;
+        }
+
+        // Find all the structures in visible rooms
+        let LocationHelper = require('helper.location');
+        let siteIds = LocationHelper.findIds(FIND_STRUCTURES);
+
+        // Filter out all the valid controllers
+        let validSiteIds = [];
+
+        for (let idxId in siteIds) {
+            if (this.isValidUpgradeSiteId(siteIds[idxId])) {
+                validSiteIds.push(siteIds[idxId]);
+            }
+        }
+
+        // Find the closest among all the valid sites
+        let closestValidSiteId = LocationHelper.findClosestId(this.pos, validSiteIds);
+
+        // Save the closest valid site to the upgrader
+        this.cacheActionSiteId(closestValidSiteId);
+
+        return closestValidSiteId;
     }
 
     /**
@@ -141,7 +213,7 @@ class UpgraderClass extends CreepClass {
         // Find the closest among all the valid sites
         let closestValidSiteId = LocationHelper.findClosestId(this.pos, validSiteIds);
 
-        // Save the closest valid site to the harvester's cache
+        // Save the closest valid site to the upgrader
         this.cacheActionSiteId(closestValidSiteId);
 
         return closestValidSiteId;
