@@ -12,6 +12,16 @@ class CreepHelper {
         return new creepClass(creep);
     }
 
+    static getCreepClassByFileId(id) {
+        let classFile = this.creepClassFiles[id];
+
+        if (classFile) {
+            return require(classFile);
+        }
+
+        throw new Error('Could not find class file for creep with id ' + id);
+    }
+
     static getCreepClassByName(name) {
         let role = this.getRoleByName(name);
         return this.getCreepClassByRole(role);

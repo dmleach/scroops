@@ -3,35 +3,60 @@ var BaseClass = require('class.base');
 class CreepClass extends BaseClass {
 
     act() {
-        throw new Error('act method has not been defined for ' + this.name);
+        this.doActivityMethod(this.activity);
     }
 
-    static get body() {
-        throw new Error('body method has not been defined for ' + this.name);
+    get activity() {
+        throw new Error('Base creeps do not have activities');
+    }
+
+    static get bodyBase() {
+        throw new Error('bodyBase method has not been defined for ' + this.name);
+    }
+
+    get body() {
+        let body = [];
+
+        for (let idxBody in this.gameObject.body) {
+            body.push(this.gameObject.body[idxBody].type);
+        }
+
+        return body;
+    }
+
+    get cachedActionSite() {
+        if (this.gameObject.memory.actionSiteId) {
+            let siteObject = Game.getObjectById(this.gameObject.memory.actionSiteId);
+
+            if (siteObject) {
+                return siteObject;
+            }
+        }
+
+        this.clearCachedActionSite();
+    }
+
+    get carriedEnergy() {
+        return this.gameObject.carry [RESOURCE_ENERGY];
+    }
+
+    clearCachedActionSite() {
+        this.gameObject.memory.actionSiteId = undefined;
     }
 
     static get count() {
+        let CreepHelper = require('helper.creep');
         let count = 0;
 
         for (let creepName in Game.creeps) {
-            // A creep's role is defined by the beginning of its name. A creep
-            // whose name starts with "Harvester" is a Harvester
-            if (this.getRole(creepName) == this.role) {
+            // A creep's role is defined by the non-numeric part of its name.
+            // A creep whose name contains "Harvester" is a Harvester
+            if (CreepHelper.getRoleByName(creepName) == this.role) {
                 count++;
             }
         }
 
         return count;
-    }
-
-    static getClassByFileId(id) {
-        let classFile = CreepClass.creepClassFiles[id];
-
-        if (classFile) {
-            return require(classFile);
-        }
-
-        throw new Error('Could not find class file for creep with id ' + id);
     }
 
     static get minimumCount() {

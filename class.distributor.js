@@ -5,7 +5,7 @@ class DistributorClass extends CreepClass {
     act() {
     }
 
-    static get body() {
+    static get bodyBase() {
         return [MOVE, CARRY];
     }
 

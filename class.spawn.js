@@ -30,17 +30,12 @@ class SpawnClass extends BaseClass {
     }
 
     manageCreeps() {
-        let BaseCreepClass = require('class.creep');
+        let CreepHelper = require('helper.creep');
 
-        for (var fileId in BaseCreepClass.creepClassFiles) {
-            console.log('File ' + fileId);
-            let creepClass = BaseCreepClass.getClassByFileId(fileId);
-            console.log(creepClass.role);
-
-            console.log('There are ' + creepClass.count + ' ' + creepClass.role + 's and there should be ' + creepClass.minimumCount);
+        for (var fileId in CreepHelper.creepClassFiles) {
+            let creepClass = CreepHelper.getCreepClassByFileId(fileId);
 
             if (creepClass.count < creepClass.minimumCount) {
-                console.log('Spawning a new ' + creepClass.role);
                 try {
                     this.spawn(creepClass);
                 } catch(error) {
@@ -56,7 +51,7 @@ class SpawnClass extends BaseClass {
      * Spawns a new creep of the given class
      */
     spawn(creepClass) {
-        let creepBody = creepClass.body;
+        let creepBody = creepClass.bodyBase;
         let creepName = creepClass.role + Game.time;
         let spawnResult = this.gameObject.spawnCreep(creepBody, creepName);
 
