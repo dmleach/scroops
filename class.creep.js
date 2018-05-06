@@ -24,6 +24,10 @@ class CreepClass extends BaseClass {
         return body;
     }
 
+    cacheActionSite(site) {
+        this.gameObject.memory.actionSiteId = site.id;
+    }
+
     get cachedActionSite() {
         if (this.gameObject.memory.actionSiteId) {
             let siteObject = Game.getObjectById(this.gameObject.memory.actionSiteId);
@@ -61,6 +65,10 @@ class CreepClass extends BaseClass {
 
     static get minimumCount() {
         return 0;
+    }
+
+    moveByPath(path) {
+        return this.gameObject.moveByPath(path);
     }
 
     static get role() {

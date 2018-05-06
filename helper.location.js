@@ -26,11 +26,28 @@ class LocationHelper {
         return result;
     }
 
+    static findClosest(position, locations) {
+        let PathHelper = require('helper.path');
+        let closestLocation = false;
+        let closestLocationDistance = Infinity;
+
+        for (let idxLocation in locations) {
+            let location = locations[idxLocation];
+            let path = PathHelper.find(position, location.pos);
+
+            if (path.length < closestLocationDistance) {
+                closestLocation = location;
+                closestLocationDistance = path.length;
+            }
+        }
+
+        return closestLocation;
+    }
+
     static findIds(findType) {
         let resultIds = this.readFromCache(findType);
 
         if (resultIds) {
-            console.log('Fetched from cache');
             return resultIds;
         }
 
@@ -49,8 +66,6 @@ class LocationHelper {
     }
 
     static writeToCache(findType, locationIds) {
-        console.log('Writing to cache ' + findType + ' values ' + locationIds);
-
         if (!Memory.findResults) {
             Memory.findResults = {};
         }

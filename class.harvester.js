@@ -5,18 +5,31 @@ const ACTIVITY_DEPOSIT = 1;
 
 class HarvesterClass extends CreepClass {
 
+    /**
+     * Computes the activity the creep should perform this turn
+     */
     get activity () {
+        // If the harvester has room to carry one more harvest worth of energy,
+        // it should harvest
         if (this.carriedEnergy + this.energyPerHarvest <= this.gameObject.carryCapacity) {
             return ACTIVITY_HARVEST;
         }
 
+        // Otherwise the harvester should deposit the energy it's carrying
         return ACTIVITY_DEPOSIT;
     }
 
+    /**
+     * The body parts the most simplest version of a harvester should have
+     */
     static get bodyBase() {
         return [MOVE, CARRY, WORK];
     }
 
+    /**
+     * Do the given activity. This method connects the activity constant values
+     * to methods of the creep object
+     */
     doActivityMethod(activity) {
         switch (activity) {
             case ACTIVITY_HARVEST:
@@ -28,11 +41,36 @@ class HarvesterClass extends CreepClass {
         throw new Error(this.name + ' has no method for activity ' + activity);
     }
 
-    doHarvest() {
-        console.log(this.name + ' is harvesting');
-        let actionSite = this.harvestSite;
+    /**
+     * Deposit carried energy
+     */
+    doDeposit() {
+        this.gameObject.drop(RESOURCE_ENERGY);
     }
 
+    /**
+     * Harvest energy from a source
+     */
+    doHarvest() {
+        let actionSite = this.harvestSite;
+
+        // If the harvester is more than one space away from the source, it
+        // needs to move to the source
+        if (this.pos.getRangeTo(actionSite.pos) > 1) {
+            let PathHelper = require('helper.path');
+            this.moveByPath(PathHelper.find(this.pos, actionSite.pos));
+        }
+
+        // If the harvester is exactly one space away from the source, it can
+        // harvest energy from the source
+        if (this.pos.getRangeTo(actionSite.pos) == 1) {
+            let harvestResult = this.gameObject.harvest(actionSite);
+        }
+    }
+
+    /**
+     * Computes the amount of energy the harvester will gain from each harvest
+     */
     get energyPerHarvest() {
         let body = this.body;
         let workCount = 0;
@@ -43,36 +81,56 @@ class HarvesterClass extends CreepClass {
             }
         }
 
+        // Each of the harvester's WORK body parts will harvest 2 energy
         return workCount * 2;
     }
 
+    /**
+     * Finds the closest source with energy to the harvester
+     */
     get harvestSite() {
+        // First check to see if there's a source in the harvester's cache
         let harvestSite = this.cachedActionSite;
 
         if (this.isValidHarvestSite(harvestSite)) {
             return harvestSite;
         }
 
+        // Find all the sources in visible rooms
         let LocationHelper = require('helper.location');
         let sources = LocationHelper.find(FIND_SOURCES);
 
-        for (let idxSource in sources) {
-            console.log(sources[idxSource]);
-        }
+        // Find the closest source among all the found sources
+        let closestSource = LocationHelper.findClosest(this.pos, sources);
+
+        // Save the closest source to the harvester's cache
+        this.cacheActionSite(closestSource);
+
+        return closestSource;
     }
 
+    /**
+     * Computes whether a given harvest site is valid for harvesting
+     */
     isValidHarvestSite(site) {
         if (site instanceof Source) {
+            // Sources should have energy
             return site.energy > 0;
         }
 
         return false;
     }
 
+    /**
+     * The minimum number of creeps of this role that should be in play
+     */
     static get minimumCount() {
         return 1;
     }
 
+    /**
+     * The name of this creep's role
+     */
     static get role() {
         return 'Harvester';
     }
