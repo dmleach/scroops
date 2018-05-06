@@ -52,19 +52,23 @@ class HarvesterClass extends CreepClass {
      * Harvest energy from a source
      */
     doHarvest() {
-        let actionSite = this.harvestSite;
+        let harvestSite = Game.getObjectById(this.harvestSiteId);
+
+        if (!harvestSite) {
+            return false;
+        }
 
         // If the harvester is more than one space away from the source, it
         // needs to move to the source
-        if (this.pos.getRangeTo(actionSite.pos) > 1) {
+        if (this.pos.getRangeTo(harvestSite.pos) > 1) {
             let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, actionSite.pos));
+            this.moveByPath(PathHelper.find(this.pos, harvestSite.pos));
         }
 
         // If the harvester is exactly one space away from the source, it can
         // harvest energy from the source
-        if (this.pos.getRangeTo(actionSite.pos) == 1) {
-            let harvestResult = this.gameObject.harvest(actionSite);
+        if (this.pos.getRangeTo(harvestSite.pos) == 1) {
+            let harvestResult = this.gameObject.harvest(harvestSite);
         }
     }
 
@@ -88,31 +92,33 @@ class HarvesterClass extends CreepClass {
     /**
      * Finds the closest source with energy to the harvester
      */
-    get harvestSite() {
+    get harvestSiteId() {
         // First check to see if there's a source in the harvester's cache
-        let harvestSite = this.cachedActionSite;
+        let harvestSiteId = this.cachedActionSiteId;
 
-        if (this.isValidHarvestSite(harvestSite)) {
-            return harvestSite;
+        if (this.isValidHarvestSiteId(harvestSiteId)) {
+            return harvestSiteId;
         }
 
         // Find all the sources in visible rooms
         let LocationHelper = require('helper.location');
-        let sources = LocationHelper.find(FIND_SOURCES);
+        let sourceIds = LocationHelper.findIds(FIND_SOURCES);
 
         // Find the closest source among all the found sources
-        let closestSource = LocationHelper.findClosest(this.pos, sources);
+        let closestSourceId = LocationHelper.findClosestId(this.pos, sourceIds);
 
         // Save the closest source to the harvester's cache
-        this.cacheActionSite(closestSource);
+        this.cacheActionSiteId(closestSourceId);
 
-        return closestSource;
+        return closestSourceId;
     }
 
     /**
      * Computes whether a given harvest site is valid for harvesting
      */
-    isValidHarvestSite(site) {
+    isValidHarvestSiteId(id) {
+        let site = Game.getObjectById(id);
+
         if (site instanceof Source) {
             // Sources should have energy
             return site.energy > 0;

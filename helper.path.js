@@ -1,7 +1,21 @@
 class PathHelper {
 
     static find(start, end) {
-        let path = this.readFromCache(start, end);
+        if (!start) {
+            throw new Error('Start position must be supplied to find');
+        }
+
+        if (!end) {
+            throw new Error('End position must be supplied to find');
+        }
+
+        let path;
+
+        try {
+            path = this.readFromCache(start, end);
+        } catch(error) {
+            path = undefined;
+        }
 
         if (path) {
             return path;
@@ -14,6 +28,14 @@ class PathHelper {
     }
 
     static readFromCache(start, end) {
+        if (!start) {
+            throw new Error('Start position must be supplied to readFromCache');
+        }
+
+        if (!end) {
+            throw new Error('End position must be supplied to readFromCache');
+        }
+
         if (!Memory.pathResults) {
             return undefined;
         }
@@ -34,6 +56,14 @@ class PathHelper {
     }
 
     static writeToCache(start, end, path) {
+        if (!start) {
+            throw new Error('Start position must be supplied to writeToCache');
+        }
+
+        if (!end) {
+            throw new Error('End position must be supplied to writeToCache');
+        }
+
         if (!Memory.pathResults) {
             Memory.pathResults = {};
         }

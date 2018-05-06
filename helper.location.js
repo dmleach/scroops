@@ -14,34 +14,29 @@ class LocationHelper {
         return result;
     }
 
-    static find(findType) {
-        let resultIds = this.findIds(findType);
-        let result = [];
-
-        for (let idxResult in resultIds) {
-            let gameObject = Game.getObjectById(resultIds[idxResult]);
-            result.push(gameObject);
-        }
-
-        return result;
-    }
-
-    static findClosest(position, locations) {
-        let PathHelper = require('helper.path');
-        let closestLocation = false;
+    static findClosestId(position, locationIds) {
+        let closestLocationId = false;
         let closestLocationDistance = Infinity;
+        let PathHelper = require('helper.path');
 
-        for (let idxLocation in locations) {
-            let location = locations[idxLocation];
-            let path = PathHelper.find(position, location.pos);
+        for (let idxId in locationIds) {
+            let location = Game.getObjectById(locationIds[idxId]);
 
-            if (path.length < closestLocationDistance) {
-                closestLocation = location;
-                closestLocationDistance = path.length;
+            if (location) {
+                try {
+                    let path = PathHelper.find(position, location.pos);
+
+                    if (path.length < closestLocationDistance) {
+                        closestLocationId = locationIds[idxId];
+                        closestLocationDistance = path.length;
+                    }
+                } catch(error) {
+                    console.log('Could not find path from ' + position + ' to ' + location.pos);
+                }
             }
         }
 
-        return closestLocation;
+        return closestLocationId;
     }
 
     static findIds(findType) {
@@ -52,7 +47,10 @@ class LocationHelper {
         }
 
         resultIds = this.doFindIds(findType);
-        this.writeToCache(findType, resultIds);
+
+        if (this.shouldCache(findType)) {
+            this.writeToCache(findType, resultIds);
+        }
 
         return resultIds;
     }
@@ -63,6 +61,11 @@ class LocationHelper {
         }
 
         return Memory.findResults[findType];
+    }
+
+    static shouldCache(findType) {
+        let shouldNotCache = [FIND_DROPPED_RESOURCES];
+        return shouldNotCache.indexOf(findType) == -1;
     }
 
     static writeToCache(findType, locationIds) {

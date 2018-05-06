@@ -14,6 +14,9 @@ class CreepClass extends BaseClass {
         throw new Error('bodyBase method has not been defined for ' + this.name);
     }
 
+    /**
+     * Returns an array of body parts on the creep
+     */
     get body() {
         let body = [];
 
@@ -24,30 +27,25 @@ class CreepClass extends BaseClass {
         return body;
     }
 
-    cacheActionSite(site) {
-        this.gameObject.memory.actionSiteId = site.id;
+    cacheActionSiteId(id) {
+        this.gameObject.memory.actionSiteId = id;
     }
 
-    get cachedActionSite() {
-        if (this.gameObject.memory.actionSiteId) {
-            let siteObject = Game.getObjectById(this.gameObject.memory.actionSiteId);
-
-            if (siteObject) {
-                return siteObject;
-            }
-        }
-
-        this.clearCachedActionSite();
+    get cachedActionSiteId() {
+        return this.gameObject.memory.actionSiteId;
     }
 
     get carriedEnergy() {
         return this.gameObject.carry [RESOURCE_ENERGY];
     }
 
-    clearCachedActionSite() {
+    clearCachedActionSiteId() {
         this.gameObject.memory.actionSiteId = undefined;
     }
 
+    /**
+     * Returns the current number of creeps with this creep's role
+     */
     static get count() {
         let CreepHelper = require('helper.creep');
         let count = 0;
@@ -68,7 +66,11 @@ class CreepClass extends BaseClass {
     }
 
     moveByPath(path) {
-        return this.gameObject.moveByPath(path);
+        let moveResult = this.gameObject.moveByPath(path);
+
+        if (moveResult !== OK) {
+            console.log(this.name + ' moveByPath result is ' + moveResult);
+        }
     }
 
     static get role() {
