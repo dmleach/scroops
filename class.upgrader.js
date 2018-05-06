@@ -19,7 +19,7 @@ class UpgraderClass extends CreepClass {
     }
 
     /**
-     * The body parts the most simplest version of an upgrader should have
+     * The body parts the simplest version of an upgrader should have
      */
     static get bodyBase() {
         return [MOVE, CARRY, MOVE, WORK];
@@ -27,7 +27,7 @@ class UpgraderClass extends CreepClass {
 
     /**
      * Do the given activity. This method connects the activity constant values
-     * to methods of the creep object
+     * to the methods of the creep object
      */
     doActivityMethod(activity) {
         switch (activity) {
