@@ -73,6 +73,7 @@ class SpenderClass extends CreepClass {
         let LocationHelper = require('helper.location');
         let siteIds = LocationHelper.findIds(FIND_STRUCTURES);
 
+
         // Filter out all the valid sites
         let validSiteIds = [];
 
@@ -83,7 +84,11 @@ class SpenderClass extends CreepClass {
         }
 
         // Also find all dropped energy resources in visible rooms
-        validSiteIds.push(LocationHelper.findIds(FIND_DROPPED_RESOURCES));
+        let energyIds = LocationHelper.findIds(FIND_DROPPED_RESOURCES);
+
+        for (let idxId in energyIds) {
+            validSiteIds.push(energyIds[idxId]);
+        }
 
         if (validSiteIds.length == 0) {
             return false;
