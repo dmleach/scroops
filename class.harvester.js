@@ -26,6 +26,29 @@ class HarvesterClass extends CreepClass {
         return [MOVE, CARRY, WORK];
     }
 
+    get depositSiteId () {
+        // Find the closest container, if one exists
+        let LocationHelper = require('helper.location');
+        let structureIds = LocationHelper.findIds(FIND_STRUCTURES);
+        let containerIds = [];
+
+        for (let idxId in structureIds) {
+            let gameObject = Game.getObjectById(structureIds[idxId]);
+
+            if (gameObject instanceof StructureContainer) {
+                if (gameObject.store [RESOURCE_ENERGY] < gameObject.storeCapacity) {
+                    containerIds.push(structureIds[idxId]);
+                }
+            }
+        }
+
+        if (containerIds.length == 0) {
+            return false;
+        }
+
+        return LocationHelper.findClosestId(this.pos, containerIds);
+    }
+
     /**
      * Do the given activity. This method connects the activity constant values
      * to methods of the creep object
@@ -45,7 +68,26 @@ class HarvesterClass extends CreepClass {
      * Deposit carried energy
      */
     doDeposit() {
-        this.gameObject.drop(RESOURCE_ENERGY);
+        let depositSiteId = this.depositSiteId;
+
+        if (!depositSiteId) {
+            this.gameObject.drop(RESOURCE_ENERGY);
+            return;
+        }
+
+        let depositSite = Game.getObjectById(depositSiteId);
+
+        if (!depositSite) {
+            this.gameObject.drop(RESOURCE_ENERGY);
+            return;
+        }
+
+        if (this.pos.getRangeTo(depositSite.pos) > 1) {
+            this.gameObject.drop(RESOURCE_ENERGY);
+            return;
+        }
+
+        this.gameObject.transfer(depositSite, RESOURCE_ENERGY);
     }
 
     /**
