@@ -65,7 +65,7 @@ class DistributorClass extends CreepClass {
                     energy = site.store [RESOURCE_ENERGY];
                 }
 
-                if (site instanceof StructureExtension) {
+                if (site instanceof StructureExtension || site instanceof StructureSpawn) {
                     energy = site.energy;
                 }
             }
@@ -122,9 +122,7 @@ class DistributorClass extends CreepClass {
         let transferResult = false;
 
         if (this.pos.getRangeTo(depositSite.pos) == 1) {
-            if (depositSite instanceof StructureContainer || depositSite instanceof StructureExtension) {
-                transferResult = this.gameObject.transfer(depositSite, RESOURCE_ENERGY);
-            }
+            transferResult = this.gameObject.transfer(depositSite, RESOURCE_ENERGY);
         }
 
         // If the withdrawal was successful, clear the action site from cache
@@ -177,7 +175,7 @@ class DistributorClass extends CreepClass {
             return site.store[RESOURCE_ENERGY] < site.storeCapacity;
         }
 
-        if (site instanceof StructureExtension) {
+        if (site instanceof StructureExtension || site instanceof StructureSpawn) {
             return site.energy < site.energyCapacity;
         }
 
