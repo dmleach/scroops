@@ -65,7 +65,7 @@ class BuilderClass extends SpenderClass {
             case 'Withdraw':
                 return this.doWithdraw();
             case 'Work':
-                return this.doBuild();
+                return this.doWork();
         }
 
         throw new Error(this.name + ' has no method for activity ' + activity);
@@ -111,6 +111,38 @@ class BuilderClass extends SpenderClass {
         }
     }
 
+    doRepair() {
+        let repairSite = Game.getObjectById(this.repairSiteId);
+
+        if (!repairSite) {
+            return false;
+        }
+
+        // If the builder is more than three spaces away from the site, it
+        // needs to move to the site
+        if (this.pos.getRangeTo(repairSite.pos) > 3) {
+            let PathHelper = require('helper.path');
+            this.moveByPath(PathHelper.find(this.pos, repairSite.pos));
+        }
+
+        // If the builder is within three spaces of the controller, it can
+        // repair it
+        if (this.pos.getRangeTo(repairSite.pos) <= 3) {
+            let repairResult = this.gameObject.repair(repairSite);
+        }
+    }
+
+    doWork() {
+        let LocationHelper = require('helper.location');
+        let constructionSiteIds = LocationHelper.findIds(FIND_MY_CONSTRUCTION_SITES);
+
+        if (constructionSiteIds.length > 0) {
+            this.doBuild();
+        } else {
+            this.doRepair();
+        }
+    }
+
     /**
      * Computes whether a given site is valid for building
      */
@@ -125,6 +157,10 @@ class BuilderClass extends SpenderClass {
      */
     static get minimumCount() {
         return 1;
+    }
+
+    get repairSiteId() {
+        return '5af14a821ad10d5415ba77a6';
     }
 
     /**
