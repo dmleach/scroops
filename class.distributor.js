@@ -19,6 +19,65 @@ class DistributorClass extends CreepClass {
         return [MOVE, CARRY];
     }
 
+    get depositSiteId() {
+        // First check to see if there's a location in the distributor's cache
+        let depositSiteId = this.cachedActionSiteId;
+
+        if (this.isValidDepositSiteId(depositSiteId)) {
+            return depositSiteId;
+        }
+
+        // Find all the structures in visible rooms
+        let LocationHelper = require('helper.location');
+        let siteIds = LocationHelper.findIds(FIND_STRUCTURES);
+
+        // Filter out all the valid sites
+        let validSiteIds = [];
+
+        for (let idxId in siteIds) {
+            if (this.isValidDepositSiteId(siteIds[idxId])) {
+                validSiteIds.push(siteIds[idxId]);
+            }
+        }
+
+        if (validSiteIds.length == 0) {
+            return false;
+        }
+
+        // Find the emptyest among all the valid sites
+        let emptyestSiteId = false;
+        let emptyestSiteEnergy = Infinity;
+
+        for (let idxId in validSiteIds) {
+            let site = Game.getObjectById(validSiteIds[idxId]);
+            let energy = Infinity;
+
+            if (site) {
+                if (site instanceof Resource) {
+                    energy = site.amount;
+                }
+
+                if (site instanceof StructureContainer) {
+                    energy = site.store [RESOURCE_ENERGY];
+                }
+
+                if (site instanceof StructureExtension) {
+                    energy = site.energy;
+                }
+            }
+
+            if (energy < emptyestSiteEnergy) {
+                emptyestSiteId = validSiteIds[idxId];
+                emptyestSiteEnergy = energy;
+            }
+        }
+
+        // Save the closest valid site to the upgrader
+        this.cacheActionSiteId(emptyestSiteId);
+
+        return emptyestSiteId;
+    }
+
     /**
      * Do the given activity. This method connects the activity constant values
      * to the methods of the creep object
@@ -35,6 +94,39 @@ class DistributorClass extends CreepClass {
     }
 
     doDeposit() {
+        let depositSiteId = this.depositSiteId;
+
+        if (!depositSiteId) {
+            return false;
+        }
+
+        let depositSite = Game.getObjectById(depositSiteId);
+
+        if (!depositSite) {
+            return false;
+        }
+
+        // If the creep is more than one space away from the site, it
+        // needs to move to the site
+        if (this.pos.getRangeTo(depositSite.pos) > 1) {
+            let PathHelper = require('helper.path');
+            this.moveByPath(PathHelper.find(this.pos, depositSite.pos));
+        }
+
+        // If the creep is exactly one space away from the site, it can
+        // deposit energy into the site
+        let transferResult = false;
+
+        if (this.pos.getRangeTo(depositSite.pos) == 1) {
+            if (depositSite instanceof StructureContainer || depositSite instanceof StructureExtension) {
+                transferResult = this.gameObject.transfer(depositSite, RESOURCE_ENERGY);
+            }
+        }
+
+        // If the withdrawal was successful, clear the action site from cache
+        if (transferResult == OK) {
+            this.clearCachedActionSiteId();
+        }
     }
 
     /**
@@ -74,6 +166,20 @@ class DistributorClass extends CreepClass {
         }
     }
 
+    isValidDepositSiteId(id) {
+        let site = Game.getObjectById(id);
+
+        if (site instanceof StructureContainer) {
+            return site.store[RESOURCE_ENERGY] < site.storeCapacity;
+        }
+
+        if (site instanceof StructureExtension) {
+            return site.energy < site.energyCapacity;
+        }
+
+        return false;
+    }
+
     /**
      * Computes whether a given site is valid for energy withdrawal
      */
@@ -81,7 +187,7 @@ class DistributorClass extends CreepClass {
         let site = Game.getObjectById(id);
 
         if (site instanceof StructureContainer) {
-            return site.store [RESOURCE_ENERGY] > 0;
+            return site.store [RESOURCE_ENERGY];
         }
 
         if (site instanceof Resource) {
