@@ -9,6 +9,10 @@ class UpgraderClass extends SpenderClass {
         return [MOVE, CARRY, MOVE, WORK];
     }
 
+    static get bodyImprovement() {
+        return [MOVE, CARRY, MOVE, WORK];
+    }
+
     /**
      * Do the given activity. This method connects the activity constant values
      * to the methods of the creep object
@@ -109,7 +113,7 @@ class UpgraderClass extends SpenderClass {
         return closestValidSiteId;
     }
 
-    
+
 
 }
 

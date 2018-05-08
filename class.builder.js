@@ -9,6 +9,10 @@ class BuilderClass extends SpenderClass {
         return [MOVE, CARRY, MOVE, WORK];
     }
 
+    static get bodyImprovement() {
+        return [MOVE, CARRY, MOVE, WORK];
+    }
+
     /**
      * Finds the construction site that is closest to being finished
      */
@@ -90,6 +94,17 @@ class BuilderClass extends SpenderClass {
             let buildResult = this.gameObject.build(buildSite);
         }
 
+        // If the building is now complete, clear the action site from cache
+        // and clear the location helper's structure cache
+        if (buildSite.progress == buildSite.progressTotal) {
+            this.clearCachedActionSiteId();
+            let LocationHelper = require('helper.location');
+            LocationHelper.clearCache([
+                FIND_STRUCTURES, FIND_MY_STRUCTURES,
+                FIND_CONSTRUCTION_SITES, FIND_MY_CONSTRUCTION_SITES
+            ]);
+        }
+
         // If the builder is now out of energy, clear the action site from cache
         if (this.carriedEnergy == 0) {
             this.clearCachedActionSiteId();
@@ -109,7 +124,7 @@ class BuilderClass extends SpenderClass {
      * The minimum number of creeps of this role that should be in play
      */
     static get minimumCount() {
-        return 0;
+        return 1;
     }
 
     /**

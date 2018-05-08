@@ -1,5 +1,15 @@
 class CreepHelper {
 
+    static bodyCost(body) {
+        var cost = 0;
+
+        for (var idxPart in body) {
+            cost += BODYPART_COST[body[idxPart]];
+        }
+
+        return cost;
+    }
+
     static createCreepByName(name) {
         let creep = Game.creeps[name];
 

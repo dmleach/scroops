@@ -51,7 +51,12 @@ class SpawnClass extends BaseClass {
      * Spawns a new creep of the given class
      */
     spawn(creepClass) {
-        let creepBody = creepClass.bodyBase;
+        let creepBody = creepClass.bodyByEnergy(this.gameObject.room.energyAvailable);
+
+        if (!creepBody) {
+            return false;
+        }
+
         let creepName = creepClass.role + Game.time;
         let spawnResult = this.gameObject.spawnCreep(creepBody, creepName);
 

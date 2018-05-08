@@ -14,6 +14,10 @@ class CreepClass extends BaseClass {
         throw new Error('bodyBase method has not been defined for ' + this.name);
     }
 
+    static get bodyImprovement() {
+        throw new Error('bodyImprovement method has not been defined for ' + this.name);
+    }
+
     /**
      * Returns an array of body parts on the creep
      */
@@ -22,6 +26,21 @@ class CreepClass extends BaseClass {
 
         for (let idxBody in this.gameObject.body) {
             body.push(this.gameObject.body[idxBody].type);
+        }
+
+        return body;
+    }
+
+    static bodyByEnergy(energy) {
+        let CreepHelper = require('helper.creep');
+        let body = this.bodyBase;
+
+        if (CreepHelper.bodyCost(body) > energy) {
+            return false;
+        }
+
+        while (CreepHelper.bodyCost(body.concat(this.bodyImprovement)) <= energy) {
+            body = body.concat(this.bodyImprovement);
         }
 
         return body;

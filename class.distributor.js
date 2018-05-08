@@ -19,6 +19,10 @@ class DistributorClass extends CreepClass {
         return [MOVE, CARRY];
     }
 
+    static get bodyImprovement() {
+        return [MOVE, CARRY];
+    }
+
     get depositSiteId() {
         // First check to see if there's a location in the distributor's cache
         let depositSiteId = this.cachedActionSiteId;
