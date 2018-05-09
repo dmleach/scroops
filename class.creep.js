@@ -87,8 +87,9 @@ class CreepClass extends BaseClass {
     moveByPath(path) {
         let positionBeforeMove = this.pos
         let moveResult = this.gameObject.moveByPath(path);
+        let acceptableResults = [OK, ERR_BUSY, ERR_TIRED];
 
-        if (moveResult !== OK) {
+        if (acceptableResults.indexOf(moveResult) == -1) {
             console.log(this.name + ' moveByPath result is ' + moveResult);
         }
 
