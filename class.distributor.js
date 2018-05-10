@@ -126,7 +126,7 @@ class DistributorClass extends CreepClass {
         }
 
         // If the withdrawal was successful, clear the action site from cache
-        if (transferResult == OK) {
+        if (transferResult === OK) {
             this.clearCachedActionSiteId();
         }
     }
@@ -163,7 +163,7 @@ class DistributorClass extends CreepClass {
         }
 
         // If the withdrawal was successful, clear the action site from cache
-        if (withdrawResult == OK) {
+        if (withdrawResult === OK) {
             this.clearCachedActionSiteId();
         }
     }

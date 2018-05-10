@@ -53,7 +53,7 @@ class SpenderClass extends CreepClass {
         }
 
         // If the withdrawal was successful, clear the action site from cache
-        if (withdrawResult == OK) {
+        if (withdrawResult === OK) {
             this.clearCachedActionSiteId();
         }
     }
