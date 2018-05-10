@@ -1,3 +1,7 @@
+/**
+ * The base class for all objects
+ */
+
 class BaseClass {
 
     /**
