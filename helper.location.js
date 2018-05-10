@@ -1,15 +1,46 @@
 class LocationHelper {
 
-    static doFindIds(findType) {
+    static clearCache(findType) {
+        if (!Array.isArray(findType)) {
+            findType = [findType];
+        }
+
+        for (idxType in findType) {
+            Memory.findResults[findType[idxType]] = undefined;
+        }
+    }
+
+    static doFindIds(findType, roomNames = undefined) {
+        // console.log('Before processing, roomNames is ' + roomNames);
+
+        if (roomNames) {
+            if (Array.isArray(roomNames) == false) {
+                roomNames = [roomNames];
+            }
+        } else {
+            roomNames = Object.keys(Game.rooms);
+        }
+
+        // console.log('After processing, roomNames is ' + roomNames + ', length ' + roomNames.length);
+
         let result = [];
 
-        for (let roomName in Game.rooms) {
-            let roomResult = Game.rooms[roomName].find(findType);
+        for (let idxRoom in roomNames) {
+            let room = Game.rooms[roomNames[idxRoom]];
 
-            for (let idxResult in roomResult) {
-                result.push(roomResult[idxResult].id);
+            if (room) {
+                // console.log('doFindIds is searching ' + room.name);
+
+                let roomResult = room.find(findType);
+                // console.log('room.find result for ' + findType + ' in room ' + room + ': ' + roomResult);
+
+                for (let idxResult in roomResult) {
+                    result.push(roomResult[idxResult].id);
+                }
             }
         }
+
+        // console.log('doFindIds result for ' + findType + ' in rooms ' + roomNames + ': ' + result);
 
         return result;
     }
@@ -39,14 +70,22 @@ class LocationHelper {
         return closestLocationId;
     }
 
-    static findIds(findType) {
-        let resultIds = this.readFromCache(findType);
+    static findIds(findType, roomNames = undefined) {
+        // let resultIds = this.readFromCache(findType);
+        //
+        // if (resultIds) {
+        //     return resultIds;
+        // }
 
-        if (resultIds) {
-            return resultIds;
+        if (roomNames) {
+            if (Array.isArray(roomNames) == false) {
+                roomNames = [roomNames];
+            }
         }
 
-        resultIds = this.doFindIds(findType);
+        let resultIds = this.doFindIds(findType, roomNames);
+
+        // console.log('findIds result for ' + findType + ' in rooms ' + roomNames + ': ' + resultIds);
 
         if (this.shouldCache(findType)) {
             this.writeToCache(findType, resultIds);
@@ -63,6 +102,23 @@ class LocationHelper {
             for (let idxY = position.y - 1; idxY <= position.y + 1; idxY++) {
                 if (idxX !== position.x || idxY !== position.y) {
                     if (this.isSpaceOpen(new RoomPosition(idxX, idxY, position.roomName))) {
+                        result++;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    static getWalkableSpacesAroundCount(position) {
+        let result = 0;
+        let objects = false;
+
+        for (let idxX = position.x - 1; idxX <= position.x + 1; idxX++) {
+            for (let idxY = position.y - 1; idxY <= position.y + 1; idxY++) {
+                if (idxX !== position.x || idxY !== position.y) {
+                    if (this.isSpaceWalkable(new RoomPosition(idxX, idxY, position.roomName))) {
                         result++;
                     }
                 }

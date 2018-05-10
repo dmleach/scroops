@@ -65,7 +65,7 @@ class DistributorClass extends CreepClass {
                     energy = site.store [RESOURCE_ENERGY];
                 }
 
-                if (site instanceof StructureExtension || site instanceof StructureSpawn) {
+                if (site instanceof StructureExtension || site instanceof StructureSpawn || site instanceof StructureTower) {
                     energy = site.energy;
                 }
             }
@@ -175,25 +175,8 @@ class DistributorClass extends CreepClass {
             return site.store[RESOURCE_ENERGY] < site.storeCapacity;
         }
 
-        if (site instanceof StructureExtension || site instanceof StructureSpawn) {
+        if (site instanceof StructureExtension || site instanceof StructureSpawn || site instanceof StructureTower) {
             return site.energy < site.energyCapacity;
-        }
-
-        return false;
-    }
-
-    /**
-     * Computes whether a given site is valid for energy withdrawal
-     */
-    isValidWithdrawSiteId(id) {
-        let site = Game.getObjectById(id);
-
-        if (site instanceof StructureContainer) {
-            return site.store [RESOURCE_ENERGY];
-        }
-
-        if (site instanceof Resource) {
-            return true;
         }
 
         return false;
@@ -204,59 +187,22 @@ class DistributorClass extends CreepClass {
      */
     get withdrawSiteId() {
         // First check to see if there's a location in the distributor's cache
+        let EnergyHelper = require('helper.energy');
         let withdrawSiteId = this.cachedActionSiteId;
 
-        if (this.isValidWithdrawSiteId(withdrawSiteId)) {
+        if (EnergyHelper.isValidWithdrawSiteId(withdrawSiteId)) {
             return withdrawSiteId;
         }
 
-        // Find all the structures in visible rooms
-        let LocationHelper = require('helper.location');
-        let siteIds = LocationHelper.findIds(FIND_STRUCTURES);
-
-        // Filter out all the valid sites
-        let validSiteIds = [];
-
-        for (let idxId in siteIds) {
-            if (this.isValidWithdrawSiteId(siteIds[idxId])) {
-                validSiteIds.push(siteIds[idxId]);
-            }
-        }
-
-        // Also find all dropped energy resources in visible rooms
-        let energyIds = LocationHelper.findIds(FIND_DROPPED_RESOURCES);
-
-        for (let idxId in energyIds) {
-            validSiteIds.push(energyIds[idxId]);
-        }
+        // If not, find the valid withdraw sites in the room
+        let validSiteIds = EnergyHelper.validWithdrawSiteIdsByRoom(this.pos.roomName);
 
         if (validSiteIds.length == 0) {
             return false;
         }
 
         // Find the fullest among all the valid sites
-        let fullestSiteId = false;
-        let fullestSiteEnergy = 0;
-
-        for (let idxId in validSiteIds) {
-            let site = Game.getObjectById(validSiteIds[idxId]);
-            let energy = 0;
-
-            if (site) {
-                if (site instanceof StructureContainer) {
-                    energy = site.store [RESOURCE_ENERGY] > 0;
-                }
-
-                if (site instanceof Resource) {
-                    energy = site.amount;
-                }
-            }
-
-            if (energy > fullestSiteEnergy) {
-                fullestSiteId = validSiteIds[idxId];
-                fullestSiteEnergy = energy;
-            }
-        }
+        let fullestSiteId = EnergyHelper.fullestSiteByIds(validSiteIds, this.pos);
 
         // Save the closest valid site to the upgrader
         this.cacheActionSiteId(fullestSiteId);
@@ -265,7 +211,7 @@ class DistributorClass extends CreepClass {
     }
 
     static get minimumCount() {
-        return 1;
+        return 2;
     }
 
     static get role() {
