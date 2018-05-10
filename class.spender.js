@@ -73,7 +73,6 @@ class SpenderClass extends CreepClass {
         let LocationHelper = require('helper.location');
         let siteIds = LocationHelper.findIds(FIND_STRUCTURES);
 
-
         // Filter out all the valid sites
         let validSiteIds = [];
 
