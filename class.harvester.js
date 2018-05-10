@@ -192,9 +192,9 @@ class HarvesterClass extends CreepClass {
             return true;
         }
 
-        // At most, there should be one harvester for every empty space around
-        // the friendly rooms' sources
-        let emptySpaces = 0;
+        // At most, there should be one harvester for every walkable space
+        // around the friendly rooms' sources
+        let walkableSpaces = 0;
         let LocationHelper = require('helper.location');
         let sourceIds = LocationHelper.findIds(FIND_SOURCES);
 
@@ -204,13 +204,13 @@ class HarvesterClass extends CreepClass {
             if (source) {
                 if (source.room.controller) {
                     if (source.room.controller.my) {
-                        emptySpaces += LocationHelper.getOpenSpacesAroundCount(source.pos);
+                        walkableSpaces += LocationHelper.getWalkableSpacesAroundCount(source.pos);
                     }
                 }
             }
         }
 
-        return emptySpaces > 0;
+        return HarvesterClass.count < walkableSpaces;
     }
 
 }
