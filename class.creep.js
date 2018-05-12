@@ -81,8 +81,8 @@ class CreepClass extends ActiveClass {
         let moveResult = this.gameObject.moveByPath(path);
         let acceptableResults = [OK, ERR_BUSY, ERR_TIRED];
 
-        if (acceptableResults.indexOf(moveResult) == -1) {
-            console.log(this.name + ' moveByPath result is ' + moveResult);
+        if (acceptableResults.indexOf(moveResult) !== -1) {
+            return true;
         }
 
         // As a backup so creeps don't get stuck: if the cached path is blocked,
@@ -92,6 +92,7 @@ class CreepClass extends ActiveClass {
 
             if (actionSite) {
                 this.gameObject.moveTo(actionSite.pos);
+                console.log(this.name + ' executed moveTo in CreepClass.moveByPath');
             }
         }
     }
