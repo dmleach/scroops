@@ -11,8 +11,6 @@ class LocationHelper {
     }
 
     static doFindIds(findType, roomNames = undefined) {
-        // console.log('Before processing, roomNames is ' + roomNames);
-
         if (roomNames) {
             if (Array.isArray(roomNames) == false) {
                 roomNames = [roomNames];
@@ -21,26 +19,20 @@ class LocationHelper {
             roomNames = Object.keys(Game.rooms);
         }
 
-        // console.log('After processing, roomNames is ' + roomNames + ', length ' + roomNames.length);
-
         let result = [];
 
         for (let idxRoom in roomNames) {
             let room = Game.rooms[roomNames[idxRoom]];
 
             if (room) {
-                // console.log('doFindIds is searching ' + room.name);
-
                 let roomResult = room.find(findType);
-                // console.log('room.find result for ' + findType + ' in room ' + room + ': ' + roomResult);
+                console.log('LocationHelper executed a find ' + findType);
 
                 for (let idxResult in roomResult) {
                     result.push(roomResult[idxResult].id);
                 }
             }
         }
-
-        // console.log('doFindIds result for ' + findType + ' in rooms ' + roomNames + ': ' + result);
 
         return result;
     }
@@ -71,11 +63,7 @@ class LocationHelper {
     }
 
     static findIds(findType, roomNames = undefined) {
-        // let resultIds = this.readFromCache(findType);
-        //
-        // if (resultIds) {
-        //     return resultIds;
-        // }
+        let resultIds = [];
 
         if (roomNames) {
             if (Array.isArray(roomNames) == false) {
@@ -83,9 +71,24 @@ class LocationHelper {
             }
         }
 
-        let resultIds = this.doFindIds(findType, roomNames);
+        // First check to see if the result has been cached
+        let cachedIds = this.readFromCache(findType);
 
-        // console.log('findIds result for ' + findType + ' in rooms ' + roomNames + ': ' + resultIds);
+        if (!roomNames) {
+            return cachedIds;
+        } else {
+            for (let idxId in cachedIds) {
+                let gameObject = Game.getObjectById(cachedIds[idxId]);
+
+                if (roomNames.indexOf(gameObject.pos.roomName) !== -1) {
+                    resultIds.push(cachedIds[idxId]);
+                }
+            }
+
+            return resultIds;
+        }
+
+        resultIds = this.doFindIds(findType, roomNames);
 
         if (this.shouldCache(findType)) {
             this.writeToCache(findType, resultIds);

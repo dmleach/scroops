@@ -8,7 +8,7 @@ class RepairHelper {
         let damagedIds = [];
 
         let LocationHelper = require('helper.location');
-        let structureIds = LocationHelper.doFindIds(FIND_STRUCTURES);
+        let structureIds = LocationHelper.findIds(FIND_STRUCTURES);
 
         for (let idxId in structureIds) {
             if (this.isValidRepairSiteId(structureIds[idxId])) {
