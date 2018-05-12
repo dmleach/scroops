@@ -7,10 +7,10 @@ class TowerClass extends ActiveClass {
      * This function determines that activity for a given room
      */
     get activity() {
-        let room = Game.rooms[this.pos.roomName];
-        let enemies = room.find(FIND_HOSTILE_CREEPS);
+        let CombatHelper = require('helper.combat');
+        let enemyIds = CombatHelper.getEnemyIdsByRoom(this.pos.roomName);
 
-        if (enemies.length > 0) {
+        if (enemyIds.length > 0) {
             return 'Attack';
         }
 
@@ -33,6 +33,14 @@ class TowerClass extends ActiveClass {
     }
 
     doAttack() {
+        let CombatHelper = require('helper.combat');
+        let enemyIds = CombatHelper.enemyIds;
+
+        if (enemyIds.length == 0) {
+            return true;
+        }
+
+        this.gameObject.attack(Game.getObjectById(enemyIds[0]));
     }
 
     doRepair() {
