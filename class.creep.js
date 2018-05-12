@@ -1,14 +1,6 @@
-var BaseClass = require('class.base');
+var ActiveClass = require('class.active');
 
-class CreepClass extends BaseClass {
-
-    act() {
-        this.doActivityMethod(this.activity);
-    }
-
-    get activity() {
-        throw new Error('Base creeps do not have activities');
-    }
+class CreepClass extends ActiveClass {
 
     static get bodyBase() {
         throw new Error('bodyBase method has not been defined for ' + this.name);

@@ -1,6 +1,7 @@
 module.exports.loop = function () {
 
-    // Clean old creeps out of memory
+    // Clean old creeps out of memory. This comes from the tutorial and is a
+    // bit of necessary maintenance
     for (let creepName in Memory.creeps) {
         if (!Game.creeps[creepName]) {
             delete Memory.creeps[creepName];
@@ -23,5 +24,9 @@ module.exports.loop = function () {
         let creep = CreepHelper.createCreepByName(creepName);
         creep.act();
     }
+
+    // Iterate through all the towers and have them take an action
+    let TowerHelper = require('helper.tower');
+    TowerHelper.activateTowers();
 
 }

@@ -14,17 +14,10 @@ class BaseClass {
     }
 
     /**
-     * Creates an instance of the base class wrapped around the game object
-     * with the given id
+     * Returns the id of the game object wrapped inside this class
      */
-    static createById(id) {
-        let gameObject = Game.getObjectById(id);
-
-        if (!gameObject) {
-            throw new Error("Could not find object with id " + id);
-        }
-
-        return new BaseClass(gameObject);
+    get id() {
+        return this.gameObject.id;
     }
 
     /**
@@ -35,16 +28,10 @@ class BaseClass {
     }
 
     /**
-     * Returns the position of the game object wrapped inside this class.
-     * Throws an error if the game object does not have a position (i.e. it's
-     * not a room object
+     * Returns the position of the game object wrapped inside this class
      */
     get pos() {
-        if (this.gameObject instanceof RoomObject) {
-            return this.gameObject.pos;
-        }
-
-        throw new Error("Only room objects have a position value");
+        return this.gameObject.pos;
     }
 }
 
