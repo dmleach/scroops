@@ -74,18 +74,20 @@ class LocationHelper {
         // First check to see if the result has been cached
         let cachedIds = this.readFromCache(findType);
 
-        if (!roomNames) {
-            return cachedIds;
-        } else {
-            for (let idxId in cachedIds) {
-                let gameObject = Game.getObjectById(cachedIds[idxId]);
+        if (cachedIds) {
+            if (!roomNames) {
+                return cachedIds;
+            } else {
+                for (let idxId in cachedIds) {
+                    let gameObject = Game.getObjectById(cachedIds[idxId]);
 
-                if (roomNames.indexOf(gameObject.pos.roomName) !== -1) {
-                    resultIds.push(cachedIds[idxId]);
+                    if (roomNames.indexOf(gameObject.pos.roomName) !== -1) {
+                        resultIds.push(cachedIds[idxId]);
+                    }
                 }
-            }
 
-            return resultIds;
+                return resultIds;
+            }
         }
 
         resultIds = this.doFindIds(findType, roomNames);

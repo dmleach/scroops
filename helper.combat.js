@@ -11,15 +11,8 @@ class CombatHelper {
     }
 
     static getEnemyIdsByRoom(roomName) {
-        let enemyIds = [];
-        let room = Game.rooms[roomName];
-        let enemies = room.find(FIND_HOSTILE_CREEPS);
-
-        for (let idxEnemy in enemies) {
-            enemyIds.push(enemies[idxEnemy].id);
-        }
-
-        return enemyIds;
+        let LocationHelper = require('helper.location');
+        return LocationHelper.findIds(FIND_HOSTILE_CREEPS, roomName);
     }
 
 }
