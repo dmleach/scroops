@@ -49,32 +49,8 @@ class DistributorClass extends CreepClass {
         }
 
         // Find the emptyest among all the valid sites
-        let emptyestSiteId = false;
-        let emptyestSiteEnergy = Infinity;
-
-        for (let idxId in validSiteIds) {
-            let site = Game.getObjectById(validSiteIds[idxId]);
-            let energy = Infinity;
-
-            if (site) {
-                if (site instanceof Resource) {
-                    energy = site.amount;
-                }
-
-                if (site instanceof StructureContainer) {
-                    energy = site.store [RESOURCE_ENERGY];
-                }
-
-                if (site instanceof StructureExtension || site instanceof StructureSpawn || site instanceof StructureTower) {
-                    energy = site.energy;
-                }
-            }
-
-            if (energy < emptyestSiteEnergy) {
-                emptyestSiteId = validSiteIds[idxId];
-                emptyestSiteEnergy = energy;
-            }
-        }
+        let EnergyHelper = require('helper.energy');
+        let emptyestSiteId = EnergyHelper.emptyestSiteByIds(validSiteIds, this.pos);
 
         // Save the closest valid site to the upgrader
         this.cacheActionSiteId(emptyestSiteId);

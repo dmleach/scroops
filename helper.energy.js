@@ -1,5 +1,36 @@
 class EnergyHelper {
 
+    static emptyestSiteByIds(siteIds, position = undefined) {
+        let emptyestSiteId = false;
+        let emptyestSiteEnergy = Infinity;
+        let emptyestSiteEnergyDistance = Infinity;
+
+        for (let idxId in siteIds) {
+            let siteEnergy = this.energyBySiteId(siteIds[idxId]);
+
+            if (position && (siteEnergy == emptyestSiteEnergy)) {
+                let siteEnergyDistance = position.getRangeTo(Game.getObjectById(siteIds[idxId]).pos);
+
+                if (siteEnergyDistance < emptyestSiteEnergyDistance) {
+                    emptyestSiteId = siteIds[idxId];
+                    emptyestSiteEnergyDistance = siteEnergyDistance;
+                }
+
+            }
+
+            if (siteEnergy < emptyestSiteEnergy) {
+                emptyestSiteId = siteIds[idxId];
+                emptyestSiteEnergy = siteEnergy;
+
+                if (position) {
+                    emptyestSiteEnergyDistance = position.getRangeTo(Game.getObjectById(emptyestSiteId).pos);
+                }
+            }
+        }
+
+        return emptyestSiteId;
+    }
+
     /**
      * Returns the amount of energy stored in the site with the given id
      */
