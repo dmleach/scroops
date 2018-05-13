@@ -5,7 +5,7 @@ class LocationHelper {
             findType = [findType];
         }
 
-        for (idxType in findType) {
+        for (let idxType in findType) {
             Memory.findResults[findType[idxType]] = undefined;
         }
     }
@@ -81,8 +81,10 @@ class LocationHelper {
                 for (let idxId in cachedIds) {
                     let gameObject = Game.getObjectById(cachedIds[idxId]);
 
-                    if (roomNames.indexOf(gameObject.pos.roomName) !== -1) {
-                        resultIds.push(cachedIds[idxId]);
+                    if (gameObject) {
+                        if (roomNames.indexOf(gameObject.pos.roomName) !== -1) {
+                            resultIds.push(cachedIds[idxId]);
+                        }
                     }
                 }
 
@@ -92,11 +94,38 @@ class LocationHelper {
 
         resultIds = this.doFindIds(findType, roomNames);
 
-        if (this.shouldCache(findType)) {
-            this.writeToCache(findType, resultIds);
-        }
+        this.writeToCache(findType, resultIds);
 
         return resultIds;
+    }
+
+    static getCacheLifespan(findType) {
+        switch (findType) {
+            case FIND_CREEPS:
+            case FIND_MY_CREEPS:
+            case FIND_HOSTILE_CREEPS:
+                return 5;
+            case FIND_DROPPED_ENERGY:
+            case FIND_DROPPED_RESOURCES:
+            case FIND_FLAGS:
+            case FIND_CONSTRUCTION_SITES:
+            case FIND_MY_CONSTRUCTION_SITES:
+            case FIND_HOSTILE_CONSTRUCTION_SITES:
+            case FIND_TOMBSTONES:
+                return 10;
+            case FIND_SOURCES_ACTIVE:
+            case FIND_STRUCTURES:
+            case FIND_MY_STRUCTURES:
+            case FIND_HOSTILE_STRUCTURES:
+                return 100;
+            case FIND_MY_SPAWNS:
+            case FIND_HOSTILE_SPAWNS:
+                return 1000;
+            case FIND_SOURCES:
+                return Infinity;
+            default:
+                return 10;
+        }
     }
 
     static getOpenSpacesAroundCount(position) {
@@ -135,23 +164,39 @@ class LocationHelper {
         return result;
     }
 
-    static readFromCache(findType) {
-        let uncachedTypes = [FIND_HOSTILE_CREEPS];
-
-        if (uncachedTypes.indexOf(findType) !== -1) {
-            return undefined;
+    static isCacheObsolete(findType) {
+        if (!Memory.findResults) {
+            return true;
         }
 
+        if (!Memory.findResults.timestamp) {
+            return true;
+        }
+
+        let cacheTimestamp = Memory.findResults.timestamp[findType];
+
+        if (!cacheTimestamp) {
+            return true;
+        }
+
+        if (Game.time - cacheTimestamp > this.getCacheLifespan(findType)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    static readFromCache(findType) {
         if (!Memory.findResults) {
             return undefined;
         }
 
-        return Memory.findResults[findType];
-    }
+        if (this.isCacheObsolete(findType)) {
+            this.clearCache(findType);
+            return undefined;
+        }
 
-    static shouldCache(findType) {
-        let shouldNotCache = [FIND_DROPPED_RESOURCES];
-        return shouldNotCache.indexOf(findType) == -1;
+        return Memory.findResults[findType];
     }
 
     static writeToCache(findType, locationIds) {
