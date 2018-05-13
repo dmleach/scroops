@@ -101,20 +101,21 @@ class DistributorClass extends CreepClass {
         let depositSiteId = this.depositSiteId;
 
         if (!depositSiteId) {
+            console.log(this.name + ' deposit site id is invalid');
             return false;
         }
 
         let depositSite = Game.getObjectById(depositSiteId);
 
         if (!depositSite) {
+            console.log(this.name + ' deposit site is invalid');
             return false;
         }
 
         // If the creep is more than one space away from the site, it
         // needs to move to the site
         if (this.pos.getRangeTo(depositSite.pos) > 1) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, depositSite.pos));
+            this.goTo(depositSite.pos);
         }
 
         // If the creep is exactly one space away from the site, it can
@@ -144,8 +145,7 @@ class DistributorClass extends CreepClass {
         // If the creep is more than one space away from the site, it
         // needs to move to the site
         if (this.pos.getRangeTo(withdrawSite.pos) > 1) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, withdrawSite.pos));
+            this.goTo(withdrawSite.pos);
         }
 
         // If the creep is exactly one space away from the site, it can

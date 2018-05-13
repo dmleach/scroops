@@ -72,6 +72,26 @@ class CreepClass extends ActiveClass {
         return count;
     }
 
+    goTo(destinationPos) {
+        let priorPosition = this.pos;
+        this.debugLog('Prior position is ' + priorPosition);
+
+        let PathHelper = require('helper.path');
+        let path = PathHelper.find(this.pos, destinationPos);
+        this.debugLog('Direction to move toward ' + destinationPos + ' is ' + path[0].direction);
+
+        let resultPosition = PathHelper.getPosByDirection(this.pos, path[0].direction);
+        this.debugLog('Resulting position will be ' + resultPosition);
+
+        if (PathHelper.isSpaceWalkable(resultPosition)) {
+            this.debugLog('Resulting position is walkable');
+            let moveResult = this.gameObject.move(path[0].direction);
+        } else {
+            this.gameObject.moveTo(destinationPos);
+            console.log(this.name + ' executed a moveTo in ClassCreep.goTo');
+        }
+    }
+
     static get minimumCount() {
         return 0;
     }
