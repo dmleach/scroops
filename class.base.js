@@ -14,6 +14,18 @@ class BaseClass {
     }
 
     /**
+     * Writes the given message to the console log if this object's id is in
+     * the array of debug ids
+     */
+    debugLog(message) {
+        let debugIds = ['5af8652042aa150cf94eb507'];
+
+        if (debugIds.indexOf(this.id) !== -1) {
+            console.log('[' + this.name + '] ' + message);
+        }
+    }
+
+    /**
      * Returns the id of the game object wrapped inside this class
      */
     get id() {
