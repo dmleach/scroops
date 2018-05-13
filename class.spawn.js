@@ -64,12 +64,16 @@ class SpawnClass extends BaseClass {
             return true;
         }
 
-        throw new Error(
-            this.name
-            + ' tried to spawn ' + creepName
-            + ' with body ' + creepBody
-            + ' but received error "' + SpawnClass.getSpawnErrorMessage(spawnResult) + '"'
-        );
+        let acceptableErrors = [ERR_BUSY];
+
+        if (acceptableErrors.indexOf(spawnResult) == -1) {
+            throw new Error(
+                this.name
+                + ' tried to spawn ' + creepName
+                + ' with body ' + creepBody
+                + ' but received error "' + SpawnClass.getSpawnErrorMessage(spawnResult) + '"'
+            );
+        }
     }
 
 }
