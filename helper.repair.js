@@ -43,6 +43,29 @@ class RepairHelper {
         return true;
     }
 
+    static get mostDamagedStructureId() {
+        let damagedStructureIds = this.damagedStructureIds;
+        let mostDamagedStructureId = false;
+        let mostDamagedStructureDeficit = 0;
+
+        for (let idxId in damagedStructureIds) {
+            let gameObject = Game.getObjectById(damagedStructureIds[idxId]);
+
+            if (gameObject) {
+                if (gameObject instanceof Structure) {
+                    let deficit = gameObject.hitsMax - gameObject.hits;
+
+                    if (deficit > mostDamagedStructureDeficit) {
+                        mostDamagedStructureId = damagedStructureIds[idxId];
+                        mostDamagedStructureDeficit = deficit;
+                    }
+                }
+            }
+        }
+
+        return mostDamagedStructureId;
+    }
+
 }
 
 module.exports = RepairHelper;

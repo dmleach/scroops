@@ -45,13 +45,11 @@ class TowerClass extends ActiveClass {
 
     doRepair() {
         let RepairHelper = require('helper.repair');
-        let damagedStructureIds = RepairHelper.damagedStructureIds;
+        let mostDamagedStructureId = RepairHelper.mostDamagedStructureId;
 
-        if (damagedStructureIds.length == 0) {
-            return true;
+        if (mostDamagedStructureId) {
+            this.gameObject.repair(Game.getObjectById(mostDamagedStructureId));
         }
-
-        this.gameObject.repair(Game.getObjectById(damagedStructureIds[0]));
     }
 
 }
