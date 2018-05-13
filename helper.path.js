@@ -83,7 +83,7 @@ class PathHelper {
                     return false;
                 }
 
-                if (['road'].indexOf(object.structure.structureType) !== -1) {
+                if (['container','road'].indexOf(object.structure.structureType) !== -1) {
                     return true;
                 }
 

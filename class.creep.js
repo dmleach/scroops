@@ -83,10 +83,11 @@ class CreepClass extends ActiveClass {
         let resultPosition = PathHelper.getPosByDirection(this.pos, path[0].direction);
         this.debugLog('Resulting position will be ' + resultPosition);
 
-        if (PathHelper.isSpaceWalkable(resultPosition)) {
-            this.debugLog('Resulting position is walkable');
+        if (PathHelper.isSpaceOpen(resultPosition)) {
+            this.debugLog('Resulting position is open');
             let moveResult = this.gameObject.move(path[0].direction);
         } else {
+            this.debugLog('Resulting position is not open');
             this.gameObject.moveTo(destinationPos);
             console.log(this.name + ' executed a moveTo in ClassCreep.goTo');
         }
@@ -94,27 +95,6 @@ class CreepClass extends ActiveClass {
 
     static get minimumCount() {
         return 0;
-    }
-
-    moveByPath(path) {
-        let positionBeforeMove = this.pos
-        let moveResult = this.gameObject.moveByPath(path);
-        let acceptableResults = [OK, ERR_BUSY, ERR_TIRED];
-
-        if (acceptableResults.indexOf(moveResult) !== -1) {
-            return true;
-        }
-
-        // As a backup so creeps don't get stuck: if the cached path is blocked,
-        // go ahead and find a new one
-        if (this.pos == positionBeforeMove) {
-            let actionSite = Game.getObjectById(this.cachedActionSiteId);
-
-            if (actionSite) {
-                this.gameObject.moveTo(actionSite.pos);
-                console.log(this.name + ' executed moveTo in CreepClass.moveByPath');
-            }
-        }
     }
 
     static get role() {

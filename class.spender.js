@@ -34,8 +34,7 @@ class SpenderClass extends CreepClass {
         // If the creep is more than one space away from the site, it
         // needs to move to the site
         if (this.pos.getRangeTo(withdrawSite.pos) > 1) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, withdrawSite.pos));
+            this.goTo(withdrawSite.pos);
         }
 
         // If the creep is exactly one space away from the site, it can

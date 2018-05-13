@@ -84,8 +84,7 @@ class BuilderClass extends SpenderClass {
         // If the builder is more than three spaces away from the site, it
         // needs to move to the site
         if (this.pos.getRangeTo(buildSite.pos) > 3) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, buildSite.pos));
+            this.goTo(buildSite.pos);
         }
 
         // If the builder is within three spaces of the controller, it can
@@ -121,8 +120,7 @@ class BuilderClass extends SpenderClass {
         // If the builder is more than three spaces away from the site, it
         // needs to move to the site
         if (this.pos.getRangeTo(repairSite.pos) > 3) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, repairSite.pos));
+            this.goTo(repairSite.pos);
         }
 
         // If the builder is within three spaces of the controller, it can

@@ -107,8 +107,7 @@ class HarvesterClass extends CreepClass {
         // If the harvester is more than one space away from the source, it
         // needs to move to the source
         if (this.pos.getRangeTo(harvestSite.pos) > 1) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, harvestSite.pos));
+            this.goTo(harvestSite.pos);
         }
 
         // If the harvester is exactly one space away from the source, it can

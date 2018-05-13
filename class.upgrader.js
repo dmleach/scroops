@@ -41,8 +41,7 @@ class UpgraderClass extends SpenderClass {
         // If the upgrader is more than three spaces away from the site, it
         // needs to move to the site
         if (this.pos.getRangeTo(upgradeSite.pos) > 3) {
-            let PathHelper = require('helper.path');
-            this.moveByPath(PathHelper.find(this.pos, upgradeSite.pos));
+            this.goTo(upgradeSite.pos);
         }
 
         // If the upgrader is within three spaces of the controller, it can
@@ -109,6 +108,7 @@ class UpgraderClass extends SpenderClass {
 
         // Save the closest valid site to the upgrader
         this.cacheActionSiteId(closestValidSiteId);
+
 
         return closestValidSiteId;
     }
