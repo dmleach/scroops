@@ -190,6 +190,12 @@ class LocationHelper {
     }
 
     static readFromCache(findType) {
+        let uncachedTypes = [FIND_HOSTILE_CREEPS];
+
+        if (uncachedTypes.indexOf(findType) !== -1) {
+            return undefined;
+        }
+
         if (!Memory.findResults) {
             return undefined;
         }
@@ -208,6 +214,12 @@ class LocationHelper {
         }
 
         Memory.findResults[findType] = locationIds;
+
+        if (!Memory.findResults.timestamp) {
+            Memory.findResults.timestamp = {};
+        }
+
+        Memory.findResults.timestamp[findType] = Game.time;
     }
 
 }
