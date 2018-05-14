@@ -31,6 +31,12 @@ class EnergyHelper {
         return emptyestSiteId;
     }
 
+    static emptyestSiteByRoom(roomName) {
+        let LocationHelper = require('helper.location');
+        let siteIds = LocationHelper.findIds(FIND_STRUCTURES, roomName);
+        return this.emptyestSiteByIds(siteIds);
+    }
+
     /**
      * Returns the amount of energy stored in the site with the given id
      */
@@ -118,11 +124,15 @@ class EnergyHelper {
             }
         }
 
-        // Also find all dropped energy resources in visible rooms
-        let energyIds = LocationHelper.findIds(FIND_DROPPED_RESOURCES, [roomName]);
+        // Find all dropped energy resources in visible rooms
+        let findTypes = [FIND_DROPPED_RESOURCES, FIND_TOMBSTONES];
 
-        for (let idxId in energyIds) {
-            validSiteIds.push(energyIds[idxId]);
+        for (let idxType in findTypes) {
+            let energyIds = LocationHelper.findIds(findTypes[idxType], roomName);
+
+            for (let idxId in energyIds) {
+                validSiteIds.push(energyIds[idxId]);
+            }
         }
 
         return validSiteIds;
