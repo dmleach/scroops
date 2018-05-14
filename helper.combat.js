@@ -15,6 +15,22 @@ class CombatHelper {
         return LocationHelper.findIds(FIND_HOSTILE_CREEPS, roomName);
     }
 
+    static getTowerIdsByRoom(roomName) {
+        let towerIds = [];
+        let LocationHelper = require('helper.location');
+        let siteIds = LocationHelper.findIds(FIND_STRUCTURES, roomName);
+
+        for (let idxId in siteIds) {
+            let gameObject = Game.getObjectById(siteIds[idxId]);
+
+            if (gameObject instanceof StructureTower) {
+                towerIds.push(siteIds[idxId]);
+            }
+        }
+
+        return towerIds;
+    }
+
 }
 
 module.exports = CombatHelper;

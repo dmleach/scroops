@@ -24,6 +24,17 @@ class DistributorClass extends CreepClass {
     }
 
     get depositSiteId() {
+        // Are there enemies in the room? If so take energy to the towers
+        let CombatHelper = require('helper.combat');
+
+        if (CombatHelper.getEnemyIdsByRoom(this.pos.room).length > 0) {
+            let towerIds = CombatHelper.getTowerIdsByRoom(this.pos.room);
+
+            if (towerIds.length > 0) {
+                return towerIds[0];
+            }
+        }
+
         // First check to see if there's a location in the distributor's cache
         let depositSiteId = this.cachedActionSiteId;
 
