@@ -99,6 +99,25 @@ class PathHelper {
         return false;
     }
 
+    static moveBlockingCreeps(position, direction) {
+        let LocationHelper = require('helper.location');
+        let blockingCreepIds = LocationHelper.getCreepIdsByPosition(position);
+
+        for (let idxId in blockingCreepIds) {
+            let blockingCreep = Game.getObjectById(blockingCreepIds[idxId]);
+            let unmovableRoles = ['Harvester'];
+            let CreepHelper = require('helper.creep');
+
+            if (unmovableRoles.indexOf(CreepHelper.getRoleByName(blockingCreep.name)) !== -1) {
+                return false;
+            }
+
+            blockingCreep.move((direction + 4) % 8);
+        }
+
+        return true;
+    }
+
     static readFromCache(start, end) {
         if (!start) {
             throw new Error('Start position must be supplied to readFromCache');

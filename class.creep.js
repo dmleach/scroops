@@ -74,29 +74,24 @@ class CreepClass extends ActiveClass {
 
     goTo(destinationPos) {
         let priorPosition = this.pos;
-        this.debugLog('Prior position is ' + priorPosition);
 
         let PathHelper = require('helper.path');
         let path = PathHelper.find(this.pos, destinationPos);
-        this.debugLog('Direction to move toward ' + destinationPos + ' is ' + path[0].direction);
 
         let resultPosition = PathHelper.getPosByDirection(this.pos, path[0].direction);
-        this.debugLog('Resulting position will be ' + resultPosition);
 
         if (!PathHelper.isSpaceOpen(resultPosition)) {
-            this.debugLog('Resulting position is not open');
-
-            let LocationHelper = require('helper.location');
-            let blockingCreepIds = LocationHelper.getCreepIdsByPosition(resultPosition);
-
-            for (let idxId in blockingCreepIds) {
-                let blockingCreep = Game.getObjectById(blockingCreepIds[idxId]);
-                blockingCreep.move((path[0].direction + 4) % 8);
-            }
-
+            PathHelper.moveBlockingCreeps(resultPosition, path[0].direction);
         }
 
-        let moveResult = this.gameObject.move(path[0].direction);
+        let moveResult = undefined;
+
+        if (PathHelper.isSpaceOpen(resultPosition)) {
+            moveResult = this.gameObject.move(path[0].direction);
+        } else {
+            moveResult = this.gameObject.moveTo(destinationPos);
+            console.log(this.name + ' executed a moveTo');
+        }
     }
 
     static get minimumCount() {
