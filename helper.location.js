@@ -26,7 +26,6 @@ class LocationHelper {
 
             if (room) {
                 let roomResult = room.find(findType);
-                console.log('LocationHelper executed a find ' + findType);
 
                 for (let idxResult in roomResult) {
                     result.push(roomResult[idxResult].id);
@@ -126,6 +125,21 @@ class LocationHelper {
             default:
                 return 10;
         }
+    }
+
+    static getCreepIdsByPosition(position) {
+        let creepIds = [];
+        let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
+
+        for (let idxObjects in objects) {
+            let gameObject = objects[idxObjects];
+
+            if (gameObject.type == 'creep') {
+                creepIds.push(gameObject[gameObject.type].id);
+            }
+        }
+
+        return creepIds;
     }
 
     static getOpenSpacesAroundCount(position) {

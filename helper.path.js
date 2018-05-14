@@ -55,17 +55,10 @@ class PathHelper {
             return false;
         }
 
-        let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
+        let LocationHelper = require('helper.location');
+        let creepIds = LocationHelper.getCreepIdsByPosition(position);
 
-        for (let idxObjects in objects) {
-            let object = objects[idxObjects];
-
-            if (['creep'].indexOf(object.type) !== -1) {
-                return false;
-            }
-        }
-
-        return true;
+        return creepIds.length == 0;
     }
 
     static isSpaceWalkable(position) {
@@ -83,7 +76,7 @@ class PathHelper {
                     return false;
                 }
 
-                if (['container','road'].indexOf(object.structure.structureType) !== -1) {
+                if (['container','rampart','road'].indexOf(object.structure.structureType) !== -1) {
                     return true;
                 }
 
