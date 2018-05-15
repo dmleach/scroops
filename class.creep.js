@@ -50,6 +50,10 @@ class CreepClass extends ActiveClass {
         return this.gameObject.carry [RESOURCE_ENERGY];
     }
 
+    get carryCapacity() {
+        return this.gameObject.carryCapacity;
+    }
+
     clearCachedActionSiteId() {
         this.gameObject.memory.actionSiteId = undefined;
     }

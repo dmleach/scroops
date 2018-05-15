@@ -145,7 +145,16 @@ class DistributorClass extends CreepClass {
             }
 
             if (withdrawSite instanceof StructureContainer) {
-                withdrawResult = this.gameObject.withdraw(withdrawSite, RESOURCE_ENERGY);
+                let EnergyHelper = require('helper.energy');
+                let emptyestSiteId = EnergyHelper.emptyestSiteByRoom(this.pos.roomName);
+                let leastEnergy = EnergyHelper.energyBySiteId(emptyestSiteId);
+                let energyToWithdraw = EnergyHelper.energyBySiteId(withdrawSite.id) - leastEnergy - 1;
+
+                if (energyToWithdraw > this.carryCapacity) {
+                    energyToWithdraw = this.carryCapacity;
+                }
+
+                withdrawResult = this.gameObject.withdraw(withdrawSite, RESOURCE_ENERGY, energyToWithdraw);
             }
         }
 
