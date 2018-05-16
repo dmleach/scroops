@@ -82,16 +82,19 @@ class CreepClass extends ActiveClass {
         let PathHelper = require('helper.path');
         let path = PathHelper.find(this.pos, destinationPos);
 
-        let resultPosition = PathHelper.getPosByDirection(this.pos, path[0].direction);
+        if (!path) {
+        }
+
+        let resultPosition = PathHelper.getPosByDirection(this.pos, path.direction);
 
         if (!PathHelper.isSpaceOpen(resultPosition)) {
-            PathHelper.moveBlockingCreeps(resultPosition, path[0].direction);
+            PathHelper.moveBlockingCreeps(resultPosition, path.direction);
         }
 
         let moveResult = undefined;
 
         if (PathHelper.isSpaceOpen(resultPosition)) {
-            moveResult = this.gameObject.move(path[0].direction);
+            moveResult = this.gameObject.move(path.direction);
         } else {
             moveResult = this.gameObject.moveTo(destinationPos);
             console.log(this.name + ' executed a moveTo');

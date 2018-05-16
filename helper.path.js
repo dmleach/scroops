@@ -24,7 +24,7 @@ class PathHelper {
         path = start.findPathTo(end, { ignoreCreeps: true });
         this.writeToCache(start, end, path);
 
-        return path;
+        return path[0];
     }
 
     static getPosByDirection(position, direction) {
@@ -155,6 +155,10 @@ class PathHelper {
             throw new Error('End position must be supplied to writeToCache');
         }
 
+        if (!path || path.length == 0) {
+            throw new Error('Valid path must be supplied to writeToCache');
+        }
+
         if (!Memory.pathResults) {
             Memory.pathResults = {};
         }
@@ -175,7 +179,8 @@ class PathHelper {
             Memory.pathResults[start.x][start.y][end.x][end.y] = {};
         }
 
-        Memory.pathResults[start.x][start.y][end.x][end.y] = path;
+        // We don't need to store the whole path; only the first step
+        Memory.pathResults[start.x][start.y][end.x][end.y] = path[0];
     }
 
 }
