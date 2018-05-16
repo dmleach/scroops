@@ -46,9 +46,9 @@ class LocationHelper {
 
             if (location) {
                 try {
-                    let path = PathHelper.find(position, location.pos);
+                    let distance = position.getRangeTo(location);
 
-                    if (path.length < closestLocationDistance) {
+                    if (distance < closestLocationDistance) {
                         closestLocationId = locationIds[idxId];
                         closestLocationDistance = path.length;
                     }
