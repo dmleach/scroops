@@ -50,10 +50,10 @@ class LocationHelper {
 
                     if (distance < closestLocationDistance) {
                         closestLocationId = locationIds[idxId];
-                        closestLocationDistance = path.length;
+                        closestLocationDistance = distance;
                     }
                 } catch(error) {
-                    console.log('Could not find path from ' + position + ' to ' + location.pos);
+                    console.log('Could not find path from ' + position + ' to ' + location.pos + ' (' + error.message + ')');
                 }
             }
         }
@@ -198,6 +198,10 @@ class LocationHelper {
         }
 
         return false;
+    }
+
+    static isExit(pos) {
+        return pos.x == 0 || pos.x == 49 || pos.y == 0 || pos.y == 49;
     }
 
     static readFromCache(findType) {

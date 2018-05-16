@@ -2,9 +2,22 @@ class CombatHelper {
 
     static get enemyIds() {
         let enemyIds = [];
+        let LocationHelper = require('helper.location');
 
         for (let roomName in Game.rooms) {
-            enemyIds = enemyIds.concat(this.getEnemyIdsByRoom(roomName));
+            let roomEnemyIds = this.getEnemyIdsByRoom(roomName);
+
+            for (let idxId in roomEnemyIds) {
+                let enemy = Game.getObjectById(roomEnemyIds[idxId]);
+
+                // Some enemies stay on the edge of the screen to "taunt" you
+                // into wasting resources on attacking them
+                if (!LocationHelper.isExit(enemy.pos)) {
+                    enemyIds.push(roomEnemyIds[idxId]);
+                }
+            }
+
+            enemyIds = enemyIds.concat();
         }
 
         return enemyIds;
