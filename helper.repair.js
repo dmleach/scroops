@@ -43,10 +43,10 @@ class RepairHelper {
         return true;
     }
 
-    static get mostDamagedStructureId() {
+    static get weakestDamagedStructureId() {
         let damagedStructureIds = this.damagedStructureIds;
-        let mostDamagedStructureId = false;
-        let mostDamagedStructureDeficit = 0;
+        let weakestDamagedStructureId = false;
+        let weakestDamagedStructureHits = Infinity;
 
         for (let idxId in damagedStructureIds) {
             let gameObject = Game.getObjectById(damagedStructureIds[idxId]);
@@ -55,15 +55,15 @@ class RepairHelper {
                 if (gameObject instanceof Structure) {
                     let deficit = gameObject.hitsMax - gameObject.hits;
 
-                    if (deficit > mostDamagedStructureDeficit) {
-                        mostDamagedStructureId = damagedStructureIds[idxId];
-                        mostDamagedStructureDeficit = deficit;
+                    if ( (gameObject.hits < gameObject.hitsMax) && (gameObject.hits < weakestDamagedStructureHits) ) {
+                        weakestDamagedStructureId = damagedStructureIds[idxId];
+                        weakestDamagedStructureHits = gameObject.hits;
                     }
                 }
             }
         }
 
-        return mostDamagedStructureId;
+        return weakestDamagedStructureId;
     }
 
 }
