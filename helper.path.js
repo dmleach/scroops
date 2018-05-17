@@ -27,6 +27,30 @@ class PathHelper {
         return path[0];
     }
 
+    static findToRoom(start, roomName) {
+        if (!start) {
+            throw new Error('Start position must be supplied to findToRoom');
+        }
+
+        if (!roomName) {
+            throw new Error('Room name must be supplied to findToRoom');
+        }
+
+        let RoomHelper = require('helper.room');
+        let direction = undefined;
+
+        try {
+            direction = RoomHelper.getDirectionToRoom(start, roomName);
+        } catch (Error) {
+            throw new Error('Rooms given to findToRoom are not adjacent');
+        }
+
+        let exits = RoomHelper.findExits(start.roomName, [direction])
+        let LocationHelper = require('helper.location');
+        let closestExit = LocationHelper.findClosestPosition(start, exits);
+        console.log(this.name + ' closest exit is ' + closestExit);
+    }
+
     static getPosByDirection(position, direction) {
         switch (direction) {
             case TOP:

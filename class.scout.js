@@ -42,7 +42,8 @@ class ScoutClass extends CreepClass {
         let assignedRoom = this.roomAssignment;
         console.log(this.name + ' should scout ' + assignedRoom);
 
-
+        let PathHelper = require('helper.path');
+        PathHelper.findToRoom(this.pos, assignedRoom);
     }
 
     /**
@@ -88,7 +89,7 @@ class ScoutClass extends CreepClass {
 
         for (let idxId in adjacentRooms) {
             if (!ScoutClass.isRoomScouted(adjacentRooms[idxId])) {
-                this.gameObject.memory.room = assignedRoom;
+                this.gameObject.memory.room = adjacentRooms[idxId];
                 return adjacentRooms[idxId];
             }
         }
