@@ -31,8 +31,14 @@ class CreepClass extends ActiveClass {
             return false;
         }
 
-        while (CreepHelper.bodyCost(body.concat(this.bodyImprovement)) <= energy) {
-            body = body.concat(this.bodyImprovement);
+        try {
+            while (CreepHelper.bodyCost(body.concat(this.bodyImprovement)) <= energy) {
+                body = body.concat(this.bodyImprovement);
+            }
+        } catch (Error) {
+            // Most likely error is that bodyImprovement wasn't defined, and
+            // that's acceptable. It'd be better to define a specific error
+            // class to know for sure
         }
 
         return body;
@@ -81,10 +87,6 @@ class CreepClass extends ActiveClass {
 
         let PathHelper = require('helper.path');
         let path = PathHelper.find(this.pos, destinationPos);
-
-        if (!path) {
-        }
-
         let resultPosition = PathHelper.getPosByDirection(this.pos, path.direction);
 
         if (!PathHelper.isSpaceOpen(resultPosition)) {
@@ -97,8 +99,22 @@ class CreepClass extends ActiveClass {
             moveResult = this.gameObject.move(path.direction);
         } else {
             moveResult = this.gameObject.moveTo(destinationPos);
-            console.log(this.name + ' executed a moveTo');
         }
+    }
+
+    isSiblingByName(creepName) {
+        if (creepName == this.name) {
+            return false;
+        }
+
+        let creep = Game.creeps[creepName];
+
+        if (!creep) {
+            return false
+        }
+
+        let CreepHelper = require('helper.creep');
+        return this.role == CreepHelper.getCreepClassByName(creepName).role;
     }
 
     static get minimumCount() {
@@ -119,6 +135,18 @@ class CreepClass extends ActiveClass {
         }
 
         return false;
+    }
+
+    get siblingIds() {
+        let siblings = [];
+
+        for (let creepName in Game.creeps) {
+            if (this.isSiblingByName(creepName)) {
+                siblings.push(Game.creeps[creepName].id);
+            }
+        }
+
+        return siblings;
     }
 
 }

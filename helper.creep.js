@@ -10,6 +10,14 @@ class CreepHelper {
         return cost;
     }
 
+    static createCreepById(id) {
+        let gameObject = Game.getObjectById(id);
+
+        if (gameObject instanceof Creep) {
+            return this.createCreepByName(gameObject.name);
+        }
+    }
+
     static createCreepByName(name) {
         let creep = Game.creeps[name];
 
@@ -20,6 +28,16 @@ class CreepHelper {
         let creepClass = this.getCreepClassByName(name);
 
         return new creepClass(creep);
+    }
+
+    static get creepClassFiles() {
+        return [
+            'class.harvester',
+            'class.distributor',
+            'class.upgrader',
+            'class.builder',
+            'class.scout',
+        ];
     }
 
     static getCreepClassByFileId(id) {
@@ -49,13 +67,18 @@ class CreepHelper {
         throw new Error('Could not find class for creep with role ' + role);
     }
 
-    static get creepClassFiles() {
-        return [
-            'class.harvester',
-            'class.distributor',
-            'class.upgrader',
-            'class.builder',
-        ];
+    static getCreepIdsByRole(role) {
+        let creepIds = [];
+
+        for (let creepName in Game.creeps) {
+            let creep = this.createCreepByName(creepName);
+
+            if (creep.role == role) {
+                creepIds.push(creep.id);
+            }
+        }
+
+        return creepIds;
     }
 
     static getRoleByName(name) {

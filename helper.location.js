@@ -1,5 +1,28 @@
 class LocationHelper {
 
+    /**
+     * Returns all the non-friendly rooms that are adjacent to friendly rooms
+     */
+    static get adjacentRooms() {
+        let adjacentRooms = [];
+
+        for (let roomName in Game.rooms) {
+            let exits = Game.map.describeExits(roomName);
+
+            for (let idxExit in exits) {
+                let adjacentRoom = exits[idxExit];
+
+                if (adjacentRooms.indexOf(adjacentRoom) == -1) {
+                    if (this.isFriendlyRoom(adjacentRoom) == false) {
+                        adjacentRooms.push(adjacentRoom);
+                    }
+                }
+            }
+        }
+
+        return adjacentRooms;
+    }
+
     static clearCache(findType) {
         if (!Array.isArray(findType)) {
             findType = [findType];
@@ -202,6 +225,14 @@ class LocationHelper {
 
     static isExit(pos) {
         return pos.x == 0 || pos.x == 49 || pos.y == 0 || pos.y == 49;
+    }
+
+    static isFriendlyRoom(roomName) {
+        let room = Game.rooms[roomName];
+
+        if (!room) {
+            return false;
+        }
     }
 
     static readFromCache(findType) {
