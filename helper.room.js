@@ -7,19 +7,22 @@ class RoomHelper {
         let adjacentRooms = [];
 
         for (let roomName in Game.rooms) {
-            let exits = Game.map.describeExits(roomName);
+            if (this.isFriendly(roomName)) {
+                let exits = Game.map.describeExits(roomName);
 
-            for (let idxExit in exits) {
-                let adjacentRoom = exits[idxExit];
+                for (let idxExit in exits) {
+                    let adjacentRoom = exits[idxExit];
 
-                if (adjacentRooms.indexOf(adjacentRoom) == -1) {
-                    if (this.isFriendly(adjacentRoom) == false) {
-                        adjacentRooms.push(adjacentRoom);
+                    if (adjacentRooms.indexOf(adjacentRoom) == -1) {
+                        if (this.isFriendly(adjacentRoom) == false) {
+                            adjacentRooms.push(adjacentRoom);
+                        }
                     }
                 }
             }
         }
 
+        console.log('Adjacent rooms to friendly rooms are ' + adjacentRooms);
         return adjacentRooms;
     }
 
@@ -79,6 +82,16 @@ class RoomHelper {
         if (!room) {
             return false;
         }
+
+        if (!room.controller) {
+            return false;
+        }
+
+        if (!room.controller.my) {
+            return false;
+        }
+
+        return true;
     }
 
 }
