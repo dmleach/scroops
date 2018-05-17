@@ -1,6 +1,7 @@
 let CreepClass = require('class.creep');
 
 const ACTIVITY_SCOUT = 0;
+const ACTIVITY_OBSERVE = 1;
 
 class ScoutClass extends CreepClass {
 
@@ -8,14 +9,48 @@ class ScoutClass extends CreepClass {
      * Computes the activity the creep should perform this turn
      */
     get activity () {
+        if (this.pos.isEqualTo(this.assignedPosition)) {
+            return ACTIVITY_OBSERVE;
+        }
+
         return ACTIVITY_SCOUT;
     }
 
     /**
-     * The room this scout has been assigned to watch
+     * The position at which this scout has been assigned to observe
      */
-    get assignedRoom() {
-        return this.gameObject.memory.room;
+    get assignedPosition() {
+        if (this.gameObject.memory.assignedPosition) {
+            return new RoomPosition(
+                this.gameObject.memory.assignedPosition.x,
+                this.gameObject.memory.assignedPosition.y,
+                this.gameObject.memory.assignedPosition.roomName
+            );
+        }
+
+        // Find the room the scout should observe
+        let RoomHelper = require('helper.room');
+        let adjacentRooms = RoomHelper.adjacentRooms;
+        let assignedRoom = undefined;
+
+        for (let idxId in adjacentRooms) {
+            if (!ScoutClass.isRoomScouted(adjacentRooms[idxId])) {
+                assignedRoom = adjacentRooms[idxId]
+            }
+        }
+
+        // If the scout is in that room, great! Let its current position be its
+        // assignment
+        if (this.pos.roomName == assignedRoom) {
+            this.gameObject.memory.assignedPosition = this.pos;
+            return this.pos;
+        }
+
+        // Find a path to that room and assign the end of that path to the scout
+        let PathHelper = require('helper.path');
+        let destination = PathHelper.findToRoom(this.pos, assignedRoom);
+        this.gameObject.memory.assignedPosition = destination;
+        return destination;
     }
 
     /**
@@ -33,17 +68,24 @@ class ScoutClass extends CreepClass {
         switch (activity) {
             case ACTIVITY_SCOUT:
                 return this.doScout();
+            case ACTIVITY_OBSERVE:
+                return this.doObserve();
         }
 
         throw new Error(this.name + ' has no method for activity ' + activity);
     }
 
-    doScout() {
-        let assignedRoom = this.roomAssignment;
-        console.log(this.name + ' should scout ' + assignedRoom);
+    doObserve() {
+    }
 
-        let PathHelper = require('helper.path');
-        PathHelper.findToRoom(this.pos, assignedRoom);
+    doScout() {
+        let assignedPosition = this.assignedPosition;
+
+        if (!assignedPosition) {
+            return false;
+        }
+
+        this.goTo(assignedPosition);
     }
 
     /**
@@ -84,8 +126,8 @@ class ScoutClass extends CreepClass {
             return this.assignedRoom;
         }
 
-        let LocationHelper = require('helper.location');
-        let adjacentRooms = LocationHelper.adjacentRooms;
+        let RoomHelper = require('helper.room');
+        let adjacentRooms = RoomHelper.adjacentRooms;
 
         for (let idxId in adjacentRooms) {
             if (!ScoutClass.isRoomScouted(adjacentRooms[idxId])) {

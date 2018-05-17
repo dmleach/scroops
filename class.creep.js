@@ -83,7 +83,9 @@ class CreepClass extends ActiveClass {
     }
 
     goTo(destinationPos) {
-        let priorPosition = this.pos;
+        if (this.pos.isEqualTo(destinationPos)) {
+            return true;
+        }
 
         let PathHelper = require('helper.path');
         let path = PathHelper.find(this.pos, destinationPos);

@@ -1,5 +1,34 @@
 class PathHelper {
 
+    static exitDestination(exit) {
+        if (!(exit instanceof RoomPosition)) {
+            throw new Error('Value given to exitDestination must be a RoomPosition');
+        }
+
+        let destination = new RoomPosition(0, 0, exit.roomName);
+        let adjacentRooms = Game.map.describeExits(exit.roomName);
+
+        if (exit.x == 0) {
+            destination.roomName = adjacentRooms[FIND_EXIT_LEFT];
+            destination.x = 48;
+            destination.y = exit.y;
+        } else if (exit.x == 49) {
+            destination.roomName = adjacentRooms[FIND_EXIT_RIGHT];
+            destination.x = 1;
+            destination.y = exit.y;
+        } else if (exit.y == 0) {
+            destination.roomName = adjacentRooms[FIND_EXIT_TOP];
+            destination.x = exit.x;
+            destination.y = 48;
+        } else if (exit.y == 49) {
+            destination.roomName = adjacentRooms[FIND_EXIT_BOTTOM];
+            destination.x = exit.x;
+            destination.y = 1;
+        }
+
+        return destination;
+    }
+
     static find(start, end) {
         if (!start) {
             throw new Error('Start position must be supplied to find');
@@ -15,13 +44,23 @@ class PathHelper {
             path = this.readFromCache(start, end);
         } catch(error) {
             path = undefined;
+            console.log(error.message);
         }
 
         if (path) {
+
             return path;
         }
 
-        path = start.findPathTo(end, { ignoreCreeps: true });
+        let destination = end;
+        let LocationHelper = require('helper.location');
+
+        if (LocationHelper.isExit(end)) {
+            destination = this.exitDestination(end);
+            console.log('Exit ' + end + ' destination is ' + destination);
+        }
+
+        path = start.findPathTo(destination, { ignoreCreeps: true });
         this.writeToCache(start, end, path);
 
         return path[0];
@@ -45,10 +84,10 @@ class PathHelper {
             throw new Error('Rooms given to findToRoom are not adjacent');
         }
 
-        let exits = RoomHelper.findExits(start.roomName, [direction])
+        let exits = RoomHelper.findExits(start.roomName, [direction]);
         let LocationHelper = require('helper.location');
         let closestExit = LocationHelper.findClosestPosition(start, exits);
-        console.log(this.name + ' closest exit is ' + closestExit);
+        return this.exitDestination(closestExit);
     }
 
     static getPosByDirection(position, direction) {
@@ -152,22 +191,34 @@ class PathHelper {
         }
 
         if (!Memory.pathResults) {
-            return undefined;
+            return false;
         }
 
-        if (!Memory.pathResults[start.x]) {
-            return undefined;
+        if (!Memory.pathResults[start.roomName]) {
+            return false;
         }
 
-        if (!Memory.pathResults[start.x][start.y]) {
-            return undefined;
+        if (!Memory.pathResults[start.roomName][start.x]) {
+            return false;
         }
 
-        if (!Memory.pathResults[start.x][start.y][end.x]) {
-            return undefined;
+        if (!Memory.pathResults[start.roomName][start.x][start.y]) {
+            return false;
         }
 
-        return Memory.pathResults[start.x][start.y][end.x][end.y];
+        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName]) {
+            return false;
+        }
+
+        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x]) {
+            return false;
+        }
+
+        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y]) {
+            return false;
+        }
+
+        return Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y];
     }
 
     static writeToCache(start, end, path) {
@@ -187,24 +238,32 @@ class PathHelper {
             Memory.pathResults = {};
         }
 
-        if (!Memory.pathResults[start.x]) {
-            Memory.pathResults[start.x] = {};
+        if (!Memory.pathResults[start.roomName]) {
+            Memory.pathResults[start.roomName] = {};
         }
 
-        if (!Memory.pathResults[start.x][start.y]) {
-            Memory.pathResults[start.x][start.y] = {};
+        if (!Memory.pathResults[start.roomName][start.x]) {
+            Memory.pathResults[start.roomName][start.x] = {};
         }
 
-        if (!Memory.pathResults[start.x][start.y][end.x]) {
-            Memory.pathResults[start.x][start.y][end.x] = {};
+        if (!Memory.pathResults[start.roomName][start.x][start.y]) {
+            Memory.pathResults[start.roomName][start.x][start.y] = {};
         }
 
-        if (!Memory.pathResults[start.x][start.y][end.x][end.y]) {
-            Memory.pathResults[start.x][start.y][end.x][end.y] = {};
+        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName]) {
+            Memory.pathResults[start.roomName][start.x][start.y][end.roomName] = {};
+        }
+
+        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x]) {
+            Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x] = {};
+        }
+
+        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y]) {
+            Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y] = {};
         }
 
         // We don't need to store the whole path; only the first step
-        Memory.pathResults[start.x][start.y][end.x][end.y] = path[0];
+        Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y] = path[0];
     }
 
 }
