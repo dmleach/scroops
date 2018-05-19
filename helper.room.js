@@ -22,7 +22,6 @@ class RoomHelper {
             }
         }
 
-        console.log('Adjacent rooms to friendly rooms are ' + adjacentRooms);
         return adjacentRooms;
     }
 

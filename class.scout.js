@@ -17,17 +17,9 @@ class ScoutClass extends CreepClass {
     }
 
     /**
-     * The position at which this scout has been assigned to observe
+     * Assigns the scout a position from which it should observe
      */
-    get assignedPosition() {
-        if (this.gameObject.memory.assignedPosition) {
-            return new RoomPosition(
-                this.gameObject.memory.assignedPosition.x,
-                this.gameObject.memory.assignedPosition.y,
-                this.gameObject.memory.assignedPosition.roomName
-            );
-        }
-
+    assignPosition() {
         // Find the room the scout should observe
         let RoomHelper = require('helper.room');
         let adjacentRooms = RoomHelper.adjacentRooms;
@@ -39,6 +31,11 @@ class ScoutClass extends CreepClass {
             }
         }
 
+        if (!assignedRoom) {
+            console.log(this.name + ' cannot get a room assignment');
+            return false;
+        }
+
         // If the scout is in that room, great! Let its current position be its
         // assignment
         if (this.pos.roomName == assignedRoom) {
@@ -48,9 +45,42 @@ class ScoutClass extends CreepClass {
 
         // Find a path to that room and assign the end of that path to the scout
         let PathHelper = require('helper.path');
+        console.log(this.name + ' is looking for a path from ' + this.pos + ' to ' + assignedRoom);
         let destination = PathHelper.findToRoom(this.pos, assignedRoom);
         this.gameObject.memory.assignedPosition = destination;
         return destination;
+    }
+
+    /**
+     * The position to which this scout is assigned. Unlike similar functions
+     * in other creep classes, this function will not automatically assign
+     * the scout a position if it doesn't already have one. This is to avoid
+     * setting up an infinite recursion, as assigning a position involves
+     * getting the assigned positions of other creeps
+     */
+    get assignedPosition() {
+        if (this.gameObject.memory.assignedPosition) {
+            return new RoomPosition(
+                this.gameObject.memory.assignedPosition.x,
+                this.gameObject.memory.assignedPosition.y,
+                this.gameObject.memory.assignedPosition.roomName
+            );
+        }
+
+        return undefined;
+    }
+
+    /**
+     * The room to which this scout is assigned
+     */
+    get assignedRoom() {
+        let assignedPosition = this.assignedPosition;
+
+        if (assignedPosition) {
+            return assignedPosition.roomName;
+        }
+
+        return undefined;
     }
 
     /**
@@ -81,11 +111,11 @@ class ScoutClass extends CreepClass {
     doScout() {
         let assignedPosition = this.assignedPosition;
 
-        if (!assignedPosition) {
-            return false;
+        if (assignedPosition) {
+            this.goTo(assignedPosition);
+        } else {
+            this.assignPosition();
         }
-
-        this.goTo(assignedPosition);
     }
 
     /**
@@ -106,37 +136,16 @@ class ScoutClass extends CreepClass {
         return false;
     }
 
-    /**
-     * The minimum number of creeps of this role that should be in play
-     */
-    static get minimumCount() {
-        return 2;
-    }
-
     static get role() {
         return 'Scout';
     }
 
-    /**
-     * Gets the scout's assignment from cache, or assigns a room to the scout
-     * and caches it if nothing is already saved
-     */
-    get roomAssignment() {
-        if (this.assignedRoom) {
-            return this.assignedRoom;
-        }
-
+    static get shouldSpawn() {
+        // At most, there should be one scout for every non-friendly room
+        // adjacent to friendly rooms
         let RoomHelper = require('helper.room');
         let adjacentRooms = RoomHelper.adjacentRooms;
-
-        for (let idxId in adjacentRooms) {
-            if (!ScoutClass.isRoomScouted(adjacentRooms[idxId])) {
-                this.gameObject.memory.room = adjacentRooms[idxId];
-                return adjacentRooms[idxId];
-            }
-        }
-
-        return undefined;
+        return ScoutClass.count < RoomHelper.adjacentRooms.length;
     }
 
 }
