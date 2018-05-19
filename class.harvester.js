@@ -72,6 +72,10 @@ class HarvesterClass extends CreepClass {
         return [WORK];
     }
 
+    static get bodyMaximum() {
+        return [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, WORK];
+    }
+
     get depositSiteId () {
         // Find the closest container, if one exists
         let LocationHelper = require('helper.location');

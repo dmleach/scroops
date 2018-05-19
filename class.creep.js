@@ -2,14 +2,6 @@ var ActiveClass = require('class.active');
 
 class CreepClass extends ActiveClass {
 
-    static get bodyBase() {
-        throw new Error('bodyBase method has not been defined for ' + this.name);
-    }
-
-    static get bodyImprovement() {
-        throw new Error('bodyImprovement method has not been defined for ' + this.name);
-    }
-
     /**
      * Returns an array of body parts on the creep
      */
@@ -23,6 +15,23 @@ class CreepClass extends ActiveClass {
         return body;
     }
 
+    static get bodyBase() {
+        throw new Error('bodyBase method has not been defined for ' + this.name);
+    }
+
+    static get bodyImprovement() {
+        throw new Error('bodyImprovement method has not been defined for ' + this.name);
+    }
+
+    static get bodyMaximum() {
+        return [
+            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+            MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+            CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
+            WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+        ];
+    }
+
     static bodyByEnergy(energy) {
         let CreepHelper = require('helper.creep');
         let body = this.bodyBase;
@@ -31,10 +40,18 @@ class CreepClass extends ActiveClass {
             return false;
         }
 
+        let cost = Infinity;
+        let isOverMaximum = true;
+
         try {
-            while (CreepHelper.bodyCost(body.concat(this.bodyImprovement)) <= energy) {
-                body = body.concat(this.bodyImprovement);
-            }
+            do {
+                cost = CreepHelper.bodyCost(body.concat(this.bodyImprovement));
+                isOverMaximum = this.isBodyMoreDeveloped(body.concat(this.bodyImprovement), this.bodyMaximum);
+
+                if ( (cost <= energy) && (isOverMaximum == false) ) {
+                    body = body.concat(this.bodyImprovement);
+                }
+            } while (cost <= energy && isOverMaximum == false);
         } catch (Error) {
             // Most likely error is that bodyImprovement wasn't defined, and
             // that's acceptable. It'd be better to define a specific error
@@ -83,11 +100,14 @@ class CreepClass extends ActiveClass {
     }
 
     getBodyPartCount(bodyPart) {
+        return CreepClass.getPartCountByBody(bodyPart, this.body);
+    }
+
+    static getPartCountByBody(part, body) {
         let count = 0;
-        let body = this.body;
 
         for (let idxBody in body) {
-            if (body[idxBody] == bodyPart) {
+            if (body[idxBody] == part) {
                 count++;
             }
         }
@@ -123,6 +143,22 @@ class CreepClass extends ActiveClass {
         } else {
             moveResult = this.gameObject.moveTo(destinationPos);
         }
+    }
+
+    static isBodyMoreDeveloped(testBody, referenceBody) {
+        let uniqueParts = Array.from(new Set(testBody));
+
+        for (let idxUniquePart in uniqueParts) {
+            let part = uniqueParts[idxUniquePart];
+            let testCount = this.getPartCountByBody(part, testBody);
+            let referenceCount = this.getPartCountByBody(part, referenceBody)
+
+            if (testCount > referenceCount) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     isSiblingByName(creepName) {
