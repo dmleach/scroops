@@ -191,6 +191,10 @@ class BuilderClass extends SpenderClass {
         return 'Builder';
     }
 
+    static get spawnPriority() {
+        return 80;
+    }
+
 }
 
 module.exports = BuilderClass;

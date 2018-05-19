@@ -212,6 +212,10 @@ class HarvesterClass extends CreepClass {
         return HarvesterClass.count < walkableSpaces;
     }
 
+    static get spawnPriority() {
+        return 100;
+    }
+
 }
 
 module.exports = HarvesterClass;

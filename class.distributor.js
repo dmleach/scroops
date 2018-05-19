@@ -214,6 +214,10 @@ class DistributorClass extends CreepClass {
         return 'Distributor';
     }
 
+    static get spawnPriority() {
+        return 70;
+    }
+
 }
 
 module.exports = DistributorClass;

@@ -30,21 +30,52 @@ class SpawnClass extends BaseClass {
     }
 
     manageCreeps() {
+        let priorities = this.priorities;
+        let priorityValues = Object.keys(priorities).reverse();
+
         let CreepHelper = require('helper.creep');
 
-        for (var fileId in CreepHelper.creepClassFiles) {
-            let creepClass = CreepHelper.getCreepClassByFileId(fileId);
+        for (let idxValue in priorityValues) {
+            let fileIds = priorities[priorityValues[idxValue]];
 
-            if (creepClass.shouldSpawn) {
-                try {
-                    this.spawn(creepClass);
-                } catch(error) {
-                    if (Game.time % 5 == 0) {
-                        console.log(error.message);
+            for (let idxId in fileIds) {
+                let creepClass = CreepHelper.getCreepClassByFileId(fileIds[idxId]);
+
+                if (creepClass.shouldSpawn) {
+                    try {
+                        this.spawn(creepClass);
+                        return true;
+                    } catch(error) {
+                        if (Game.time % 5 == 0) {
+                            console.log(error.message);
+                        }
+                        return false;
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Returns an object representing the priority of spawning the different
+     * creep types
+     */
+    get priorities() {
+        let priorities = {};
+        let CreepHelper = require('helper.creep');
+
+        for (var fileId in CreepHelper.creepClassFiles) {
+            let creepClass = CreepHelper.getCreepClassByFileId(fileId);
+            let priority = creepClass.spawnPriority;
+
+            if (!priorities[priority]) {
+                priorities[priority] = [];
+            }
+
+            priorities[priority].push(fileId);
+        }
+
+        return priorities;
     }
 
     /**

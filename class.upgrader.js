@@ -79,6 +79,10 @@ class UpgraderClass extends SpenderClass {
         return 'Upgrader';
     }
 
+    static get spawnPriority() {
+        return 90;
+    }
+
     /**
      * Finds the closest room controller
      */
