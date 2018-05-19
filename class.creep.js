@@ -151,6 +151,10 @@ class CreepClass extends ActiveClass {
         return siblings;
     }
 
+    static get spawnPriority() {
+        return 0;
+    }
+
 }
 
 module.exports = CreepClass;

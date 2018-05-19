@@ -127,8 +127,12 @@ class ScoutClass extends CreepClass {
         for (let idxId in scoutIds) {
             let scout = CreepHelper.createCreepById(scoutIds[idxId]);
 
-            if (scout.assignedRoom == roomName) {
-                return true;
+            // I'm not exactly sure how this comes back as undefined, but I can
+            // see in the console that it does when new scouts are spawned
+            if (scout) {
+                if (scout.assignedRoom == roomName) {
+                    return true;
+                }
             }
         }
 
