@@ -115,6 +115,21 @@ class LocationHelper {
         return resultIds;
     }
 
+    static findStructures(structureType, roomNames = undefined) {
+        let resultIds = [];
+        let structureIds = this.findIds(FIND_STRUCTURES, roomNames);
+
+        for (let idxId in structureIds) {
+            let structure = Game.getObjectById(structureIds[idxId]);
+
+            if (structure.structureType == structureType) {
+                resultIds.push(structureIds[idxId]);
+            }
+        }
+
+        return resultIds;
+    }
+
     static getCacheLifespan(findType) {
         switch (findType) {
             case FIND_CREEPS:

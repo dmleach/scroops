@@ -131,6 +131,14 @@ class CreepClass extends ActiveClass {
         return this.constructor.role;
     }
 
+    get room() {
+        return this.gameObject.room;
+    }
+
+    get roomName() {
+        return this.gameObject.room.name;
+    }
+
     static get shouldSpawn() {
         if (this.count < this.minimumCount) {
             return true;

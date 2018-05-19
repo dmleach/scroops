@@ -2,6 +2,27 @@ let BaseClass = require('class.base');
 
 class SpawnClass extends BaseClass {
 
+    /**
+     * Base energy is the amount of energy needed to spawn all possible creep
+     * types. In other words, it's the energy needed to spawn the most expensive
+     * basic-bodied creep
+     */
+    static get baseEnergy() {
+        let highestCost = 0;
+        let CreepHelper = require('helper.creep');
+
+        for (var fileId in CreepHelper.creepClassFiles) {
+            let creepClass = CreepHelper.getCreepClassByFileId(fileId);
+            let bodyCost = CreepHelper.bodyCost(creepClass.bodyBase);
+
+            if (bodyCost > highestCost) {
+                highestCost = bodyCost;
+            }
+        }
+
+        return highestCost;
+    }
+
     static createByName(name) {
         return new SpawnClass(Game.spawns[name]);
     }
@@ -32,7 +53,6 @@ class SpawnClass extends BaseClass {
     manageCreeps() {
         let priorities = this.priorities;
         let priorityValues = Object.keys(priorities).reverse();
-
         let CreepHelper = require('helper.creep');
 
         for (let idxValue in priorityValues) {

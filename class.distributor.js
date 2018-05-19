@@ -24,17 +24,6 @@ class DistributorClass extends CreepClass {
     }
 
     get depositSiteId() {
-        // Are there enemies in the room? If so take energy to the towers
-        let CombatHelper = require('helper.combat');
-
-        if (CombatHelper.getEnemyIdsByRoom(this.pos.room).length > 0) {
-            let towerIds = CombatHelper.getTowerIdsByRoom(this.pos.room);
-
-            if (towerIds.length > 0) {
-                return towerIds[0];
-            }
-        }
-
         // First check to see if there's a location in the distributor's cache
         let depositSiteId = this.cachedActionSiteId;
 
@@ -42,8 +31,37 @@ class DistributorClass extends CreepClass {
             return depositSiteId;
         }
 
-        // Find all the structures in visible rooms
+        // Are there enemies in the room? If so take energy to the towers
+        let CombatHelper = require('helper.combat');
+
+        if (CombatHelper.getEnemyIdsByRoom(this.roomName).length > 0) {
+            console.log(this.name + ' sees enemies in the room');
+            let towerIds = CombatHelper.getTowerIdsByRoom(this.pos.room);
+
+            if (towerIds.length > 0) {
+                this.cacheActionSiteId(towerIds[0]);
+                return towerIds[0];
+            }
+        }
+
+        // Is there enough energy in the spawn and extensions to create all
+        // the creep types? If not take energy to the spawn and extensions
         let LocationHelper = require('helper.location');
+        let SpawnClass = require('class.spawn');
+
+        if (this.room.energyAvailable < SpawnClass.baseEnergy) {
+            let spawnEnergySiteIds = LocationHelper.findIds(FIND_MY_SPAWNS);
+            spawnEnergySiteIds = spawnEnergySiteIds.concat(LocationHelper.findStructures(STRUCTURE_EXTENSION));
+
+            for (let idxId in spawnEnergySiteIds) {
+                if (this.isValidDepositSiteId(spawnEnergySiteIds[idxId])) {
+                    this.cacheActionSiteId(spawnEnergySiteIds[idxId]);
+                    return spawnEnergySiteIds[idxId];
+                }
+            }
+        }
+
+        // Find all the structures in visible rooms
         let siteIds = LocationHelper.findIds(FIND_STRUCTURES);
 
         // Filter out all the valid sites
