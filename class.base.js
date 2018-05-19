@@ -18,7 +18,7 @@ class BaseClass {
      * the array of debug ids
      */
     debugLog(message) {
-        let debugIds = ['5af8652042aa150cf94eb507'];
+        let debugIds = [];
 
         if (debugIds.indexOf(this.id) !== -1) {
             console.log('[' + this.name + '] ' + message);
