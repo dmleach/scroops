@@ -45,7 +45,6 @@ class ScoutClass extends CreepClass {
 
         // Find a path to that room and assign the end of that path to the scout
         let PathHelper = require('helper.path');
-        console.log(this.name + ' is looking for a path from ' + this.pos + ' to ' + assignedRoom);
         let destination = PathHelper.findToRoom(this.pos, assignedRoom);
         this.gameObject.memory.assignedPosition = destination;
         return destination;
