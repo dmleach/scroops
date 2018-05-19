@@ -1,3 +1,5 @@
+const ROOM_STATUS_LIFESPAN = 100;
+
 class RoomHelper {
 
     /**
@@ -63,6 +65,30 @@ class RoomHelper {
         return route[0].exit;
     }
 
+    static getIsHostile(roomName) {
+        if (!Memory.roomStatus) {
+            return undefined;
+        }
+
+        let roomStatus = Memory.roomStatus[roomName];
+
+        if (!roomStatus) {
+            return undefined;
+        }
+
+        if (!roomStatus['status']) {
+            return undefined;
+        }
+
+        if (!roomStatus['timestamp']) {
+            return undefined;
+        }
+
+        return
+            roomStatus['status'] == 'Hostile'
+            && Game.time > roomStatus['timestamp'] + ROOM_STATUS_LIFESPAN;
+    }
+
     static isAdjacent(roomNameA, roomNameB) {
         let exits = Game.map.describeExits(roomNameA);
 
@@ -91,6 +117,18 @@ class RoomHelper {
         }
 
         return true;
+    }
+
+    static setIsHostile(roomName) {
+        if (!Memory.roomStatus) {
+            Memory.roomStatus = {}
+        }
+
+        let roomStatus = {};
+        roomStatus['status'] = 'Hostile';
+        roomStatus['timestamp'] = Game.time;
+
+        Memory.roomStatus[roomName] = roomStatus;
     }
 
 }

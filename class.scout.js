@@ -105,6 +105,13 @@ class ScoutClass extends CreepClass {
     }
 
     doObserve() {
+        let CombatHelper = require('helper.combat');
+        let hostileCreepIds = CombatHelper.getEnemyIdsByRoom(this.roomName);
+
+        if (hostileCreepIds.length > 0) {
+            let RoomHelper = require('helper.room');
+            RoomHelper.setIsHostile(this.roomName);
+        }
     }
 
     doScout() {
@@ -122,7 +129,17 @@ class ScoutClass extends CreepClass {
         // adjacent to friendly rooms
         let RoomHelper = require('helper.room');
         let adjacentRooms = RoomHelper.adjacentRooms;
-        return ScoutClass.count < RoomHelper.adjacentRooms.length;
+
+        // Don't send scouts into known hostile rooms
+        let eligibleRoomCount = 0;
+
+        for (let idxRoom in adjacentRooms) {
+            if (RoomHelper.getIsHostile(adjacentRooms[idxRoom]) == false) {
+                eligibleRoomCount++;
+            }
+        }
+
+        return ScoutClass.count < eligibleRoomCount;
     }
 
     /**
