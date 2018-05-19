@@ -19,6 +19,48 @@ class HarvesterClass extends CreepClass {
         return ACTIVITY_DEPOSIT;
     }
 
+    static assignHarvestSite(roomName) {
+        // Find all the sources in the given room
+        let LocationHelper = require('helper.location');
+        let sourceIds = LocationHelper.findIds(FIND_SOURCES, roomName);
+        let CreepHelper = require('helper.creep');
+
+        for (let idxSourceId in sourceIds) {
+            // There shouldn't be more than six WORK parts on harvesters
+            // assigned to this source
+            let workPartCount = 0;
+            let sourceHarvesterIds = this.getHarvesterIdsBySourceId(sourceIds[idxSourceId]);
+
+            for (let idxHarvesterId in sourceHarvesterIds) {
+                let creep = CreepHelper.createCreepById(sourceHarvesterIds[idxHarvesterId]);
+                workPartCount += creep.getBodyPartCount(WORK);
+            }
+
+            // There shouldn't be more creeps assigned to this source than
+            // walkable spaces around it
+            let walkableSpaces = 0;
+            let source = Game.getObjectById(sourceIds[idxSourceId]);
+
+            if (source) {
+                walkableSpaces += LocationHelper.getWalkableSpacesAroundCount(source.pos);
+            }
+
+            if (workPartCount < 6 && sourceHarvesterIds.length < walkableSpaces) {
+                return sourceIds[idxSourceId];
+            }
+        }
+    }
+
+    get assignedHarvestSiteId() {
+        let harvestSiteId = this.cachedActionSiteId;
+
+        if (this.isValidHarvestSiteId(harvestSiteId)) {
+            return harvestSiteId;
+        }
+
+        return undefined;
+    }
+
     /**
      * The body parts the most simplest version of a harvester should have
      */
@@ -121,17 +163,43 @@ class HarvesterClass extends CreepClass {
      * Computes the amount of energy the harvester will gain from each harvest
      */
     get energyPerHarvest() {
-        let body = this.body;
-        let workCount = 0;
+        // Each of the harvester's WORK body parts will harvest 2 energy
+        return this.getBodyPartCount(WORK) * 2;
+    }
 
-        for (let idxBody in body) {
-            if (body[idxBody] == WORK) {
-                workCount++;
+    static getHarvesterIdsBySourceId(sourceId) {
+        let resultIds = [];
+        let CreepHelper = require('helper.creep');
+        let harvesterIds = CreepHelper.getCreepIdsByRole(this.role);
+
+        for (let idxId in harvesterIds) {
+            let harvester = CreepHelper.createCreepById(harvesterIds[idxId]);
+
+            if (harvester) {
+                if (harvester.assignedHarvestSiteId == sourceId) {
+                    resultIds.push(harvesterIds[idxId]);
+                }
             }
         }
 
-        // Each of the harvester's WORK body parts will harvest 2 energy
-        return workCount * 2;
+
+        return resultIds;
+    }
+
+    static getShouldSpawn(roomName) {
+        if (super.getShouldSpawn(roomName)) {
+            return true;
+        }
+
+        // Harvesters only work in friendly rooms
+        let RoomHelper = require('helper.room');
+
+        if (RoomHelper.isFriendly(roomName) == false) {
+            return false;
+        }
+
+        let harvestSiteId = this.assignHarvestSite(roomName);
+        return harvestSiteId !== undefined;
     }
 
     /**
@@ -139,23 +207,19 @@ class HarvesterClass extends CreepClass {
      */
     get harvestSiteId() {
         // First check to see if there's a source in the harvester's cache
-        let harvestSiteId = this.cachedActionSiteId;
+        if (this.assignedHarvestSiteId) {
+            return this.assignedHarvestSiteId;
+        }
 
-        if (this.isValidHarvestSiteId(harvestSiteId)) {
+        // If not, assign a source to this harvester
+        let harvestSiteId = HarvesterClass.assignHarvestSite(this.roomName);
+
+        if (harvestSiteId) {
+            this.cacheActionSiteId(harvestSiteId);
             return harvestSiteId;
         }
 
-        // Find all the sources in visible rooms
-        let LocationHelper = require('helper.location');
-        let sourceIds = LocationHelper.findIds(FIND_SOURCES);
-
-        // Find the closest source among all the found sources
-        let closestSourceId = LocationHelper.findClosestId(this.pos, sourceIds);
-
-        // Save the closest source to the harvester's cache
-        this.cacheActionSiteId(closestSourceId);
-
-        return closestSourceId;
+        return undefined;
     }
 
     /**
@@ -184,32 +248,6 @@ class HarvesterClass extends CreepClass {
      */
     static get role() {
         return 'Harvester';
-    }
-
-    static get shouldSpawn() {
-        if (super.shouldSpawn) {
-            return true;
-        }
-
-        // At most, there should be one harvester for every walkable space
-        // around the friendly rooms' sources
-        let walkableSpaces = 0;
-        let LocationHelper = require('helper.location');
-        let sourceIds = LocationHelper.findIds(FIND_SOURCES);
-
-        for (let idxId in sourceIds) {
-            let source = Game.getObjectById(sourceIds[idxId]);
-
-            if (source) {
-                if (source.room.controller) {
-                    if (source.room.controller.my) {
-                        walkableSpaces += LocationHelper.getWalkableSpacesAroundCount(source.pos);
-                    }
-                }
-            }
-        }
-
-        return HarvesterClass.count < walkableSpaces;
     }
 
     static get spawnPriority() {

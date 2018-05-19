@@ -117,6 +117,14 @@ class ScoutClass extends CreepClass {
         }
     }
 
+    static getShouldSpawn(roomName) {
+        // At most, there should be one scout for every non-friendly room
+        // adjacent to friendly rooms
+        let RoomHelper = require('helper.room');
+        let adjacentRooms = RoomHelper.adjacentRooms;
+        return ScoutClass.count < RoomHelper.adjacentRooms.length;
+    }
+
     /**
      * Returns true if any scout has the given room as its assigned room
      */
@@ -141,14 +149,6 @@ class ScoutClass extends CreepClass {
 
     static get role() {
         return 'Scout';
-    }
-
-    static get shouldSpawn() {
-        // At most, there should be one scout for every non-friendly room
-        // adjacent to friendly rooms
-        let RoomHelper = require('helper.room');
-        let adjacentRooms = RoomHelper.adjacentRooms;
-        return ScoutClass.count < RoomHelper.adjacentRooms.length;
     }
 
 }

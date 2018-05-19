@@ -122,8 +122,10 @@ class LocationHelper {
         for (let idxId in structureIds) {
             let structure = Game.getObjectById(structureIds[idxId]);
 
-            if (structure.structureType == structureType) {
-                resultIds.push(structureIds[idxId]);
+            if (structure) {
+                if (structure.structureType == structureType) {
+                    resultIds.push(structureIds[idxId]);
+                }
             }
         }
 

@@ -61,7 +61,7 @@ class SpawnClass extends BaseClass {
             for (let idxId in fileIds) {
                 let creepClass = CreepHelper.getCreepClassByFileId(fileIds[idxId]);
 
-                if (creepClass.shouldSpawn) {
+                if (creepClass.getShouldSpawn(this.roomName)) {
                     try {
                         this.spawn(creepClass);
                         return true;

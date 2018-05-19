@@ -45,6 +45,14 @@ class BaseClass {
     get pos() {
         return this.gameObject.pos;
     }
+
+    get room() {
+        return this.gameObject.room;
+    }
+
+    get roomName() {
+        return this.gameObject.room.name;
+    }
 }
 
 module.exports = BaseClass;

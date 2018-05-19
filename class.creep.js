@@ -82,6 +82,27 @@ class CreepClass extends ActiveClass {
         return count;
     }
 
+    getBodyPartCount(bodyPart) {
+        let count = 0;
+        let body = this.body;
+
+        for (let idxBody in body) {
+            if (body[idxBody] == bodyPart) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    static getShouldSpawn(roomName) {
+        if (this.count < this.minimumCount) {
+            return true;
+        }
+
+        return false;
+    }
+
     goTo(destinationPos) {
         if (this.pos.isEqualTo(destinationPos)) {
             return true;
@@ -129,22 +150,6 @@ class CreepClass extends ActiveClass {
 
     get role() {
         return this.constructor.role;
-    }
-
-    get room() {
-        return this.gameObject.room;
-    }
-
-    get roomName() {
-        return this.gameObject.room.name;
-    }
-
-    static get shouldSpawn() {
-        if (this.count < this.minimumCount) {
-            return true;
-        }
-
-        return false;
     }
 
     get siblingIds() {
