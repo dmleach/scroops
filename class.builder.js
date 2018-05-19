@@ -131,12 +131,21 @@ class BuilderClass extends SpenderClass {
     }
 
     doWork() {
+        // If there are active construction sites, the builder should work on
+        // them
         let LocationHelper = require('helper.location');
         let constructionSiteIds = LocationHelper.findIds(FIND_MY_CONSTRUCTION_SITES);
 
         if (constructionSiteIds.length > 0) {
             this.doBuild();
-        } else {
+        }
+
+        // If there are no towers in the builder's room, the builder should
+        // work on repair
+        let TowerHelper = require('helper.tower');
+        let roomTowers = TowerHelper.getFriendlyTowerIdsByRoom(this.pos.roomName);
+
+        if (roomTowers.length == 0) {
             this.doRepair();
         }
     }
@@ -158,7 +167,21 @@ class BuilderClass extends SpenderClass {
     }
 
     get repairSiteId() {
-        return '5af14a821ad10d5415ba77a6';
+        let RepairHelper = require('helper.repair');
+
+        // First check to see if there's a location in the builder's cache
+        let repairSiteId = this.cachedActionSiteId;
+
+        if (RepairHelper.isValidRepairSiteId(repairSiteId)) {
+            return repairSiteId;
+        }
+
+        repairSiteId = RepairHelper.weakestDamagedStructureId;
+
+        // Save the repair site to the builder
+        this.cacheActionSiteId(repairSiteId);
+
+        return repairSiteId;
     }
 
     /**
