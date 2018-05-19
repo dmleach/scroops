@@ -40,6 +40,21 @@ class TowerHelper {
         return towerIds;
     }
 
+    static getFriendlyTowerIdsByRoom(roomName) {
+        let roomTowerIds = [];
+        let towerIds = this.friendlyTowerIds;
+
+        for (let idxId in towerIds) {
+            let tower = Game.getObjectById(towerIds[idxId]);
+
+            if (tower.pos.roomName == roomName) {
+                roomTowerIds.push(towerIds[idxId]);
+            }
+        }
+
+        return roomTowerIds;
+    }
+
 }
 
 module.exports = TowerHelper;
