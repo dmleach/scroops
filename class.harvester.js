@@ -56,16 +56,6 @@ class HarvesterClass extends CreepClass {
         return undefined;
     }
 
-    get assignedHarvestSiteId() {
-        let harvestSiteId = this.cachedActionSiteId;
-
-        if (this.isValidHarvestSiteId(harvestSiteId)) {
-            return harvestSiteId;
-        }
-
-        return undefined;
-    }
-
     /**
      * The body parts the most simplest version of a harvester should have
      */
@@ -185,7 +175,7 @@ class HarvesterClass extends CreepClass {
             let harvester = CreepHelper.createCreepById(harvesterIds[idxId]);
 
             if (harvester) {
-                if (harvester.assignedHarvestSiteId == sourceId) {
+                if (harvester.cachedActionSiteId == sourceId) {
                     resultIds.push(harvesterIds[idxId]);
                 }
             }
@@ -216,8 +206,8 @@ class HarvesterClass extends CreepClass {
      */
     get harvestSiteId() {
         // First check to see if there's a source in the harvester's cache
-        if (this.assignedHarvestSiteId) {
-            return this.assignedHarvestSiteId;
+        if (this.cachedActionSiteId) {
+            return this.cachedActionSiteId;
         }
 
         // If not, assign a source to this harvester
