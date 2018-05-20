@@ -1,4 +1,4 @@
-const ROOM_STATUS_LIFESPAN = 100;
+const ROOM_STATUS_LIFESPAN = 500;
 
 class RoomHelper {
 

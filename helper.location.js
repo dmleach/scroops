@@ -136,7 +136,6 @@ class LocationHelper {
         switch (findType) {
             case FIND_CREEPS:
             case FIND_MY_CREEPS:
-            case FIND_HOSTILE_CREEPS:
                 return 5;
             case FIND_DROPPED_ENERGY:
             case FIND_DROPPED_RESOURCES:
@@ -252,6 +251,12 @@ class LocationHelper {
     }
 
     static writeToCache(findType, locationIds) {
+        let nonCacheTypes = [FIND_HOSTILE_CREEPS];
+
+        if (nonCacheTypes.indexOf(findType) !== -1) {
+            return false;
+        }
+
         if (!Memory.findResults) {
             Memory.findResults = {};
         }

@@ -28,6 +28,23 @@ class CombatHelper {
         return LocationHelper.findIds(FIND_HOSTILE_CREEPS, roomName);
     }
 
+    static getHostileEnemyIdsByRoom(roomName) {
+        let hostileIds = [];
+        let enemyIds = this.getEnemyIdsByRoom(roomName);
+
+        for (let idxId in enemyIds) {
+            let creep = Game.getObjectById(enemyIds[idxId]);
+
+            if (creep) {
+                if (this.isCreepHostile(creep)) {
+                    hostileIds.push(enemyIds[idxId]);
+                }
+            }
+        }
+
+        return hostileIds;
+    }
+
     static getTowerIdsByRoom(roomName) {
         let towerIds = [];
         let LocationHelper = require('helper.location');
@@ -42,6 +59,22 @@ class CombatHelper {
         }
 
         return towerIds;
+    }
+
+    static isCreepHostile(creep) {
+        let hostileParts = [ATTACK, RANGED_ATTACK];
+
+        if (!(creep instanceof Creep)) {
+            throw new Error('Value given to isCreepHostile must be of type Creep');
+        }
+
+        for (let idxBody in creep.body) {
+            if (hostileParts.indexOf(creep.body[idxBody].type) !== -1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

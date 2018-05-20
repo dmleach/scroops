@@ -26,7 +26,7 @@ class ScoutClass extends CreepClass {
         let assignedRoom = undefined;
 
         for (let idxId in adjacentRooms) {
-            if (!ScoutClass.isRoomScouted(adjacentRooms[idxId])) {
+            if (!ScoutClass.isRoomScouted(adjacentRooms[idxId]) && !RoomHelper.getIsHostile(adjacentRooms[idxId])) {
                 assignedRoom = adjacentRooms[idxId]
             }
         }
@@ -106,7 +106,7 @@ class ScoutClass extends CreepClass {
 
     doObserve() {
         let CombatHelper = require('helper.combat');
-        let hostileCreepIds = CombatHelper.getEnemyIdsByRoom(this.roomName);
+        let hostileCreepIds = CombatHelper.getHostileEnemyIdsByRoom(this.roomName);
 
         if (hostileCreepIds.length > 0) {
             let RoomHelper = require('helper.room');
@@ -134,7 +134,7 @@ class ScoutClass extends CreepClass {
         let eligibleRoomCount = 0;
 
         for (let idxRoom in adjacentRooms) {
-            if (RoomHelper.getIsHostile(adjacentRooms[idxRoom]) == false) {
+            if (!RoomHelper.getIsHostile(adjacentRooms[idxRoom])) {
                 eligibleRoomCount++;
             }
         }
