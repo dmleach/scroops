@@ -33,7 +33,10 @@ class HarvesterClass extends CreepClass {
 
             for (let idxHarvesterId in sourceHarvesterIds) {
                 let creep = CreepHelper.createCreepById(sourceHarvesterIds[idxHarvesterId]);
-                workPartCount += creep.getBodyPartCount(WORK);
+
+                if (creep) {
+                    workPartCount += creep.getBodyPartCount(WORK);
+                }
             }
 
             // There shouldn't be more creeps assigned to this source than
@@ -42,13 +45,15 @@ class HarvesterClass extends CreepClass {
             let source = Game.getObjectById(sourceIds[idxSourceId]);
 
             if (source) {
-                walkableSpaces += LocationHelper.getWalkableSpacesAroundCount(source.pos);
+                walkableSpaces = LocationHelper.getWalkableSpacesAroundCount(source.pos);
             }
 
             if (workPartCount < 6 && sourceHarvesterIds.length < walkableSpaces) {
                 return sourceIds[idxSourceId];
             }
         }
+
+        return undefined;
     }
 
     get assignedHarvestSiteId() {
