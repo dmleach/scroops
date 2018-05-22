@@ -52,13 +52,17 @@ class DistributorClass extends CreepClass {
         if (this.room.energyAvailable < SpawnClass.baseEnergy) {
             let spawnEnergySiteIds = LocationHelper.findIds(FIND_MY_SPAWNS);
             spawnEnergySiteIds = spawnEnergySiteIds.concat(LocationHelper.findStructures(STRUCTURE_EXTENSION));
+            let eligibleSiteIds = [];
 
             for (let idxId in spawnEnergySiteIds) {
                 if (this.isValidDepositSiteId(spawnEnergySiteIds[idxId])) {
-                    this.cacheActionSiteId(spawnEnergySiteIds[idxId]);
-                    return spawnEnergySiteIds[idxId];
+                    eligibleSiteIds.push(spawnEnergySiteIds[idxId]);
                 }
             }
+
+            depositSiteId = LocationHelper.findClosestId(this.pos, eligibleSiteIds);
+            this.cacheActionSiteId(depositSiteId);
+            return depositSiteId;
         }
 
         // Find all the structures in visible rooms
