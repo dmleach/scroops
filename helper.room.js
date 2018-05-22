@@ -2,6 +2,10 @@ const ROOM_STATUS_LIFESPAN = 500;
 
 class RoomHelper {
 
+    static get ROOM_STATUS_FRIENDLY() { return 'Friendly'; }
+    static get ROOM_STATUS_HOSTILE() { return 'Hostile'; }
+    static get ROOM_STATUS_NEUTRAL() { return 'Neutral'; }
+
     /**
      * Returns all the non-friendly rooms that are adjacent to friendly rooms
      */
@@ -65,7 +69,12 @@ class RoomHelper {
         return route[0].exit;
     }
 
-    static getIsHostile(roomName) {
+    static getStatus(roomName) {
+        // First check to see if the room is friendly
+        if (this.isFriendly(roomName)) {
+            return this.ROOM_STATUS_FRIENDLY;
+        }
+
         if (!Memory.roomStatus) {
             return undefined;
         }
@@ -84,9 +93,11 @@ class RoomHelper {
             return undefined;
         }
 
-        return
-            roomStatus['status'] == 'Hostile'
-            && Game.time > roomStatus['timestamp'] + ROOM_STATUS_LIFESPAN;
+        if (Game.time > roomStatus['timestamp'] + ROOM_STATUS_LIFESPAN) {
+            return undefined;
+        }
+
+        return roomStatus['status'];
     }
 
     static isAdjacent(roomNameA, roomNameB) {
@@ -119,13 +130,18 @@ class RoomHelper {
         return true;
     }
 
-    static setIsHostile(roomName) {
+    static isHostile(roomName) {
+        let hostileStatuses = [this.ROOM_STATUS_HOSTILE];
+        return hostileStatuses.indexOf(this.getStatus(roomName)) !== -1;
+    }
+
+    static setStatus(roomName, status) {
         if (!Memory.roomStatus) {
             Memory.roomStatus = {}
         }
 
         let roomStatus = {};
-        roomStatus['status'] = 'Hostile';
+        roomStatus['status'] = status;
         roomStatus['timestamp'] = Game.time;
 
         Memory.roomStatus[roomName] = roomStatus;

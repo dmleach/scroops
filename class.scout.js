@@ -26,7 +26,7 @@ class ScoutClass extends CreepClass {
         let assignedRoom = undefined;
 
         for (let idxId in adjacentRooms) {
-            if (!ScoutClass.isRoomScouted(adjacentRooms[idxId]) && !RoomHelper.getIsHostile(adjacentRooms[idxId])) {
+            if (!ScoutClass.isRoomScouted(adjacentRooms[idxId]) && !RoomHelper.isHostile(adjacentRooms[idxId])) {
                 assignedRoom = adjacentRooms[idxId]
             }
         }
@@ -107,10 +107,10 @@ class ScoutClass extends CreepClass {
     doObserve() {
         let CombatHelper = require('helper.combat');
         let hostileCreepIds = CombatHelper.getHostileEnemyIdsByRoom(this.roomName);
+        let RoomHelper = require('helper.room');
 
         if (hostileCreepIds.length > 0) {
-            let RoomHelper = require('helper.room');
-            RoomHelper.setIsHostile(this.roomName);
+            RoomHelper.setStatus(this.roomName, RoomHelper.ROOM_STATUS_HOSTILE);
         }
     }
 
@@ -134,7 +134,9 @@ class ScoutClass extends CreepClass {
         let eligibleRoomCount = 0;
 
         for (let idxRoom in adjacentRooms) {
-            if (!RoomHelper.getIsHostile(adjacentRooms[idxRoom])) {
+            // let roomStatus = RoomHelper.getStatus(adjacentRooms[idxRoom]);
+
+            if (!RoomHelper.isHostile(adjacentRooms[idxRoom])) {
                 eligibleRoomCount++;
             }
         }
@@ -152,8 +154,6 @@ class ScoutClass extends CreepClass {
         for (let idxId in scoutIds) {
             let scout = CreepHelper.createCreepById(scoutIds[idxId]);
 
-            // I'm not exactly sure how this comes back as undefined, but I can
-            // see in the console that it does when new scouts are spawned
             if (scout) {
                 if (scout.assignedRoom == roomName) {
                     return true;
