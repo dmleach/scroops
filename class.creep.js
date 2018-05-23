@@ -6,6 +6,9 @@ class CreepClass extends ActiveClass {
      * Returns an array of body parts on the creep
      */
     get body() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.body');
+
         let body = [];
 
         for (let idxBody in this.gameObject.body) {
@@ -16,14 +19,23 @@ class CreepClass extends ActiveClass {
     }
 
     static get bodyBase() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.bodyBase');
+
         throw new Error('bodyBase method has not been defined for ' + this.name);
     }
 
     static get bodyImprovement() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.bodyImprovement');
+
         throw new Error('bodyImprovement method has not been defined for ' + this.name);
     }
 
     static get bodyMaximum() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.bodyMaximum');
+
         return [
             MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
             MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
@@ -33,6 +45,9 @@ class CreepClass extends ActiveClass {
     }
 
     static bodyByEnergy(energy) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.bodyByEnergy');
+
         let CreepHelper = require('helper.creep');
         let body = this.bodyBase;
 
@@ -62,22 +77,37 @@ class CreepClass extends ActiveClass {
     }
 
     cacheActionSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.cacheActionSiteId');
+
         this.gameObject.memory.actionSiteId = id;
     }
 
     get cachedActionSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.cachedActionSiteId');
+
         return this.gameObject.memory.actionSiteId;
     }
 
     get carriedEnergy() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.carriedEnergy');
+
         return this.gameObject.carry [RESOURCE_ENERGY];
     }
 
     get carryCapacity() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.carryCapacity');
+
         return this.gameObject.carryCapacity;
     }
 
     clearCachedActionSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.clearCachedActionSiteId');
+
         this.gameObject.memory.actionSiteId = undefined;
     }
 
@@ -85,6 +115,9 @@ class CreepClass extends ActiveClass {
      * Returns the current number of creeps with this creep's role
      */
     static get count() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.count');
+
         let CreepHelper = require('helper.creep');
         let count = 0;
 
@@ -100,10 +133,16 @@ class CreepClass extends ActiveClass {
     }
 
     getBodyPartCount(bodyPart) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.getBodyPartCount');
+
         return CreepClass.getPartCountByBody(bodyPart, this.body);
     }
 
     static getPartCountByBody(part, body) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.getPartCountByBody');
+
         let count = 0;
 
         for (let idxBody in body) {
@@ -116,6 +155,9 @@ class CreepClass extends ActiveClass {
     }
 
     static getShouldSpawn(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.getShouldSpawn');
+
         if (this.count < this.minimumCount) {
             return true;
         }
@@ -124,6 +166,9 @@ class CreepClass extends ActiveClass {
     }
 
     goTo(destinationPos) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.goTo');
+
         if (this.pos.isEqualTo(destinationPos)) {
             return true;
         }
@@ -146,6 +191,9 @@ class CreepClass extends ActiveClass {
     }
 
     static isBodyMoreDeveloped(testBody, referenceBody) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.isBodyMoreDeveloped');
+
         let uniqueParts = Array.from(new Set(testBody));
 
         for (let idxUniquePart in uniqueParts) {
@@ -162,6 +210,9 @@ class CreepClass extends ActiveClass {
     }
 
     isSiblingByName(creepName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.isSiblingByName');
+
         if (creepName == this.name) {
             return false;
         }
@@ -177,18 +228,30 @@ class CreepClass extends ActiveClass {
     }
 
     static get minimumCount() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.minimumCount');
+
         return 0;
     }
 
     static get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.role (static)');
+
         throw new Error('The base creep class does not have a role');
     }
 
     get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.role');
+
         return this.constructor.role;
     }
 
     get siblingIds() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.siblingIds');
+
         let siblings = [];
 
         for (let creepName in Game.creeps) {
@@ -201,6 +264,9 @@ class CreepClass extends ActiveClass {
     }
 
     static get spawnPriority() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepClass.spawnPriority');
+
         return 0;
     }
 

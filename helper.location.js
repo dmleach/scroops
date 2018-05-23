@@ -1,6 +1,9 @@
 class LocationHelper {
 
     static clearCache(findType) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.clearCache');
+
         if (!Array.isArray(findType)) {
             findType = [findType];
         }
@@ -11,6 +14,9 @@ class LocationHelper {
     }
 
     static doFindIds(findType, roomNames = undefined) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.doFindIds');
+
         if (roomNames) {
             if (Array.isArray(roomNames) == false) {
                 roomNames = [roomNames];
@@ -37,6 +43,9 @@ class LocationHelper {
     }
 
     static findClosestId(position, locationIds) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.findClosestId');
+
         let closestLocationId = false;
         let closestLocationDistance = Infinity;
         let PathHelper = require('helper.path');
@@ -62,6 +71,9 @@ class LocationHelper {
     }
 
     static findClosestPosition(start, positions) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.findClosestPosition');
+
         let closestPosition = false;
         let closestPositionDistance = Infinity;
         let PathHelper = require('helper.path');
@@ -79,6 +91,9 @@ class LocationHelper {
     }
 
     static findIds(findType, roomNames = undefined) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.findIds');
+
         let resultIds = [];
 
         if (roomNames) {
@@ -116,6 +131,9 @@ class LocationHelper {
     }
 
     static findStructures(structureType, roomNames = undefined) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.findStructures');
+
         let resultIds = [];
         let structureIds = this.findIds(FIND_STRUCTURES, roomNames);
 
@@ -133,6 +151,9 @@ class LocationHelper {
     }
 
     static getCacheLifespan(findType) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.getCacheLifespan');
+
         switch (findType) {
             case FIND_CREEPS:
             case FIND_MY_CREEPS:
@@ -161,6 +182,9 @@ class LocationHelper {
     }
 
     static getCreepIdsByPosition(position) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.getCreepIdsByPosition');
+
         let creepIds = [];
         let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
 
@@ -176,6 +200,9 @@ class LocationHelper {
     }
 
     static getOpenSpacesAroundCount(position) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.getOpenSpacesAroundCount');
+
         let result = 0;
         let objects = false;
         let PathHelper = require('helper.path');
@@ -194,6 +221,9 @@ class LocationHelper {
     }
 
     static getWalkableSpacesAroundCount(position) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.getWalkableSpacesAroundCount');
+
         let result = 0;
         let objects = false;
         let PathHelper = require('helper.path');
@@ -212,6 +242,9 @@ class LocationHelper {
     }
 
     static isCacheObsolete(findType) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.isCacheObsolete');
+
         if (!Memory.findResults) {
             return true;
         }
@@ -234,10 +267,16 @@ class LocationHelper {
     }
 
     static isExit(pos) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.isExit');
+
         return pos.x == 0 || pos.x == 49 || pos.y == 0 || pos.y == 49;
     }
 
     static readFromCache(findType) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.readFromCache');
+
         if (!Memory.findResults) {
             return undefined;
         }
@@ -251,6 +290,9 @@ class LocationHelper {
     }
 
     static writeToCache(findType, locationIds) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('LocationHelper.writeToCache');
+
         let nonCacheTypes = [FIND_HOSTILE_CREEPS];
 
         if (nonCacheTypes.indexOf(findType) !== -1) {

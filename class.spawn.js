@@ -8,6 +8,9 @@ class SpawnClass extends BaseClass {
      * basic-bodied creep
      */
     static get baseEnergy() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('SpawnClass.baseEnergy');
+
         let highestCost = 0;
         let CreepHelper = require('helper.creep');
 
@@ -24,6 +27,9 @@ class SpawnClass extends BaseClass {
     }
 
     static createByName(name) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('SpawnClass.createByName');
+
         return new SpawnClass(Game.spawns[name]);
     }
 
@@ -32,6 +38,9 @@ class SpawnClass extends BaseClass {
      * to StructureSpawn.spawnCreep
      */
     static getSpawnErrorMessage(errorCode) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('SpawnClass.getSpawnErrorMessage');
+
         switch (errorCode) {
             case ERR_NOT_OWNER:
                 return 'You are not the owner of this spawn';
@@ -51,6 +60,9 @@ class SpawnClass extends BaseClass {
     }
 
     manageCreeps() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('SpawnClass.manageCreeps');
+
         let priorities = this.priorities;
         let priorityValues = Object.keys(priorities).reverse();
         let CreepHelper = require('helper.creep');
@@ -81,6 +93,9 @@ class SpawnClass extends BaseClass {
      * creep types
      */
     get priorities() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('SpawnClass.priorities');
+
         let priorities = {};
         let CreepHelper = require('helper.creep');
 
@@ -102,6 +117,9 @@ class SpawnClass extends BaseClass {
      * Spawns a new creep of the given class
      */
     spawn(creepClass) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('SpawnClass.spawn');
+
         let creepBody = creepClass.bodyByEnergy(this.gameObject.room.energyAvailable);
 
         if (!creepBody) {

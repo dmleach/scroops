@@ -6,10 +6,16 @@ class BuilderClass extends SpenderClass {
      * The body parts the simplest version of a builder should have
      */
     static get bodyBase() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.bodyBase');
+
         return [MOVE, CARRY, MOVE, WORK];
     }
 
     static get bodyImprovement() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.bodyImprovement');
+
         return [MOVE, CARRY, MOVE, WORK];
     }
 
@@ -17,6 +23,9 @@ class BuilderClass extends SpenderClass {
      * Finds the construction site that is closest to being finished
      */
     get buildSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.buildSiteId');
+
         // First check to see if there's a location in the builder's cache
         let buildSiteId = this.cachedActionSiteId;
 
@@ -61,6 +70,9 @@ class BuilderClass extends SpenderClass {
      * to the methods of the creep object
      */
     doActivityMethod(activity) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.doActivityMethod');
+
         switch (activity) {
             case 'Withdraw':
                 return this.doWithdraw();
@@ -75,6 +87,9 @@ class BuilderClass extends SpenderClass {
      * Build the room's constructions
      */
     doBuild() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.doBuild');
+
         let buildSite = Game.getObjectById(this.buildSiteId);
 
         if (!buildSite) {
@@ -111,6 +126,9 @@ class BuilderClass extends SpenderClass {
     }
 
     doRepair() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.doRepair');
+
         let repairSite = Game.getObjectById(this.repairSiteId);
 
         if (!repairSite) {
@@ -131,6 +149,9 @@ class BuilderClass extends SpenderClass {
     }
 
     doWork() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.doWork');
+
         // If there are active construction sites, the builder should work on
         // them
         let LocationHelper = require('helper.location');
@@ -154,6 +175,9 @@ class BuilderClass extends SpenderClass {
      * Computes whether a given site is valid for building
      */
     isValidBuildSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.isValidBuildSiteId');
+
         let site = Game.getObjectById(id);
 
         return (site instanceof ConstructionSite && site.my);
@@ -163,10 +187,16 @@ class BuilderClass extends SpenderClass {
      * The minimum number of creeps of this role that should be in play
      */
     static get minimumCount() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.minimumCount');
+
         return 1;
     }
 
     get repairSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.repairSiteId');
+
         let RepairHelper = require('helper.repair');
 
         // First check to see if there's a location in the builder's cache
@@ -188,10 +218,16 @@ class BuilderClass extends SpenderClass {
      * The name of this creep's role
      */
     static get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.role');
+
         return 'Builder';
     }
 
     static get spawnPriority() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('BuilderClass.spawnPriority');
+
         return 80;
     }
 

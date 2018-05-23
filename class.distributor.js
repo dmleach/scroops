@@ -6,6 +6,9 @@ class DistributorClass extends CreepClass {
      * Computes the activity the creep should perform this turn
      */
     get activity () {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.activity');
+
         // If the distributor has energy, it should deposit it
         if (this.carriedEnergy > 0)  {
             return 'Deposit';
@@ -16,14 +19,23 @@ class DistributorClass extends CreepClass {
     }
 
     static get bodyBase() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.bodyBase');
+
         return [MOVE, CARRY];
     }
 
     static get bodyImprovement() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.bodyImprovement');
+
         return [MOVE, CARRY];
     }
 
     get depositSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.depositSiteId');
+
         // First check to see if there's a location in the distributor's cache
         let depositSiteId = this.cachedActionSiteId;
 
@@ -96,6 +108,9 @@ class DistributorClass extends CreepClass {
      * to the methods of the creep object
      */
     doActivityMethod(activity) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.doActivityMethod');
+
         switch (activity) {
             case 'Withdraw':
                 return this.doWithdraw();
@@ -107,6 +122,9 @@ class DistributorClass extends CreepClass {
     }
 
     doDeposit() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.doDeposit');
+
         let depositSiteId = this.depositSiteId;
 
         if (!depositSiteId) {
@@ -145,6 +163,9 @@ class DistributorClass extends CreepClass {
      * Withdraw energy from nearby containers and resources
      */
     doWithdraw() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.doWithdraw');
+
         let withdrawSite = Game.getObjectById(this.withdrawSiteId);
 
         if (!withdrawSite) {
@@ -187,6 +208,9 @@ class DistributorClass extends CreepClass {
     }
 
     isValidDepositSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.isValidDepositSiteId');
+
         let site = Game.getObjectById(id);
 
         if (site instanceof StructureContainer) {
@@ -204,6 +228,9 @@ class DistributorClass extends CreepClass {
      * Finds the most full container or resource with energy
      */
     get withdrawSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.withdrawSiteId');
+
         // First check to see if there's a location in the distributor's cache
         let EnergyHelper = require('helper.energy');
         let withdrawSiteId = this.cachedActionSiteId;
@@ -229,14 +256,23 @@ class DistributorClass extends CreepClass {
     }
 
     static get minimumCount() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.minimumCount');
+
         return 2;
     }
 
     static get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.role');
+
         return 'Distributor';
     }
 
     static get spawnPriority() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('DistributorClass.spawnPriority');
+
         return 70;
     }
 

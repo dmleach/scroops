@@ -1,6 +1,9 @@
 class EnergyHelper {
 
     static emptyestSiteByIds(siteIds, position = undefined) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.emptyestSiteByIds');
+
         let emptyestSiteId = false;
         let emptyestSiteEnergy = Infinity;
         let emptyestSiteEnergyDistance = Infinity;
@@ -32,6 +35,9 @@ class EnergyHelper {
     }
 
     static emptyestSiteByRoom(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.emptyestSiteByRoom');
+
         let LocationHelper = require('helper.location');
         let siteIds = LocationHelper.findIds(FIND_STRUCTURES, roomName);
         return this.emptyestSiteByIds(siteIds);
@@ -41,6 +47,9 @@ class EnergyHelper {
      * Returns the amount of energy stored in the site with the given id
      */
     static energyBySiteId(siteId) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.energyBySiteId');
+
         let site = Game.getObjectById(siteId);
 
         if (!site) {
@@ -59,6 +68,9 @@ class EnergyHelper {
     }
 
     static fullestSiteByIds(siteIds, position = undefined) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.fullestSiteByIds');
+
         let fullestSiteId = false;
         let fullestSiteEnergy = 0;
         let fullestSiteEnergyDistance = Infinity;
@@ -93,6 +105,9 @@ class EnergyHelper {
      * Computes whether a given site is valid for energy withdrawal
      */
     static isValidWithdrawSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.isValidWithdrawSiteId');
+
         let site = Game.getObjectById(id);
 
         if (site instanceof StructureContainer) {
@@ -111,6 +126,9 @@ class EnergyHelper {
      * in the given room
      */
     static validWithdrawSiteIdsByRoom(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.validWithdrawSiteIdsByRoom');
+
         // Find all the structures in the given room
         let LocationHelper = require('helper.location');
         let siteIds = LocationHelper.findIds(FIND_STRUCTURES, roomName);
@@ -142,6 +160,9 @@ class EnergyHelper {
      * Computes the total amount of energy valid for withdrawal in the given room
      */
     static withdrawableEnergyByRoom(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('EnergyHelper.withdrawableEnergyByRoom');
+
         let room = Game.rooms[roomName];
 
         if (!room) {

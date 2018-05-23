@@ -5,6 +5,9 @@ class RepairHelper {
      * at full hit points
      */
     static get damagedStructureIds() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RepairHelper.damagedStructureIds');
+
         let damagedIds = [];
 
         let LocationHelper = require('helper.location');
@@ -20,6 +23,9 @@ class RepairHelper {
     }
 
     static isValidRepairSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RepairHelper.isValidRepairSiteId');
+
         let structure = Game.getObjectById(id);
 
         if (!structure) {
@@ -44,6 +50,9 @@ class RepairHelper {
     }
 
     static get weakestDamagedStructureId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RepairHelper.weakestDamagedStructureId');
+
         let damagedStructureIds = this.damagedStructureIds;
         let weakestDamagedStructureId = false;
         let weakestDamagedStructureHits = Infinity;

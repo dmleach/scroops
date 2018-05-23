@@ -7,6 +7,9 @@ class TowerClass extends ActiveClass {
      * This function determines that activity for a given room
      */
     get activity() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerClass.activity');
+
         let CombatHelper = require('helper.combat');
         let enemyIds = CombatHelper.getEnemyIdsByRoom(this.pos.roomName);
 
@@ -22,6 +25,9 @@ class TowerClass extends ActiveClass {
      * to the methods of the creep object
      */
     doActivityMethod(activity) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerClass.doActivityMethod');
+
         switch (activity) {
             case 'Attack':
                 return this.doAttack();
@@ -33,6 +39,9 @@ class TowerClass extends ActiveClass {
     }
 
     doAttack() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerClass.doAttack');
+
         let CombatHelper = require('helper.combat');
         let enemyIds = CombatHelper.enemyIds;
 
@@ -44,6 +53,9 @@ class TowerClass extends ActiveClass {
     }
 
     doRepair() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerClass.doRepair');
+
         let RepairHelper = require('helper.repair');
         let weakestDamagedStructureId = RepairHelper.weakestDamagedStructureId;
 

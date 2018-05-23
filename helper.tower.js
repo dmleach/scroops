@@ -1,6 +1,9 @@
 class TowerHelper {
 
     static activateTowerById(towerId) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerHelper.activateTowerById');
+
         let gameObject = Game.getObjectById(towerId);
 
         if (!gameObject || !(gameObject instanceof StructureTower) ) {
@@ -16,6 +19,9 @@ class TowerHelper {
     }
 
     static activateTowers() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerHelper.activateTowers');
+
         // Find all the friendly towers
         let towerIds = this.friendlyTowerIds;
 
@@ -25,6 +31,9 @@ class TowerHelper {
     }
 
     static get friendlyTowerIds() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerHelper.friendlyTowerIds');
+
         let towerIds = [];
         let LocationHelper = require('helper.location');
         let structureIds = LocationHelper.findIds(FIND_MY_STRUCTURES);
@@ -41,6 +50,9 @@ class TowerHelper {
     }
 
     static getFriendlyTowerIdsByRoom(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('TowerHelper.getFriendlyTowerIdsByRoom');
+
         let roomTowerIds = [];
         let towerIds = this.friendlyTowerIds;
 

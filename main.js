@@ -1,6 +1,6 @@
 module.exports.loop = function () {
     let Profiler = require('helper.profiler');
-    Profiler.increment('test');
+    Profiler.increment('ticks');
 
     // Clean old creeps out of memory. This comes from the tutorial and is a
     // bit of necessary maintenance
@@ -31,5 +31,7 @@ module.exports.loop = function () {
     let TowerHelper = require('helper.tower');
     TowerHelper.activateTowers();
 
-    Profiler.deactivate();
+    if (Profiler.get('ticks') == 10) {
+        Profiler.deactivate();
+    }
 }

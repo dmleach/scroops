@@ -1,6 +1,9 @@
 class PathHelper {
 
     static exitDestination(exit) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.exitDestination');
+
         if (!(exit instanceof RoomPosition)) {
             throw new Error('Value given to exitDestination must be a RoomPosition');
         }
@@ -30,6 +33,9 @@ class PathHelper {
     }
 
     static find(start, end) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.find');
+
         if (!start) {
             throw new Error('Start position must be supplied to find');
         }
@@ -67,6 +73,9 @@ class PathHelper {
     }
 
     static findToRoom(start, roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.findToRoom');
+
         if (!start) {
             throw new Error('Start position must be supplied to findToRoom');
         }
@@ -91,6 +100,9 @@ class PathHelper {
     }
 
     static getPosByDirection(position, direction) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.getPosByDirection');
+
         switch (direction) {
             case TOP:
                 return new RoomPosition(position.x, position.y-1, position.roomName);
@@ -114,6 +126,9 @@ class PathHelper {
     }
 
     static isSpaceOpen(position) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.isSpaceOpen');
+
         if (!this.isSpaceWalkable(position)) {
             return false;
         }
@@ -125,6 +140,9 @@ class PathHelper {
     }
 
     static isSpaceWalkable(position) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.isSpaceWalkable');
+
         let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
 
         for (let idxObjects in objects) {
@@ -163,6 +181,9 @@ class PathHelper {
     }
 
     static moveBlockingCreeps(position, direction) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.moveBlockingCreeps');
+
         let LocationHelper = require('helper.location');
         let blockingCreepIds = LocationHelper.getCreepIdsByPosition(position);
 
@@ -182,6 +203,9 @@ class PathHelper {
     }
 
     static readFromCache(start, end) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.readFromCache');
+
         if (!start) {
             throw new Error('Start position must be supplied to readFromCache');
         }
@@ -222,6 +246,9 @@ class PathHelper {
     }
 
     static writeToCache(start, end, path) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.writeToCache');
+
         if (!start) {
             throw new Error('Start position must be supplied to writeToCache');
         }

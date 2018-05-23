@@ -9,6 +9,9 @@ class HarvesterClass extends CreepClass {
      * Computes the activity the creep should perform this turn
      */
     get activity () {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.activity');
+
         // If the harvester has room to carry one more harvest worth of energy,
         // it should harvest
         if (this.carriedEnergy + this.energyPerHarvest <= this.gameObject.carryCapacity) {
@@ -20,6 +23,9 @@ class HarvesterClass extends CreepClass {
     }
 
     static assignHarvestSite(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.assignHarvestSite');
+
         // Find all the sources in the given room
         let LocationHelper = require('helper.location');
         let sourceIds = LocationHelper.findIds(FIND_SOURCES, roomName);
@@ -60,18 +66,30 @@ class HarvesterClass extends CreepClass {
      * The body parts the most simplest version of a harvester should have
      */
     static get bodyBase() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.bodyBase');
+
         return [MOVE, CARRY, WORK];
     }
 
     static get bodyImprovement() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.bodyImprovement');
+
         return [WORK];
     }
 
     static get bodyMaximum() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.bodyMaximum');
+
         return [MOVE, CARRY, WORK, WORK, WORK, WORK, WORK, WORK];
     }
 
     get depositSiteId () {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.depositSiteId');
+
         // Find the closest container, if one exists
         let LocationHelper = require('helper.location');
         let structureIds = LocationHelper.findIds(FIND_STRUCTURES);
@@ -99,6 +117,9 @@ class HarvesterClass extends CreepClass {
      * to methods of the creep object
      */
     doActivityMethod(activity) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.doActivityMethod');
+
         switch (activity) {
             case ACTIVITY_HARVEST:
                 return this.doHarvest();
@@ -113,6 +134,9 @@ class HarvesterClass extends CreepClass {
      * Deposit carried energy
      */
     doDeposit() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.doDeposit');
+
         let depositSiteId = this.depositSiteId;
 
         if (!depositSiteId) {
@@ -139,6 +163,9 @@ class HarvesterClass extends CreepClass {
      * Harvest energy from a source
      */
     doHarvest() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.doHarvest');
+
         let harvestSite = Game.getObjectById(this.harvestSiteId);
 
         if (!harvestSite) {
@@ -162,11 +189,17 @@ class HarvesterClass extends CreepClass {
      * Computes the amount of energy the harvester will gain from each harvest
      */
     get energyPerHarvest() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.energyPerHarvest');
+
         // Each of the harvester's WORK body parts will harvest 2 energy
         return this.getBodyPartCount(WORK) * 2;
     }
 
     static getHarvesterIdsBySourceId(sourceId) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.getHarvesterIdsBySourceId');
+
         let resultIds = [];
         let CreepHelper = require('helper.creep');
         let harvesterIds = CreepHelper.getCreepIdsByRole(this.role);
@@ -186,6 +219,9 @@ class HarvesterClass extends CreepClass {
     }
 
     static getShouldSpawn(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.getShouldSpawn');
+
         if (super.getShouldSpawn(roomName)) {
             return true;
         }
@@ -205,6 +241,9 @@ class HarvesterClass extends CreepClass {
      * Finds the closest source with energy to the harvester
      */
     get harvestSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.harvestSiteId');
+
         // First check to see if there's a source in the harvester's cache
         if (this.cachedActionSiteId) {
             return this.cachedActionSiteId;
@@ -225,6 +264,9 @@ class HarvesterClass extends CreepClass {
      * Computes whether a given harvest site is valid for harvesting
      */
     isValidHarvestSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.isValidHarvestSiteId');
+
         let site = Game.getObjectById(id);
 
         if (site instanceof Source) {
@@ -239,6 +281,9 @@ class HarvesterClass extends CreepClass {
      * The minimum number of creeps of this role that should be in play
      */
     static get minimumCount() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.minimumCount');
+
         return 1;
     }
 
@@ -246,10 +291,16 @@ class HarvesterClass extends CreepClass {
      * The name of this creep's role
      */
     static get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.role');
+
         return 'Harvester';
     }
 
     static get spawnPriority() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('HarvesterClass.spawnPriority');
+
         return 100;
     }
 

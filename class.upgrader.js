@@ -6,10 +6,16 @@ class UpgraderClass extends SpenderClass {
      * The body parts the simplest version of an upgrader should have
      */
     static get bodyBase() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.bodyBase');
+
         return [MOVE, CARRY, MOVE, WORK];
     }
 
     static get bodyImprovement() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.bodyImprovement');
+
         return [MOVE, CARRY, MOVE, WORK];
     }
 
@@ -18,6 +24,9 @@ class UpgraderClass extends SpenderClass {
      * to the methods of the creep object
      */
     doActivityMethod(activity) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.doActivityMethod');
+
         switch (activity) {
             case 'Withdraw':
                 return this.doWithdraw();
@@ -32,6 +41,9 @@ class UpgraderClass extends SpenderClass {
      * Upgrade the room's controller
      */
     doUpgrade() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.doUpgrade');
+
         let upgradeSite = Game.getObjectById(this.upgradeSiteId);
 
         if (!upgradeSite) {
@@ -60,6 +72,9 @@ class UpgraderClass extends SpenderClass {
      * Computes whether a given site if valid for controller upgrade
      */
     isValidUpgradeSiteId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.isValidUpgradeSiteId');
+
         let site = Game.getObjectById(id);
 
         return site instanceof StructureController;
@@ -69,6 +84,9 @@ class UpgraderClass extends SpenderClass {
      * The minimum number of creeps of this role that should be in play
      */
     static get minimumCount() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.minimumCount');
+
         return 1;
     }
 
@@ -76,10 +94,16 @@ class UpgraderClass extends SpenderClass {
      * The name of this creep's role
      */
     static get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.role');
+
         return 'Upgrader';
     }
 
     static get spawnPriority() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.spawnPriority');
+
         return 90;
     }
 
@@ -87,6 +111,9 @@ class UpgraderClass extends SpenderClass {
      * Finds the closest room controller
      */
     get upgradeSiteId() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('UpgraderClass.upgradeSiteId');
+
         // First check to see if there's a location in the upgrader's cache
         let upgradeSiteId = this.cachedActionSiteId;
 

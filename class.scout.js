@@ -9,6 +9,9 @@ class ScoutClass extends CreepClass {
      * Computes the activity the creep should perform this turn
      */
     get activity () {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.activity');
+
         if (this.pos.isEqualTo(this.assignedPosition)) {
             return ACTIVITY_OBSERVE;
         }
@@ -20,6 +23,9 @@ class ScoutClass extends CreepClass {
      * Assigns the scout a position from which it should observe
      */
     assignPosition() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.assignPosition');
+
         // Find the room the scout should observe
         let RoomHelper = require('helper.room');
         let adjacentRooms = RoomHelper.adjacentRooms;
@@ -58,6 +64,9 @@ class ScoutClass extends CreepClass {
      * getting the assigned positions of other creeps
      */
     get assignedPosition() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.assignedPosition');
+
         if (this.gameObject.memory.assignedPosition) {
             return new RoomPosition(
                 this.gameObject.memory.assignedPosition.x,
@@ -73,6 +82,9 @@ class ScoutClass extends CreepClass {
      * The room to which this scout is assigned
      */
     get assignedRoom() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.assignedRoom');
+
         let assignedPosition = this.assignedPosition;
 
         if (assignedPosition) {
@@ -86,6 +98,9 @@ class ScoutClass extends CreepClass {
      * The body parts the most simplest version of a harvester should have
      */
     static get bodyBase() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.bodyBase');
+
         return [MOVE];
     }
 
@@ -94,6 +109,9 @@ class ScoutClass extends CreepClass {
      * to methods of the creep object
      */
     doActivityMethod(activity) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.doActivityMethod');
+
         switch (activity) {
             case ACTIVITY_SCOUT:
                 return this.doScout();
@@ -105,6 +123,9 @@ class ScoutClass extends CreepClass {
     }
 
     doObserve() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.doObserve');
+
         let CombatHelper = require('helper.combat');
         let hostileCreepIds = CombatHelper.getHostileEnemyIdsByRoom(this.roomName);
         let RoomHelper = require('helper.room');
@@ -115,6 +136,9 @@ class ScoutClass extends CreepClass {
     }
 
     doScout() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.doScout');
+
         let assignedPosition = this.assignedPosition;
 
         if (assignedPosition) {
@@ -125,6 +149,9 @@ class ScoutClass extends CreepClass {
     }
 
     static getShouldSpawn(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.getShouldSpawn');
+
         // At most, there should be one scout for every non-friendly room
         // adjacent to friendly rooms
         let RoomHelper = require('helper.room');
@@ -148,6 +175,9 @@ class ScoutClass extends CreepClass {
      * Returns true if any scout has the given room as its assigned room
      */
     static isRoomScouted(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.isRoomScouted');
+
         let CreepHelper = require('helper.creep');
         let scoutIds = CreepHelper.getCreepIdsByRole(this.role);
 
@@ -165,6 +195,9 @@ class ScoutClass extends CreepClass {
     }
 
     static get role() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('ScoutClass.role');
+
         return 'Scout';
     }
 

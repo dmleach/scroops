@@ -1,6 +1,9 @@
 class CreepHelper {
 
     static bodyCost(body) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.bodyCost');
+
         var cost = 0;
 
         for (var idxPart in body) {
@@ -11,6 +14,9 @@ class CreepHelper {
     }
 
     static createCreepById(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.createCreepById');
+
         let gameObject = Game.getObjectById(id);
 
         if (gameObject instanceof Creep) {
@@ -19,6 +25,9 @@ class CreepHelper {
     }
 
     static createCreepByName(name) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.createCreepByName');
+
         let creep = Game.creeps[name];
 
         if (!creep) {
@@ -31,6 +40,9 @@ class CreepHelper {
     }
 
     static get creepClassFiles() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.creepClassFiles');
+
         return [
             'class.harvester',
             'class.distributor',
@@ -41,6 +53,9 @@ class CreepHelper {
     }
 
     static getCreepClassByFileId(id) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.getCreepClassByFileId');
+
         let classFile = this.creepClassFiles[id];
 
         if (classFile) {
@@ -51,11 +66,17 @@ class CreepHelper {
     }
 
     static getCreepClassByName(name) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.getCreepClassByName');
+
         let role = this.getRoleByName(name);
         return this.getCreepClassByRole(role);
     }
 
     static getCreepClassByRole(role) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.getCreepClassByRole');
+
         for (let fileId in this.creepClassFiles) {
             let creepClass = require(this.creepClassFiles[fileId]);
 
@@ -68,6 +89,9 @@ class CreepHelper {
     }
 
     static getCreepIdsByRole(role) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.getCreepIdsByRole');
+
         let creepIds = [];
 
         for (let creepName in Game.creeps) {
@@ -82,6 +106,9 @@ class CreepHelper {
     }
 
     static getRoleByName(name) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('CreepHelper.getRoleByName');
+
         // A creep's role is defined by its name; specifically, everything in
         // the name that isn't a number
         return name.replace(/[0-9]/g, '');

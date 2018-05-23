@@ -10,6 +10,9 @@ class RoomHelper {
      * Returns all the non-friendly rooms that are adjacent to friendly rooms
      */
     static get adjacentRooms() {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.adjacentRooms');
+
         let adjacentRooms = [];
 
         for (let roomName in Game.rooms) {
@@ -32,6 +35,9 @@ class RoomHelper {
     }
 
     static findExits(roomName, directions) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.findExits');
+
         let room = Game.rooms[roomName];
 
         if (!room) {
@@ -60,6 +66,9 @@ class RoomHelper {
     }
 
     static getDirectionToRoom(position, roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.getDirectionToRoom');
+
         let route = Game.map.findRoute(position.roomName, roomName);
 
         if (route.length !== 1) {
@@ -70,6 +79,9 @@ class RoomHelper {
     }
 
     static getStatus(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.getStatus');
+
         // First check to see if the room is friendly
         if (this.isFriendly(roomName)) {
             return this.ROOM_STATUS_FRIENDLY;
@@ -101,6 +113,9 @@ class RoomHelper {
     }
 
     static isAdjacent(roomNameA, roomNameB) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.isAdjacent');
+
         let exits = Game.map.describeExits(roomNameA);
 
         for (let idxExit in exits) {
@@ -113,6 +128,9 @@ class RoomHelper {
     }
 
     static isFriendly(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.isFriendly');
+
         let room = Game.rooms[roomName];
 
         if (!room) {
@@ -131,11 +149,17 @@ class RoomHelper {
     }
 
     static isHostile(roomName) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.isHostile');
+
         let hostileStatuses = [this.ROOM_STATUS_HOSTILE];
         return hostileStatuses.indexOf(this.getStatus(roomName)) !== -1;
     }
 
     static setStatus(roomName, status) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('RoomHelper.setStatus');
+
         if (!Memory.roomStatus) {
             Memory.roomStatus = {}
         }
