@@ -143,21 +143,30 @@ class PathHelper {
         let Profiler = require('helper.profiler');
         Profiler.increment('PathHelper.isSpaceWalkable');
 
+        let isWalkable = this.readWalkableFromCache(position);
+
+        if (isWalkable !== undefined) {
+            return isWalkable;
+        }
+
         let objects = Game.rooms[position.roomName].lookAt(position.x, position.y);
 
         for (let idxObjects in objects) {
             let object = objects[idxObjects];
 
             if (['creep','resource','tombstone'].indexOf(object.type) !== -1) {
+                this.writeWalkableToCache(position, true);
                 return true;
             }
 
             if (object.type == 'structure') {
                 if (['constructedWall','controller','wall'].indexOf(object.structure.structureType) !== -1) {
+                    this.writeWalkableToCache(position, false);
                     return false;
                 }
 
                 if (['container','rampart','road'].indexOf(object.structure.structureType) !== -1) {
+                    this.writeWalkableToCache(position, true);
                     return true;
                 }
 
@@ -166,10 +175,12 @@ class PathHelper {
 
             if (object.type == 'terrain') {
                 if (['wall'].indexOf(object.terrain) !== -1) {
+                    this.writeWalkableToCache(position, false);
                     return false;
                 }
 
                 if (['plain','swamp'].indexOf(object.terrain) !== -1) {
+                    this.writeWalkableToCache(position, true);
                     return true;
                 }
 
@@ -177,6 +188,7 @@ class PathHelper {
             }
         }
 
+        this.writeWalkableToCache(position, false);
         return false;
     }
 
@@ -245,6 +257,45 @@ class PathHelper {
         return Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y];
     }
 
+    static readWalkableFromCache(pos) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.readWalkableFromCache');
+
+        if (!pos) {
+            throw new Error('Position must be supplied to readWalkableFromCache');
+        }
+
+        if (!Memory.pathResults) {
+            return undefined;
+        }
+
+        if (!Memory.pathResults[pos.roomName]) {
+            return undefined;
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x]) {
+            return undefined;
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]) {
+            return undefined;
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']) {
+            return undefined;
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['timestamp']) {
+            return undefined;
+        }
+
+        if (Game.time - 100 > Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['timestamp']) {
+            return undefined;
+        }
+
+        return Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['value'];
+    }
+
     static writeToCache(start, end, path) {
         let Profiler = require('helper.profiler');
         Profiler.increment('PathHelper.writeToCache');
@@ -291,6 +342,38 @@ class PathHelper {
 
         // We don't need to store the whole path; only the first step
         Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y] = path[0];
+    }
+
+    static writeWalkableToCache(pos, walkable) {
+        let Profiler = require('helper.profiler');
+        Profiler.increment('PathHelper.writeWalkableToCache');
+
+        if (!pos) {
+            throw new Error('Position must be supplied to writeWalkableToCache');
+        }
+
+        if (!Memory.pathResults) {
+            Memory.pathResults = {};
+        }
+
+        if (!Memory.pathResults[pos.roomName]) {
+            Memory.pathResults[pos.roomName] = {};
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x]) {
+            Memory.pathResults[pos.roomName][pos.x] = {};
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]) {
+            Memory.pathResults[pos.roomName][pos.x][pos.y] = {};
+        }
+
+        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']) {
+            Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable'] = {};
+        }
+
+        Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['value'] = walkable;
+        Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['timestamp'] = Game.time;
     }
 
 }
