@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+let GameObjectClass = require('class.gameobject');
 
-class SpawnClass extends BaseClass {
+class SpawnClass extends GameObjectClass {
 
     /**
      * Base energy is the amount of energy needed to spawn all possible creep

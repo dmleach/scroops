@@ -1,10 +1,10 @@
-var BaseClass = require('class.base');
+var GameObjectClass = require('class.gameobject');
 
 /**
  * ActiveClass is the ancestor for all classes that take an action based on
  * their environment. Creeps and towers are both examples of active classes
  */
-class ActiveClass extends BaseClass {
+class ActiveClass extends GameObjectClass {
 
     /**
      * The main method of an active class. It determines the activity that
