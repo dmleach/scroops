@@ -6,15 +6,13 @@ class BuilderClass extends SpenderClass {
      * The body parts the simplest version of a builder should have
      */
     static get bodyBase() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.bodyBase');
+        this.incrementProfilerCount('BuilderClass.bodyBase');
 
         return [MOVE, CARRY, MOVE, WORK];
     }
 
     static get bodyImprovement() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.bodyImprovement');
+        this.incrementProfilerCount('BuilderClass.bodyImprovement');
 
         return [MOVE, CARRY, MOVE, WORK];
     }
@@ -23,8 +21,7 @@ class BuilderClass extends SpenderClass {
      * Finds the construction site that is closest to being finished
      */
     get buildSiteId() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.buildSiteId');
+        this.incrementProfilerCount('BuilderClass.buildSiteId');
 
         // First check to see if there's a location in the builder's cache
         let buildSiteId = this.cachedActionSiteId;
@@ -70,8 +67,7 @@ class BuilderClass extends SpenderClass {
      * to the methods of the creep object
      */
     doActivityMethod(activity) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.doActivityMethod');
+        this.incrementProfilerCount('BuilderClass.doActivityMethod');
 
         switch (activity) {
             case 'Withdraw':
@@ -87,8 +83,7 @@ class BuilderClass extends SpenderClass {
      * Build the room's constructions
      */
     doBuild() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.doBuild');
+        this.incrementProfilerCount('BuilderClass.doBuild');
 
         let buildSite = Game.getObjectById(this.buildSiteId);
 
@@ -126,8 +121,7 @@ class BuilderClass extends SpenderClass {
     }
 
     doRepair() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.doRepair');
+        this.incrementProfilerCount('BuilderClass.doRepair');
 
         let repairSite = Game.getObjectById(this.repairSiteId);
 
@@ -149,8 +143,7 @@ class BuilderClass extends SpenderClass {
     }
 
     doWork() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.doWork');
+        this.incrementProfilerCount('BuilderClass.doWork');
 
         // If there are active construction sites, the builder should work on
         // them
@@ -175,8 +168,7 @@ class BuilderClass extends SpenderClass {
      * Computes whether a given site is valid for building
      */
     isValidBuildSiteId(id) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.isValidBuildSiteId');
+        this.incrementProfilerCount('BuilderClass.isValidBuildSiteId');
 
         let site = Game.getObjectById(id);
 
@@ -187,15 +179,13 @@ class BuilderClass extends SpenderClass {
      * The minimum number of creeps of this role that should be in play
      */
     static get minimumCount() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.minimumCount');
+        this.incrementProfilerCount('BuilderClass.minimumCount');
 
         return 1;
     }
 
     get repairSiteId() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.repairSiteId');
+        this.incrementProfilerCount('BuilderClass.repairSiteId');
 
         let RepairHelper = require('helper.repair');
 
@@ -218,15 +208,13 @@ class BuilderClass extends SpenderClass {
      * The name of this creep's role
      */
     static get role() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.role');
+        this.incrementProfilerCount('BuilderClass.role');
 
         return 'Builder';
     }
 
     static get spawnPriority() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('BuilderClass.spawnPriority');
+        this.incrementProfilerCount('BuilderClass.spawnPriority');
 
         return 80;
     }

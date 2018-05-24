@@ -11,8 +11,7 @@ class ActiveClass extends BaseClass {
      * should be taken and calls the appropriate activity method
      */
     act() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('ActiveClass.act');
+        this.incrementProfilerCount('ActiveClass.act');
 
         this.doActivityMethod(this.activity);
     }
@@ -21,8 +20,7 @@ class ActiveClass extends BaseClass {
      * Calls the appropriate activity method for the given activity
      */
     doActivityMethod(activity) {
-        let Profiler = require('helper.doActivityMethod');
-        Profiler.increment('ActiveClass.act');
+        this.incrementProfilerCount('ActiveClass.doActivityMethod');
 
         throw new Error('doActivityMethod method has not been defined for ' + this.name);
     }
@@ -31,8 +29,7 @@ class ActiveClass extends BaseClass {
      * Determines the activity that should be done
      */
     get activity() {
-        let Profiler = require('helper.activity');
-        Profiler.increment('ActiveClass.act');
+        this.incrementProfilerCount('ActiveClass.activity');
 
         throw new Error('activity method has not been defined for ' + this.name);
     }

@@ -28,6 +28,10 @@ class ProfilerHelper {
     }
 
     static increment(label) {
+        if (!this.isActive) {
+            return false;
+        }
+
         let value = this.get(label);
 
         if (value) {

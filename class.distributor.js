@@ -6,8 +6,7 @@ class DistributorClass extends CreepClass {
      * Computes the activity the creep should perform this turn
      */
     get activity () {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.activity');
+        this.incrementProfilerCount('DistributorClass.activity');
 
         // If the distributor has energy, it should deposit it
         if (this.carriedEnergy > 0)  {
@@ -19,22 +18,19 @@ class DistributorClass extends CreepClass {
     }
 
     static get bodyBase() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.bodyBase');
+        this.incrementProfilerCount('DistributorClass.bodyBase');
 
         return [MOVE, CARRY];
     }
 
     static get bodyImprovement() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.bodyImprovement');
+        this.incrementProfilerCount('DistributorClass.bodyImprovement');
 
         return [MOVE, CARRY];
     }
 
     get depositSiteId() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.depositSiteId');
+        this.incrementProfilerCount('DistributorClass.depositSiteId');
 
         // First check to see if there's a location in the distributor's cache
         let depositSiteId = this.cachedActionSiteId;
@@ -108,8 +104,7 @@ class DistributorClass extends CreepClass {
      * to the methods of the creep object
      */
     doActivityMethod(activity) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.doActivityMethod');
+        this.incrementProfilerCount('DistributorClass.doActivityMethod');
 
         switch (activity) {
             case 'Withdraw':
@@ -122,8 +117,7 @@ class DistributorClass extends CreepClass {
     }
 
     doDeposit() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.doDeposit');
+        this.incrementProfilerCount('DistributorClass.doDeposit');
 
         let depositSiteId = this.depositSiteId;
 
@@ -163,8 +157,7 @@ class DistributorClass extends CreepClass {
      * Withdraw energy from nearby containers and resources
      */
     doWithdraw() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.doWithdraw');
+        this.incrementProfilerCount('DistributorClass.doWithdraw');
 
         let withdrawSite = Game.getObjectById(this.withdrawSiteId);
 
@@ -208,8 +201,7 @@ class DistributorClass extends CreepClass {
     }
 
     isValidDepositSiteId(id) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.isValidDepositSiteId');
+        this.incrementProfilerCount('DistributorClass.isValidDepositSiteId');
 
         let site = Game.getObjectById(id);
 
@@ -228,8 +220,7 @@ class DistributorClass extends CreepClass {
      * Finds the most full container or resource with energy
      */
     get withdrawSiteId() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.withdrawSiteId');
+        this.incrementProfilerCount('DistributorClass.withdrawSiteId');
 
         // First check to see if there's a location in the distributor's cache
         let EnergyHelper = require('helper.energy');
@@ -256,22 +247,19 @@ class DistributorClass extends CreepClass {
     }
 
     static get minimumCount() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.minimumCount');
+        this.incrementProfilerCount('DistributorClass.minimumCount');
 
         return 2;
     }
 
     static get role() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.role');
+        this.incrementProfilerCount('DistributorClass.role');
 
         return 'Distributor';
     }
 
     static get spawnPriority() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('DistributorClass.spawnPriority');
+        this.incrementProfilerCount('DistributorClass.spawnPriority');
 
         return 70;
     }

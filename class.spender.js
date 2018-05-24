@@ -12,8 +12,7 @@ class SpenderClass extends CreepClass {
      * Computes the activity the creep should perform this turn
      */
     get activity () {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('SpenderClass.activity');
+        this.incrementProfilerCount('SpenderClass.activity');
 
         // If the creep has no energy, it should go find some
         if (this.carriedEnergy == 0) {
@@ -28,8 +27,7 @@ class SpenderClass extends CreepClass {
      * Withdraw energy from nearby containers and resources
      */
     doWithdraw() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('SpenderClass.doWithdraw');
+        this.incrementProfilerCount('SpenderClass.doWithdraw');
 
         let withdrawSite = Game.getObjectById(this.withdrawSiteId);
 
@@ -67,8 +65,7 @@ class SpenderClass extends CreepClass {
      * Finds the closest container or resource with energy
      */
     get withdrawSiteId() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('SpenderClass.withdrawSiteId');
+        this.incrementProfilerCount('SpenderClass.withdrawSiteId');
 
         // First check to see if there's a location in the upgrader's cache
         let withdrawSiteId = this.cachedActionSiteId;
@@ -114,8 +111,7 @@ class SpenderClass extends CreepClass {
      * Computes whether a given site is valid for energy withdrawal
      */
     isValidWithdrawSiteId(id) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('SpenderClass.isValidWithdrawSiteId');
+        this.incrementProfilerCount('SpenderClass.isValidWithdrawSiteId');
 
         let site = Game.getObjectById(id);
 
