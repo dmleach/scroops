@@ -10,7 +10,7 @@ class LocationHelper extends BaseClass {
         }
 
         for (let idxType in findType) {
-            Memory.findResults[findType[idxType]] = undefined;
+            this.writeToCache(findType[idxType], undefined);
         }
     }
 
@@ -236,25 +236,13 @@ class LocationHelper extends BaseClass {
     static isCacheObsolete(findType) {
         this.incrementProfilerCount('LocationHelper.isCacheObsolete');
 
-        if (!Memory.findResults) {
+        let timestamp = super.readFromCache('findResults.timestamp.' + findType);
+
+        if (!timestamp) {
             return true;
         }
 
-        if (!Memory.findResults.timestamp) {
-            return true;
-        }
-
-        let cacheTimestamp = Memory.findResults.timestamp[findType];
-
-        if (!cacheTimestamp) {
-            return true;
-        }
-
-        if (Game.time - cacheTimestamp > this.getCacheLifespan(findType)) {
-            return true;
-        }
-
-        return false;
+        return (Game.time - timestamp > this.getCacheLifespan(findType));
     }
 
     static isExit(pos) {
@@ -266,16 +254,12 @@ class LocationHelper extends BaseClass {
     static readFromCache(findType) {
         this.incrementProfilerCount('LocationHelper.readFromCache');
 
-        if (!Memory.findResults) {
-            return undefined;
-        }
-
         if (this.isCacheObsolete(findType)) {
-            this.clearCache(findType);
+            this.writeToCache(findType, undefined);
             return undefined;
         }
 
-        return Memory.findResults[findType];
+        return super.readFromCache('findResults.' + findType);
     }
 
     static writeToCache(findType, locationIds) {
@@ -287,17 +271,8 @@ class LocationHelper extends BaseClass {
             return false;
         }
 
-        if (!Memory.findResults) {
-            Memory.findResults = {};
-        }
-
-        Memory.findResults[findType] = locationIds;
-
-        if (!Memory.findResults.timestamp) {
-            Memory.findResults.timestamp = {};
-        }
-
-        Memory.findResults.timestamp[findType] = Game.time;
+        super.writeToCache('findResults.' + findType, locationIds);
+        super.writeToCache('findResults.timestamp.' + findType, Game.time);
     }
 
 }

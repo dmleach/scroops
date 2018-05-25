@@ -100,6 +100,10 @@ class BaseClass {
 
         let index = this.cacheIndexByLabel(label);
 
+        if (value == []) {
+            value = undefined;
+        }
+
         this.setCacheObjectValue(Memory, index, value);
     }
 
