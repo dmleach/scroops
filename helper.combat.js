@@ -1,8 +1,9 @@
-class CombatHelper {
+let BaseClass = require('class.base');
+
+class CombatHelper extends BaseClass {
 
     static get enemyIds() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('CombatHelper.enemyIds');
+        this.incrementProfilerCount('CombatHelper.enemyIds');
 
         let enemyIds = [];
         let LocationHelper = require('helper.location');
@@ -27,16 +28,14 @@ class CombatHelper {
     }
 
     static getEnemyIdsByRoom(roomName) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('CombatHelper.getEnemyIdsByRoom');
+        this.incrementProfilerCount('CombatHelper.getEnemyIdsByRoom');
 
         let LocationHelper = require('helper.location');
         return LocationHelper.findIds(FIND_HOSTILE_CREEPS, roomName);
     }
 
     static getHostileEnemyIdsByRoom(roomName) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('CombatHelper.getHostileEnemyIdsByRoom');
+        this.incrementProfilerCount('CombatHelper.getHostileEnemyIdsByRoom');
 
         let hostileIds = [];
         let enemyIds = this.getEnemyIdsByRoom(roomName);
@@ -55,8 +54,7 @@ class CombatHelper {
     }
 
     static getTowerIdsByRoom(roomName) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('CombatHelper.getTowerIdsByRoom');
+        this.incrementProfilerCount('CombatHelper.getTowerIdsByRoom');
 
         let towerIds = [];
         let LocationHelper = require('helper.location');
@@ -74,8 +72,7 @@ class CombatHelper {
     }
 
     static isCreepHostile(creep) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('CombatHelper.isCreepHostile');
+        this.incrementProfilerCount('CombatHelper.isCreepHostile');
 
         let hostileParts = [ATTACK, RANGED_ATTACK];
 

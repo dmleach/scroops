@@ -1,12 +1,13 @@
-class RepairHelper {
+let BaseClass = require('class.base');
+
+class RepairHelper extends BaseClass {
 
     /**
      * Returns the ids of all friendly structures in visible rooms that are not
      * at full hit points
      */
     static get damagedStructureIds() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('RepairHelper.damagedStructureIds');
+        this.incrementProfilerCount('RepairHelper.damagedStructureIds');
 
         let damagedIds = [];
 
@@ -23,8 +24,7 @@ class RepairHelper {
     }
 
     static isValidRepairSiteId(id) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('RepairHelper.isValidRepairSiteId');
+        this.incrementProfilerCount('RepairHelper.isValidRepairSiteId');
 
         let structure = Game.getObjectById(id);
 
@@ -50,8 +50,7 @@ class RepairHelper {
     }
 
     static get weakestDamagedStructureId() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('RepairHelper.weakestDamagedStructureId');
+        this.incrementProfilerCount('RepairHelper.weakestDamagedStructureId');
 
         let damagedStructureIds = this.damagedStructureIds;
         let weakestDamagedStructureId = false;

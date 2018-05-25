@@ -1,8 +1,9 @@
-class TowerHelper {
+let BaseClass = require('class.base');
+
+class TowerHelper extends BaseClass {
 
     static activateTowerById(towerId) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('TowerHelper.activateTowerById');
+        this.incrementProfilerCount('TowerHelper.activateTowerById');
 
         let gameObject = Game.getObjectById(towerId);
 
@@ -19,8 +20,7 @@ class TowerHelper {
     }
 
     static activateTowers() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('TowerHelper.activateTowers');
+        this.incrementProfilerCount('TowerHelper.activateTowers');
 
         // Find all the friendly towers
         let towerIds = this.friendlyTowerIds;
@@ -31,8 +31,7 @@ class TowerHelper {
     }
 
     static get friendlyTowerIds() {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('TowerHelper.friendlyTowerIds');
+        this.incrementProfilerCount('TowerHelper.friendlyTowerIds');
 
         let towerIds = [];
         let LocationHelper = require('helper.location');
@@ -50,8 +49,7 @@ class TowerHelper {
     }
 
     static getFriendlyTowerIdsByRoom(roomName) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('TowerHelper.getFriendlyTowerIdsByRoom');
+        this.incrementProfilerCount('TowerHelper.getFriendlyTowerIdsByRoom');
 
         let roomTowerIds = [];
         let towerIds = this.friendlyTowerIds;

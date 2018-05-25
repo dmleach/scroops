@@ -1,8 +1,9 @@
-class PathHelper {
+let BaseClass = require('class.base');
+
+class PathHelper extends BaseClass {
 
     static exitDestination(exit) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.exitDestination');
+        this.incrementProfilerCount('PathHelper.exitDestination');
 
         if (!(exit instanceof RoomPosition)) {
             throw new Error('Value given to exitDestination must be a RoomPosition');
@@ -33,8 +34,7 @@ class PathHelper {
     }
 
     static find(start, end) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.find');
+        this.incrementProfilerCount('PathHelper.find');
 
         if (!start) {
             throw new Error('Start position must be supplied to find');
@@ -73,8 +73,7 @@ class PathHelper {
     }
 
     static findToRoom(start, roomName) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.findToRoom');
+        this.incrementProfilerCount('PathHelper.findToRoom');
 
         if (!start) {
             throw new Error('Start position must be supplied to findToRoom');
@@ -100,8 +99,7 @@ class PathHelper {
     }
 
     static getPosByDirection(position, direction) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.getPosByDirection');
+        this.incrementProfilerCount('PathHelper.getPosByDirection');
 
         switch (direction) {
             case TOP:
@@ -126,8 +124,7 @@ class PathHelper {
     }
 
     static isSpaceOpen(position) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.isSpaceOpen');
+        this.incrementProfilerCount('PathHelper.isSpaceOpen');
 
         if (!this.isSpaceWalkable(position)) {
             return false;
@@ -140,8 +137,7 @@ class PathHelper {
     }
 
     static isSpaceWalkable(position) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.isSpaceWalkable');
+        this.incrementProfilerCount('PathHelper.isSpaceWalkable');
 
         let isWalkable = this.readWalkableFromCache(position);
 
@@ -193,8 +189,7 @@ class PathHelper {
     }
 
     static moveBlockingCreeps(position, direction) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.moveBlockingCreeps');
+        this.incrementProfilerCount('PathHelper.moveBlockingCreeps');
 
         let LocationHelper = require('helper.location');
         let blockingCreepIds = LocationHelper.getCreepIdsByPosition(position);
@@ -215,8 +210,7 @@ class PathHelper {
     }
 
     static readFromCache(start, end) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.readFromCache');
+        this.incrementProfilerCount('PathHelper.readFromCache');
 
         if (!start) {
             throw new Error('Start position must be supplied to readFromCache');
@@ -258,8 +252,7 @@ class PathHelper {
     }
 
     static readWalkableFromCache(pos) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.readWalkableFromCache');
+        this.incrementProfilerCount('PathHelper.readWalkableFromCache');
 
         if (!pos) {
             throw new Error('Position must be supplied to readWalkableFromCache');
@@ -297,8 +290,7 @@ class PathHelper {
     }
 
     static writeToCache(start, end, path) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.writeToCache');
+        this.incrementProfilerCount('PathHelper.writeToCache');
 
         if (!start) {
             throw new Error('Start position must be supplied to writeToCache');
@@ -345,8 +337,7 @@ class PathHelper {
     }
 
     static writeWalkableToCache(pos, walkable) {
-        let Profiler = require('helper.profiler');
-        Profiler.increment('PathHelper.writeWalkableToCache');
+        this.incrementProfilerCount('PathHelper.writeWalkableToCache');
 
         if (!pos) {
             throw new Error('Position must be supplied to writeWalkableToCache');
