@@ -71,16 +71,28 @@ class CreepClass extends ActiveClass {
         return body;
     }
 
+    cacheActionPosition(pos) {
+        this.incrementProfilerCount('CreepClass.cacheActionPosition');
+
+        this.writeToCache('creeps.' + this.name + '.actionPosition', pos);
+    }
+
     cacheActionSiteId(id) {
         this.incrementProfilerCount('CreepClass.cacheActionSiteId');
 
-        this.gameObject.memory.actionSiteId = id;
+        this.writeToCache('creeps.' + this.name + '.actionSiteId', id);
+    }
+
+    get cachedActionPosition() {
+        this.incrementProfilerCount('CreepClass.cachedActionPosition');
+
+        return this.readFromCache('creeps.' + this.name + '.actionPosition');
     }
 
     get cachedActionSiteId() {
         this.incrementProfilerCount('CreepClass.cachedActionSiteId');
 
-        return this.gameObject.memory.actionSiteId;
+        return this.readFromCache('creeps.' + this.name + '.actionSiteId');
     }
 
     get carriedEnergy() {
@@ -98,7 +110,7 @@ class CreepClass extends ActiveClass {
     clearCachedActionSiteId() {
         this.incrementProfilerCount('CreepClass.clearCachedActionSiteId');
 
-        this.gameObject.memory.actionSiteId = undefined;
+        this.cacheActionSiteId(undefined);
     }
 
     /**

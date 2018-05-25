@@ -43,14 +43,14 @@ class ScoutClass extends CreepClass {
         // If the scout is in that room, great! Let its current position be its
         // assignment
         if (this.pos.roomName == assignedRoom) {
-            this.gameObject.memory.assignedPosition = this.pos;
+            this.cacheActionPosition(this.pos);
             return this.pos;
         }
 
         // Find a path to that room and assign the end of that path to the scout
         let PathHelper = require('helper.path');
         let destination = PathHelper.findToRoom(this.pos, assignedRoom);
-        this.gameObject.memory.assignedPosition = destination;
+        this.cacheActionPosition(destination);
         return destination;
     }
 
@@ -64,12 +64,10 @@ class ScoutClass extends CreepClass {
     get assignedPosition() {
         this.incrementProfilerCount('ScoutClass.assignedPosition');
 
-        if (this.gameObject.memory.assignedPosition) {
-            return new RoomPosition(
-                this.gameObject.memory.assignedPosition.x,
-                this.gameObject.memory.assignedPosition.y,
-                this.gameObject.memory.assignedPosition.roomName
-            );
+        let position = this.cachedActionPosition;
+
+        if (position) {
+            return new RoomPosition(position.x, position.y, position.roomName)
         }
 
         return undefined;
