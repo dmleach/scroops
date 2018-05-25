@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class RepairHelper extends BaseClass {
+class RepairHelper extends ProfiledClass {
 
     /**
      * Returns the ids of all friendly structures in visible rooms that are not

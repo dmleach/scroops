@@ -1,6 +1,6 @@
 module.exports.loop = function () {
-    let Profiler = require('helper.profiler');
-    Profiler.increment('ticks');
+    let ProfiledClass = require('class.profiled');
+    ProfiledClass.increment('ticks');
 
     // Clean old creeps out of memory. This comes from the tutorial and is a
     // bit of necessary maintenance
@@ -31,7 +31,7 @@ module.exports.loop = function () {
     let TowerHelper = require('helper.tower');
     TowerHelper.activateTowers();
 
-    if (Profiler.get('ticks') == 10) {
-        Profiler.deactivate();
+    if (ProfiledClass.get('ticks') == 10) {
+        ProfiledClass.deactivate();
     }
 }

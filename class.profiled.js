@@ -1,5 +1,10 @@
-class ProfilerHelper {
+var BaseClass = require('class.base');
 
+/**
+ * ProfiledClass is the ancestor for all classes that can write code profiling
+ * information to memory
+ */
+class ProfiledClass extends BaseClass {
     static get PROFILER_MEMORY_KEY() { return 'Profiler'; }
     static get PROFILER_MEMORY_ACTIVE_KEY() { return 'isActive'; }
 
@@ -9,10 +14,6 @@ class ProfilerHelper {
 
     static deactivate() {
         this.set(this.PROFILER_MEMORY_ACTIVE_KEY, false);
-    }
-
-    static get isActive() {
-        return this.get(this.PROFILER_MEMORY_ACTIVE_KEY) == true;
     }
 
     static get(label) {
@@ -25,6 +26,18 @@ class ProfilerHelper {
         }
 
         return Memory[this.PROFILER_MEMORY_KEY][label];
+    }
+
+    incrementProfilerCount(label) {
+        ProfiledClass.increment(this.PROFILER_MEMORY_KEY + '.' + label);
+    }
+
+    static incrementProfilerCount(label) {
+        this.increment(this.PROFILER_MEMORY_KEY + '.' + label);
+    }
+
+    static get isActive() {
+        return this.get(this.PROFILER_MEMORY_ACTIVE_KEY) == true;
     }
 
     static increment(label) {
@@ -52,7 +65,6 @@ class ProfilerHelper {
 
         Memory[this.PROFILER_MEMORY_KEY][label] = value;
     }
-
 }
 
-module.exports = ProfilerHelper;
+module.exports = ProfiledClass;

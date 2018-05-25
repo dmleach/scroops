@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class TowerHelper extends BaseClass {
+class TowerHelper extends ProfiledClass {
 
     static activateTowerById(towerId) {
         this.incrementProfilerCount('TowerHelper.activateTowerById');

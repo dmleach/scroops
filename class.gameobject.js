@@ -1,10 +1,10 @@
-var BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
 /**
  * GameObjectClass is the ancestor for all classes that wrap a Screeps
  * game object
  */
-class GameObjectClass extends BaseClass {
+class GameObjectClass extends ProfiledClass {
 
     /**
      * The Scroops classes are envelopes around the classes provided by the

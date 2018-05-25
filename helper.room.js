@@ -1,8 +1,8 @@
 const ROOM_STATUS_LIFESPAN = 500;
 
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class RoomHelper extends BaseClass {
+class RoomHelper extends ProfiledClass {
 
     static get ROOM_STATUS_FRIENDLY() { return 'Friendly'; }
     static get ROOM_STATUS_HOSTILE() { return 'Hostile'; }

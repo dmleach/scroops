@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class CombatHelper extends BaseClass {
+class CombatHelper extends ProfiledClass {
 
     static get enemyIds() {
         this.incrementProfilerCount('CombatHelper.enemyIds');

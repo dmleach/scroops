@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class LocationHelper extends BaseClass {
+class LocationHelper extends ProfiledClass {
 
     static clearCache(findType) {
         this.incrementProfilerCount('LocationHelper.clearCache');

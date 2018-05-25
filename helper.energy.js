@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class EnergyHelper extends BaseClass {
+class EnergyHelper extends ProfiledClass {
 
     static emptyestSiteByIds(siteIds, position = undefined) {
         this.incrementProfilerCount('EnergyHelper.emptyestSiteByIds');

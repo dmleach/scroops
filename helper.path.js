@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class PathHelper extends BaseClass {
+class PathHelper extends ProfiledClass {
 
     static exitDestination(exit) {
         this.incrementProfilerCount('PathHelper.exitDestination');
@@ -63,7 +63,6 @@ class PathHelper extends BaseClass {
 
         if (LocationHelper.isExit(end)) {
             destination = this.exitDestination(end);
-            console.log('Exit ' + end + ' destination is ' + destination);
         }
 
         path = start.findPathTo(destination, { ignoreCreeps: true });
@@ -89,7 +88,7 @@ class PathHelper extends BaseClass {
         try {
             direction = RoomHelper.getDirectionToRoom(start, roomName);
         } catch (Error) {
-            throw new Error('Rooms given to findToRoom are not adjacent');
+            throw 'Rooms given to findToRoom are not adjacent';
         }
 
         let exits = RoomHelper.findExits(start.roomName, [direction]);
@@ -220,35 +219,11 @@ class PathHelper extends BaseClass {
             throw new Error('End position must be supplied to readFromCache');
         }
 
-        if (!Memory.pathResults) {
-            return false;
-        }
-
-        if (!Memory.pathResults[start.roomName]) {
-            return false;
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x]) {
-            return false;
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y]) {
-            return false;
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName]) {
-            return false;
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x]) {
-            return false;
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y]) {
-            return false;
-        }
-
-        return Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y];
+        return super.readFromCache(
+            'pathResults.'
+            + start.roomName + '.' + start.x + '.' + start.y + '.'
+            + end.roomName + '.' + end.x + '.' + end.y
+        );
     }
 
     static readWalkableFromCache(pos) {
@@ -258,35 +233,17 @@ class PathHelper extends BaseClass {
             throw new Error('Position must be supplied to readWalkableFromCache');
         }
 
-        if (!Memory.pathResults) {
+        let walkableInfo = super.readFromCache('pathResults.' + pos.roomName + '.' + pos.x + '.' + pos.y + '.walkable');
+
+        if (!walkableInfo) {
             return undefined;
         }
 
-        if (!Memory.pathResults[pos.roomName]) {
+        if (Game.time - 100 > walkableInfo.timestamp) {
             return undefined;
         }
 
-        if (!Memory.pathResults[pos.roomName][pos.x]) {
-            return undefined;
-        }
-
-        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]) {
-            return undefined;
-        }
-
-        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']) {
-            return undefined;
-        }
-
-        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['timestamp']) {
-            return undefined;
-        }
-
-        if (Game.time - 100 > Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['timestamp']) {
-            return undefined;
-        }
-
-        return Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['value'];
+        return walkableInfo.value;
     }
 
     static writeToCache(start, end, path) {
@@ -304,67 +261,22 @@ class PathHelper extends BaseClass {
             throw new Error('Valid path must be supplied to writeToCache');
         }
 
-        if (!Memory.pathResults) {
-            Memory.pathResults = {};
-        }
-
-        if (!Memory.pathResults[start.roomName]) {
-            Memory.pathResults[start.roomName] = {};
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x]) {
-            Memory.pathResults[start.roomName][start.x] = {};
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y]) {
-            Memory.pathResults[start.roomName][start.x][start.y] = {};
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName]) {
-            Memory.pathResults[start.roomName][start.x][start.y][end.roomName] = {};
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x]) {
-            Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x] = {};
-        }
-
-        if (!Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y]) {
-            Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y] = {};
-        }
-
-        // We don't need to store the whole path; only the first step
-        Memory.pathResults[start.roomName][start.x][start.y][end.roomName][end.x][end.y] = path[0];
+        let cacheKey = 'pathResults.'
+            + start.roomName + '.' + start.x + '.' + start.y + '.'
+            + end.roomName + '.' + end.x + '.' + end.y;
+        super.writeToCache(cacheKey, path[0]);
     }
 
     static writeWalkableToCache(pos, walkable) {
         this.incrementProfilerCount('PathHelper.writeWalkableToCache');
 
         if (!pos) {
-            throw new Error('Position must be supplied to writeWalkableToCache');
+            throw 'Position must be supplied to writeWalkableToCache';
         }
 
-        if (!Memory.pathResults) {
-            Memory.pathResults = {};
-        }
-
-        if (!Memory.pathResults[pos.roomName]) {
-            Memory.pathResults[pos.roomName] = {};
-        }
-
-        if (!Memory.pathResults[pos.roomName][pos.x]) {
-            Memory.pathResults[pos.roomName][pos.x] = {};
-        }
-
-        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]) {
-            Memory.pathResults[pos.roomName][pos.x][pos.y] = {};
-        }
-
-        if (!Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']) {
-            Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable'] = {};
-        }
-
-        Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['value'] = walkable;
-        Memory.pathResults[pos.roomName][pos.x][pos.y]['walkable']['timestamp'] = Game.time;
+        let cacheKey = 'pathResults.' + pos.roomName + '.' + pos.x + '.' + pos.y + '.walkable';
+        super.writeToCache(cacheKey + '.value', walkable);
+        super.writeToCache(cacheKey + '.timestamp', Game.time);
     }
 
 }
