@@ -85,29 +85,17 @@ class RoomHelper extends ProfiledClass {
             return this.ROOM_STATUS_FRIENDLY;
         }
 
-        if (!Memory.roomStatus) {
+        let roomStatusObject = this.readFromCache('roomStatus.' + roomName);
+
+        if (!roomStatusObject) {
             return undefined;
         }
 
-        let roomStatus = Memory.roomStatus[roomName];
-
-        if (!roomStatus) {
+        if (Game.time - ROOM_STATUS_LIFESPAN > roomStatusObject.timestamp) {
             return undefined;
         }
 
-        if (!roomStatus['status']) {
-            return undefined;
-        }
-
-        if (!roomStatus['timestamp']) {
-            return undefined;
-        }
-
-        if (Game.time > roomStatus['timestamp'] + ROOM_STATUS_LIFESPAN) {
-            return undefined;
-        }
-
-        return roomStatus['status'];
+        return roomStatusObject.status;
     }
 
     static isAdjacent(roomNameA, roomNameB) {
@@ -154,15 +142,8 @@ class RoomHelper extends ProfiledClass {
     static setStatus(roomName, status) {
         this.incrementProfilerCount('RoomHelper.setStatus');
 
-        if (!Memory.roomStatus) {
-            Memory.roomStatus = {}
-        }
-
-        let roomStatus = {};
-        roomStatus['status'] = status;
-        roomStatus['timestamp'] = Game.time;
-
-        Memory.roomStatus[roomName] = roomStatus;
+        this.writeToCache('roomStatus.' + roomName + '.status', status);
+        this.writeToCache('roomStatus.' + roomName + '.timestamp', Game.time);
     }
 
 }

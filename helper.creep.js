@@ -1,6 +1,6 @@
-let BaseClass = require('class.base');
+var ProfiledClass = require('class.profiled');
 
-class CreepHelper extends BaseClass {
+class CreepHelper extends ProfiledClass {
 
     static bodyCost(body) {
         this.incrementProfilerCount('CreepHelper.bodyCost');

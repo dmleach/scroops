@@ -5,65 +5,46 @@ var BaseClass = require('class.base');
  * information to memory
  */
 class ProfiledClass extends BaseClass {
-    static get PROFILER_MEMORY_KEY() { return 'Profiler'; }
-    static get PROFILER_MEMORY_ACTIVE_KEY() { return 'isActive'; }
-
-    static activate() {
-        this.set(this.PROFILER_MEMORY_ACTIVE_KEY, true);
+    static activateProfiler() {
+        this.setProfilerValue('isActive', true);
     }
 
-    static deactivate() {
-        this.set(this.PROFILER_MEMORY_ACTIVE_KEY, false);
+    static deactivateProfiler() {
+        this.setProfilerValue('isActive', false);
     }
 
-    static get(label) {
-        if (!Memory[this.PROFILER_MEMORY_KEY]) {
-            return undefined;
-        }
-
-        if (!Memory[this.PROFILER_MEMORY_KEY][label]) {
-            return undefined;
-        }
-
-        return Memory[this.PROFILER_MEMORY_KEY][label];
+    static getProfilerValue(label) {
+        return super.readFromCache('Profiler.' + label);
     }
 
     incrementProfilerCount(label) {
-        ProfiledClass.increment(this.PROFILER_MEMORY_KEY + '.' + label);
+        ProfiledClass.incrementProfilerValue(label);
     }
 
     static incrementProfilerCount(label) {
-        this.increment(this.PROFILER_MEMORY_KEY + '.' + label);
+        this.incrementProfilerValue(label);
     }
 
-    static get isActive() {
-        return this.get(this.PROFILER_MEMORY_ACTIVE_KEY) == true;
+    static get isProfilerActive() {
+        return this.getProfilerValue('isActive') == true;
     }
 
-    static increment(label) {
-        if (!this.isActive) {
-            return false;
-        }
-
-        let value = this.get(label);
+    static incrementProfilerValue(label) {
+        let value = this.getProfilerValue(label);
 
         if (value) {
-            this.set(label, value + 1);
+            this.setProfilerValue(label, value + 1);
         } else {
-            this.set(label, 1);
+            this.setProfilerValue(label, 1);
         }
     }
 
-    static set(label, value) {
-        if (!this.isActive) {
+    static setProfilerValue(label, value) {
+        if (!this.isProfilerActive) {
             return false;
         }
 
-        if (!Memory[this.PROFILER_MEMORY_KEY]) {
-            Memory[this.PROFILER_MEMORY_KEY] = {};
-        }
-
-        Memory[this.PROFILER_MEMORY_KEY][label] = value;
+        super.writeToCache('Profiler.' + label, value);
     }
 }
 
