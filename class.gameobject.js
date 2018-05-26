@@ -19,6 +19,13 @@ class GameObjectClass extends ProfiledClass {
         this.gameObject = gameObject;
     }
 
+    distance(position) {
+        this.incrementProfilerCount('GameObjectClass.distance');
+
+        let PathHelper = require('helper.path');
+        return PathHelper.distance(this.pos, position);
+    }
+
     /**
      * Returns the id of the game object wrapped inside this class
      */

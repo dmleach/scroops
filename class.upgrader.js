@@ -48,13 +48,13 @@ class UpgraderClass extends SpenderClass {
 
         // If the upgrader is more than three spaces away from the site, it
         // needs to move to the site
-        if (this.pos.getRangeTo(upgradeSite.pos) > 3) {
+        if (this.distance(upgradeSite.pos) > 3) {
             this.goTo(upgradeSite.pos);
         }
 
         // If the upgrader is within three spaces of the controller, it can
         // upgrade it
-        if (this.pos.getRangeTo(upgradeSite.pos) <= 3) {
+        if (this.distance(upgradeSite.pos) <= 3) {
             let upgradeResult = this.gameObject.upgradeController(upgradeSite);
         }
 

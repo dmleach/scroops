@@ -143,7 +143,7 @@ class HarvesterClass extends CreepClass {
             return;
         }
 
-        if (this.pos.getRangeTo(depositSite.pos) > 1) {
+        if (this.distance(depositSite.pos) > 1) {
             this.gameObject.drop(RESOURCE_ENERGY);
             return;
         }
@@ -165,13 +165,13 @@ class HarvesterClass extends CreepClass {
 
         // If the harvester is more than one space away from the source, it
         // needs to move to the source
-        if (this.pos.getRangeTo(harvestSite.pos) > 1) {
+        if (this.distance(harvestSite.pos) > 1) {
             this.goTo(harvestSite.pos);
         }
 
         // If the harvester is exactly one space away from the source, it can
         // harvest energy from the source
-        if (this.pos.getRangeTo(harvestSite.pos) == 1) {
+        if (this.distance(harvestSite.pos) == 1) {
             let harvestResult = this.gameObject.harvest(harvestSite);
         }
     }

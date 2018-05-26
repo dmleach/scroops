@@ -2,6 +2,61 @@ var ProfiledClass = require('class.profiled');
 
 class PathHelper extends ProfiledClass {
 
+    /**
+     * Retrieves information about the path from start to end from the cache,
+     * or calculates and returns the path if no cached information is found.
+     * If the return value is an object with properties 'direction' and
+     * 'length,' the information was cached and the individual steps are not
+     * available. If the return value is an array, it is the result of a call
+     * to RoomPosition.findPathTo
+     */
+    static calculatePath(start, end) {
+        this.incrementProfilerCount('PathHelper.calculatePath');
+
+        if (!start) {
+            throw 'Start position must be supplied to calculatePath';
+        }
+
+        if (!end) {
+            throw 'End position must be supplied to calculatePath';
+        }
+
+        let path;
+
+        try {
+            path = this.readFromCache(start, end);
+        } catch(error) {
+            path = undefined;
+            console.log(error.message);
+        }
+
+        if (path) {
+            return path;
+        }
+
+        let destination = end;
+        let LocationHelper = require('helper.location');
+
+        if (LocationHelper.isExit(end)) {
+            destination = this.exitDestination(end);
+        }
+
+        path = start.findPathTo(destination, { ignoreCreeps: true });
+        this.writeToCache(start, end, path);
+
+        let result = {};
+        result.direction = path[0].direction;
+        result.length = path.length;
+        return result;
+    }
+
+    static distance(start, end) {
+        this.incrementProfilerCount('PathHelper.distance');
+
+        let path = this.calculatePath(start, end);
+        return path.length;
+    }
+
     static exitDestination(exit) {
         this.incrementProfilerCount('PathHelper.exitDestination');
 
@@ -31,44 +86,6 @@ class PathHelper extends ProfiledClass {
         }
 
         return destination;
-    }
-
-    static find(start, end) {
-        this.incrementProfilerCount('PathHelper.find');
-
-        if (!start) {
-            throw new Error('Start position must be supplied to find');
-        }
-
-        if (!end) {
-            throw new Error('End position must be supplied to find');
-        }
-
-        let path;
-
-        try {
-            path = this.readFromCache(start, end);
-        } catch(error) {
-            path = undefined;
-            console.log(error.message);
-        }
-
-        if (path) {
-
-            return path;
-        }
-
-        let destination = end;
-        let LocationHelper = require('helper.location');
-
-        if (LocationHelper.isExit(end)) {
-            destination = this.exitDestination(end);
-        }
-
-        path = start.findPathTo(destination, { ignoreCreeps: true });
-        this.writeToCache(start, end, path);
-
-        return path[0];
     }
 
     static findToRoom(start, roomName) {
@@ -212,17 +229,17 @@ class PathHelper extends ProfiledClass {
         this.incrementProfilerCount('PathHelper.readFromCache');
 
         if (!start) {
-            throw new Error('Start position must be supplied to readFromCache');
+            throw 'Start position must be supplied to readFromCache';
         }
 
         if (!end) {
-            throw new Error('End position must be supplied to readFromCache');
+            throw 'End position must be supplied to readFromCache';
         }
 
         return super.readFromCache(
             'pathResults.'
-            + start.roomName + '.' + start.x + '.' + start.y + '.'
-            + end.roomName + '.' + end.x + '.' + end.y
+            + start.roomName + ',' + start.x + ',' + start.y + '.'
+            + end.roomName + ',' + end.x + ',' + end.y
         );
     }
 
@@ -233,7 +250,7 @@ class PathHelper extends ProfiledClass {
             throw new Error('Position must be supplied to readWalkableFromCache');
         }
 
-        let walkableInfo = super.readFromCache('pathResults.' + pos.roomName + '.' + pos.x + '.' + pos.y + '.walkable');
+        let walkableInfo = super.readFromCache('pathResults.' + pos.roomName + ',' + pos.x + ',' + pos.y + '.walkable');
 
         if (!walkableInfo) {
             return undefined;
@@ -262,9 +279,10 @@ class PathHelper extends ProfiledClass {
         }
 
         let cacheKey = 'pathResults.'
-            + start.roomName + '.' + start.x + '.' + start.y + '.'
-            + end.roomName + '.' + end.x + '.' + end.y;
-        super.writeToCache(cacheKey, path[0]);
+            + start.roomName + ',' + start.x + ',' + start.y + '.'
+            + end.roomName + ',' + end.x + ',' + end.y;
+        super.writeToCache(cacheKey + '.direction', path[0].direction);
+        super.writeToCache(cacheKey + '.length', path.length);
     }
 
     static writeWalkableToCache(pos, walkable) {
@@ -274,7 +292,7 @@ class PathHelper extends ProfiledClass {
             throw 'Position must be supplied to writeWalkableToCache';
         }
 
-        let cacheKey = 'pathResults.' + pos.roomName + '.' + pos.x + '.' + pos.y + '.walkable';
+        let cacheKey = 'pathResults.' + pos.roomName + ',' + pos.x + ',' + pos.y + '.walkable';
         super.writeToCache(cacheKey + '.value', walkable);
         super.writeToCache(cacheKey + '.timestamp', Game.time);
     }

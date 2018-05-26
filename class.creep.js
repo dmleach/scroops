@@ -171,7 +171,7 @@ class CreepClass extends ActiveClass {
         }
 
         let PathHelper = require('helper.path');
-        let path = PathHelper.find(this.pos, destinationPos);
+        let path = PathHelper.calculatePath(this.pos, destinationPos);
         let resultPosition = PathHelper.getPosByDirection(this.pos, path.direction);
 
         if (!PathHelper.isSpaceOpen(resultPosition)) {

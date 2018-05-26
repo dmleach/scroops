@@ -37,7 +37,8 @@ class SpenderClass extends CreepClass {
 
         // If the creep is more than one space away from the site, it
         // needs to move to the site
-        if (this.pos.getRangeTo(withdrawSite.pos) > 1) {
+
+        if (this.distance(withdrawSite.pos) > 1) {
             this.goTo(withdrawSite.pos);
         }
 
@@ -45,7 +46,7 @@ class SpenderClass extends CreepClass {
         // withdraw energy from the site
         let withdrawResult = false;
 
-        if (this.pos.getRangeTo(withdrawSite.pos) == 1) {
+        if (this.distance(withdrawSite.pos) == 1) {
             if (withdrawSite instanceof Resource) {
                 withdrawResult = this.gameObject.pickup(withdrawSite);
             }

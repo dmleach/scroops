@@ -8,12 +8,13 @@ class EnergyHelper extends ProfiledClass {
         let emptyestSiteId = false;
         let emptyestSiteEnergy = Infinity;
         let emptyestSiteEnergyDistance = Infinity;
+        let PathHelper = require('helper.path');
 
         for (let idxId in siteIds) {
             let siteEnergy = this.energyBySiteId(siteIds[idxId]);
 
             if (position && (siteEnergy == emptyestSiteEnergy)) {
-                let siteEnergyDistance = position.getRangeTo(Game.getObjectById(siteIds[idxId]).pos);
+                let siteEnergyDistance = PathHelper.distance(position, Game.getObjectById(siteIds[idxId]).pos);
 
                 if (siteEnergyDistance < emptyestSiteEnergyDistance) {
                     emptyestSiteId = siteIds[idxId];
@@ -27,7 +28,7 @@ class EnergyHelper extends ProfiledClass {
                 emptyestSiteEnergy = siteEnergy;
 
                 if (position) {
-                    emptyestSiteEnergyDistance = position.getRangeTo(Game.getObjectById(emptyestSiteId).pos);
+                    emptyestSiteEnergyDistance = PathHelper.distance(position, Game.getObjectById(emptyestSiteId).pos);
                 }
             }
         }
@@ -72,12 +73,13 @@ class EnergyHelper extends ProfiledClass {
         let fullestSiteId = false;
         let fullestSiteEnergy = 0;
         let fullestSiteEnergyDistance = Infinity;
+        let PathHelper = require('helper.path');
 
         for (let idxId in siteIds) {
             let siteEnergy = this.energyBySiteId(siteIds[idxId]);
 
             if (position && (siteEnergy == fullestSiteEnergy)) {
-                let siteEnergyDistance = position.getRangeTo(Game.getObjectById(siteIds[idxId]).pos);
+                let siteEnergyDistance = PathHelper.distance(position, Game.getObjectById(siteIds[idxId]).pos);
 
                 if (siteEnergyDistance < fullestSiteEnergyDistance) {
                     fullestSiteId = siteIds[idxId];
@@ -91,7 +93,7 @@ class EnergyHelper extends ProfiledClass {
                 fullestSiteEnergy = siteEnergy;
 
                 if (position) {
-                    fullestSiteEnergyDistance = position.getRangeTo(Game.getObjectById(fullestSiteId).pos);
+                    fullestSiteEnergyDistance = PathHelper.distance(position, Game.getObjectById(fullestSiteId).pos);
                 }
             }
         }

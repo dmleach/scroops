@@ -135,7 +135,7 @@ class DistributorClass extends CreepClass {
 
         // If the creep is more than one space away from the site, it
         // needs to move to the site
-        if (this.pos.getRangeTo(depositSite.pos) > 1) {
+        if (this.distance(depositSite.pos) > 1) {
             this.goTo(depositSite.pos);
         }
 
@@ -143,7 +143,7 @@ class DistributorClass extends CreepClass {
         // deposit energy into the site
         let transferResult = false;
 
-        if (this.pos.getRangeTo(depositSite.pos) == 1) {
+        if (this.distance(depositSite.pos) == 1) {
             transferResult = this.gameObject.transfer(depositSite, RESOURCE_ENERGY);
         }
 
@@ -167,7 +167,7 @@ class DistributorClass extends CreepClass {
 
         // If the creep is more than one space away from the site, it
         // needs to move to the site
-        if (this.pos.getRangeTo(withdrawSite.pos) > 1) {
+        if (this.distance(withdrawSite.pos) > 1) {
             this.goTo(withdrawSite.pos);
         }
 
@@ -175,7 +175,7 @@ class DistributorClass extends CreepClass {
         // withdraw energy from the site
         let withdrawResult = false;
 
-        if (this.pos.getRangeTo(withdrawSite.pos) == 1) {
+        if (this.distance(withdrawSite.pos) == 1) {
             if (withdrawSite instanceof Resource) {
                 withdrawResult = this.gameObject.pickup(withdrawSite);
             }

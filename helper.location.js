@@ -54,7 +54,7 @@ class LocationHelper extends ProfiledClass {
 
             if (location) {
                 try {
-                    let distance = position.getRangeTo(location);
+                    let distance = PathHelper.distance(position, location.pos);
 
                     if (distance < closestLocationDistance) {
                         closestLocationId = locationIds[idxId];
@@ -77,7 +77,7 @@ class LocationHelper extends ProfiledClass {
         let PathHelper = require('helper.path');
 
         for (let idxPosition in positions) {
-            let distance = start.getRangeTo(positions[idxPosition]);
+            let distance = PathHelper.distance(start, positions[idxPosition]);
 
             if (distance < closestPositionDistance) {
                 closestPosition = positions[idxPosition];
