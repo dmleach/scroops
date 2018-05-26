@@ -89,8 +89,6 @@ class LocationHelper extends ProfiledClass {
     }
 
     static findIds(findType, roomNames = undefined) {
-        this.incrementProfilerCount('LocationHelper.findIds');
-
         let resultIds = [];
 
         if (roomNames) {
@@ -103,23 +101,27 @@ class LocationHelper extends ProfiledClass {
         let cachedIds = this.readFromCache(findType);
 
         if (cachedIds) {
-            if (!roomNames) {
-                return cachedIds;
-            } else {
-                for (let idxId in cachedIds) {
-                    let gameObject = Game.getObjectById(cachedIds[idxId]);
+            this.incrementProfilerCount('LocationHelper.findIds.cached');
 
-                    if (gameObject) {
-                        if (roomNames.indexOf(gameObject.pos.roomName) !== -1) {
-                            resultIds.push(cachedIds[idxId]);
-                        }
-                    }
+            // Cached ids are indexed first by room
+            for (let idxRoom in cachedIds) {
+                let includeInResult = false;
+
+                if (roomNames == undefined) {
+                    includeInResult = true;
+                } else if (roomNames.indexOf(idxRoom) !== -1) {
+                    includeInResult = true;
                 }
 
-                return resultIds;
+                if (includeInResult) {
+                    resultIds = resultIds.concat(cachedIds[idxRoom]);
+                }
             }
+
+            return resultIds;
         }
 
+        this.incrementProfilerCount('LocationHelper.findIds.uncached');
         resultIds = this.doFindIds(findType, roomNames);
 
         this.writeToCache(findType, resultIds);
@@ -271,7 +273,24 @@ class LocationHelper extends ProfiledClass {
             return false;
         }
 
-        super.writeToCache('findResults.' + findType, locationIds);
+        let locationIdsByRoom = {};
+
+        // Sort the locations by room
+        for (let idxId in locationIds) {
+            let location = Game.getObjectById(locationIds[idxId]);
+
+            if (!locationIdsByRoom[location.pos.roomName]) {
+                locationIdsByRoom[location.pos.roomName] = [];
+            }
+
+            locationIdsByRoom[location.pos.roomName].push(locationIds[idxId]);
+        }
+
+        // Write the locations to the cache, sorted by room
+        for (let idxRoom in locationIdsByRoom) {
+            super.writeToCache('findResults.' + findType + '.' + idxRoom, locationIdsByRoom[idxRoom]);
+        }
+
         super.writeToCache('findResults.timestamp.' + findType, Game.time);
     }
 
