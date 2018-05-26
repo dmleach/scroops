@@ -21,6 +21,10 @@ class PathHelper extends ProfiledClass {
             throw 'End position must be supplied to calculatePath';
         }
 
+        if (start.isEqualTo(end)) {
+            return { direction: undefined, length: 0 };
+        }
+
         let path;
 
         try {
@@ -42,18 +46,25 @@ class PathHelper extends ProfiledClass {
         }
 
         path = start.findPathTo(destination, { ignoreCreeps: true });
-        this.writeToCache(start, end, path);
 
-        let result = {};
-        result.direction = path[0].direction;
-        result.length = path.length;
-        return result;
+        if (!path || path.length == 0) {
+            console.log('PathHelper could not calculate a path from ' + start + ' to ' + end);
+            return undefined;
+        }
+
+        this.writeToCache(start, end, path);
+        return { direction: path[0].direction, length: path.length };
     }
 
     static distance(start, end) {
         this.incrementProfilerCount('PathHelper.distance');
 
         let path = this.calculatePath(start, end);
+
+        if (path == undefined) {
+            return undefined;
+        }
+
         return path.length;
     }
 
@@ -275,7 +286,7 @@ class PathHelper extends ProfiledClass {
         }
 
         if (!path || path.length == 0) {
-            throw new Error('Valid path must be supplied to writeToCache');
+            throw new Error('Valid path must be supplied to writeToCache, ' + path + ' given');
         }
 
         let cacheKey = 'pathResults.'
