@@ -1,37 +1,54 @@
 module.exports.loop = function () {
-    let ProfiledClass = require('class.profiled');
-    ProfiledClass.incrementProfilerCount('ticks');
+    var helperLocations = require('helper.locations');
 
-    // Clean old creeps out of memory. This comes from the tutorial and is a
-    // bit of necessary maintenance
-    for (let creepName in Memory.creeps) {
-        if (!Game.creeps[creepName]) {
-            delete Memory.creeps[creepName];
+    // Clean old creeps out of memory
+    var helperCreeps = require('helper.creeps');
+    helperCreeps.cleanupCreepMemory();
+
+    // Check configuration files
+    var helperBase = require('helper.base');
+    helperBase.isBaseValid();
+
+    // Spawn new creeps, if they're needed
+    var roleSpawner = require('role.spawner');
+    roleSpawner.run(Game.spawns['Spawn1'], helperLocations);
+
+    // Check for enemies and shoot them with towers
+    var helperStructures = require('helper.structures');
+
+    for (var roomName in Game.rooms) {
+        var room = Game.rooms[roomName];
+        var towers = helperStructures.getStructures(room, STRUCTURE_TOWER);
+
+        for (var idxTower = 0; idxTower < towers.length; idxTower++) {
+            var roleTower = require('role.tower');
+            roleTower.run(towers[idxTower]);
         }
     }
 
-    // Iterate through all the friendly spawns and have them manage the creeps
-    // in their room
-    let SpawnClass = require('class.spawn');
+    // Loop through all the active creeps and have them act
+    var profiles = require('helper.profiles');
 
-    for (let spawnName in Game.spawns) {
-        let spawn = SpawnClass.createByName(spawnName);
-        spawn.manageCreeps();
-    }
+    for (var creepName in Game.creeps) {
+        var startCpu = Game.cpu.getUsed();
 
-    // Iterate through all the friendly creeps and have them take an action
-    let CreepHelper = require('helper.creep');
+        var creep = Game.creeps[creepName];
+        var profile = profiles.getProfile(creep.memory.role);
 
-    for (let creepName in Game.creeps) {
-        let creep = CreepHelper.createCreepByName(creepName);
-        creep.act();
-    }
+        if (profile) {
+            if (profile.active) {
+                var role = require(profile.roleScript);
+                role.run(creep, helperLocations);
+            }
+        }
 
-    // Iterate through all the towers and have them take an action
-    let TowerHelper = require('helper.tower');
-    TowerHelper.activateTowers();
+        if (true) {
+            var endCpu = Game.cpu.getUsed();
+            var usedCpu = endCpu - startCpu;
 
-    if (ProfiledClass.getProfilerValue('ticks') == 10) {
-        ProfiledClass.deactivateProfiler();
+            // if (usedCpu > 10) {
+            //     console.log('Used ' + usedCpu + ' to process ' + creep.name + ' doing ' + creep.memory.activity);
+            // }
+        }
     }
 }
