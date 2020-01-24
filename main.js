@@ -1,54 +1,86 @@
-module.exports.loop = function () {
-    var helperLocations = require('helper.locations');
+console.log('======= Beginning tick ' + Game.time + ' =======');
 
-    // Clean old creeps out of memory
-    var helperCreeps = require('helper.creeps');
-    helperCreeps.cleanupCreepMemory();
+for (let name in Memory.creeps) {
+    if (Game.creeps[name] === undefined) {
+        delete Memory.creeps[name];
+    }
+}
 
-    // Check configuration files
-    var helperBase = require('helper.base');
-    helperBase.isBaseValid();
+let RoomManagerClass = require('RoomManager');
+let roomManager = new RoomManagerClass('E3S18');
 
-    // Spawn new creeps, if they're needed
-    var roleSpawner = require('role.spawner');
-    roleSpawner.run(Game.spawns['Spawn1'], helperLocations);
+let UtilCreepClass = require('UtilCreep');
+let utilCreep = new UtilCreepClass(Game.creeps);
 
-    // Check for enemies and shoot them with towers
-    var helperStructures = require('helper.structures');
+let UtilSpawnClass = require('UtilSpawn');
+let utilSpawn = new UtilSpawnClass(roomManager.getFriendlySpawns()[0]);
+utilSpawn.spawnCreep(roomManager, utilCreep);
 
-    for (var roomName in Game.rooms) {
-        var room = Game.rooms[roomName];
-        var towers = helperStructures.getStructures(room, STRUCTURE_TOWER);
+let UtilPathClass = require('UtilPath');
+let utilPath = new UtilPathClass();
 
-        for (var idxTower = 0; idxTower < towers.length; idxTower++) {
-            var roleTower = require('role.tower');
-            roleTower.run(towers[idxTower]);
-        }
+let Role = require('Role');
+let GameObjectClass = require('GameObject');
+let gameObject;
+
+let creepId;
+let roleClass;
+let creep;
+
+// Iterate through each of the game's creeps
+for (let idxCreep = 0; idxCreep < utilCreep.creepIds.length; idxCreep++) {
+    creepId = utilCreep.creepIds[idxCreep];
+
+    if (creepId === undefined || creepId === null) {
+        continue;
     }
 
-    // Loop through all the active creeps and have them act
-    var profiles = require('helper.profiles');
+    roleClass = Role.getCreepClassByCreepId(creepId);
 
-    for (var creepName in Game.creeps) {
-        var startCpu = Game.cpu.getUsed();
-
-        var creep = Game.creeps[creepName];
-        var profile = profiles.getProfile(creep.memory.role);
-
-        if (profile) {
-            if (profile.active) {
-                var role = require(profile.roleScript);
-                role.run(creep, helperLocations);
-            }
-        }
-
-        if (true) {
-            var endCpu = Game.cpu.getUsed();
-            var usedCpu = endCpu - startCpu;
-
-            // if (usedCpu > 10) {
-            //     console.log('Used ' + usedCpu + ' to process ' + creep.name + ' doing ' + creep.memory.activity);
-            // }
-        }
+    if (roleClass === undefined) {
+        continue;
     }
+
+    creep = new roleClass(creepId);
+    creep.debug('******* Beginning turn for tick ' + Game.time + ' *******');
+
+    creep.takeEnergyTargetId = creep.getTakeEnergyTargetId(roomManager);
+
+    if (creep.takeEnergyTargetId !== undefined) {
+        gameObject = new GameObjectClass(creep.takeEnergyTargetId);
+        creep.debug('Taking energy from ' + gameObject.name);
+        creep.takeEnergyPos = creep.getClosestInteractionPositionById(creep.takeEnergyTargetId);
+    } else {
+        creep.debug('Object to take energy from is undefined');
+    }
+
+    creep.giveEnergyTargetId = creep.getGiveEnergyTargetId(roomManager);
+
+    if (creep.giveEnergyTargetId !== undefined) {
+        gameObject = new GameObjectClass(creep.giveEnergyTargetId);
+        creep.debug('Giving energy to ' + gameObject.name);
+        creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId);
+        creep.debug('Give energy position is ' + creep.giveEnergyPos);
+    } else {
+        creep.debug('Object to give energy to is undefined');
+    }
+
+    creep.work(roomManager, utilPath);
+
+    creep.debug('------- Ending turn for tick ' + Game.time + ' -------');
+
+}
+
+// Iterate through each of the game's towers
+let TowerClass = require('Tower');
+let tower;
+
+for (let idxTower = 0; idxTower < roomManager.getTowers().length; idxTower++) {
+    tower = new TowerClass(roomManager.getTowers()[idxTower].id);
+    tower.debug('******* Beginning turn for tick ' + Game.time + ' *******');
+
+    tower.giveEnergyTargetId = tower.getGiveEnergyTargetId(roomManager);
+    tower.debug('giveEnergyTargetId is ' + tower.giveEnergyTargetId);
+    tower.work();
+    tower.debug('------- Ending turn for tick ' + Game.time + ' -------');
 }
