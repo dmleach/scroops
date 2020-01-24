@@ -20,6 +20,9 @@ TO-DO
 * Creeps should not shove other creeps out of the way until all their move alternatives are examined
 * Creeps that cannot take energy because the spawns and extensions are not full should move to where they'll take energy from when they can
 * Don't spawn a scout for a neighboring room that can't be reached
+* Reduce costly calls to findExit
+* Use PathFinder to find paths
+* Make one code improvement: Abstract debug/error/warn to its own ancestor class so non-game objects can use them
 
 DONE
 1. Harvest energy and deposit it into the spawn
@@ -77,3 +80,4 @@ DONE
 1. Add code that outputs meaningful names instead of ids and codes when debugging
 1. Teach distributors to fill extensions according to which is closest, not just in the order provided
 1. Stop importers from dropping their energy on the ground next to a container
+1. Make one code improvement: Create a memory accessor ancestor object
