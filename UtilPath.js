@@ -1,15 +1,11 @@
-class UtilPath
-{
-    constructor() {
-        if (Memory[this.memoryKey] === undefined) {
-            Memory[this.memoryKey] = {};
-        }
-    }
+let MemoryAccessorClass = require('MemoryAccessor');
 
+class UtilPath extends MemoryAccessorClass
+{
     _cachePath(startPosition, endPosition, path) {
         let cacheKey = this._getCacheKey(startPosition) + this._getCacheKey(endPosition);
-        let cachePathRoot = Memory[this.memoryKey];
-        cachePathRoot[cacheKey] = this._getPathStringFromPath(path);
+        let pathString = this._getPathStringFromPath(path);
+        this.putIntoMemory(cacheKey, pathString);
     }
 
     _getCacheKey(position) {
@@ -18,8 +14,7 @@ class UtilPath
 
     _getPathStringFromCache(startPosition, endPosition) {
         let cacheKey = this._getCacheKey(startPosition) + this._getCacheKey(endPosition);
-        let cachePathRoot = Memory[this.memoryKey];
-        return cachePathRoot[cacheKey];
+        return this.getFromMemory(cacheKey);
     }
 
     get memoryKey() {
@@ -33,7 +28,7 @@ class UtilPath
             return this._getPathFromPathString(pathString);
         }
 
-        // console.log('Could not find path between ' + startPosition + ' and ' + endPosition + ' in cache');
+        console.log('Could not find path between ' + startPosition + ' and ' + endPosition + ' in cache');
         let path = startPosition.findPathTo(endPosition, { ignoreCreeps: true });
         this._cachePath(startPosition, endPosition, path);
         // let pathfindingResult = PathFinder.search(startPosition, endPosition);
