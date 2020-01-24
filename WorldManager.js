@@ -1,5 +1,21 @@
-class WorldManager
+let MemoryAccessorClass = require('MemoryAccessor');
+
+class WorldManager extends MemoryAccessorClass
 {
+    findExit(startRoomName, endRoomName) {
+        let exitKey = startRoomName + endRoomName;
+        let cachedExit = this.getFromMemory(exitKey);
+
+        if (cachedExit !== undefined) {
+            return cachedExit;
+        }
+
+        console.log('Call to findExit has high CPU cost');
+        let direction = Game.map.findExit(startRoomName, endRoomName);
+        this.putIntoMemory(exitKey, direction);
+        return direction;
+    }
+
     static getNeighboringRoomNames() {
         let controlledRoomNames = [];
 
@@ -24,6 +40,11 @@ class WorldManager
 
         return neighboringRoomNames;
     }
+
+    get memoryKey() {
+        return 'worldCache';
+    }
+
 }
 
 module.exports = WorldManager;

@@ -49,10 +49,8 @@ class CreepScout extends CreepAncestorClass
             return;
         }
 
-        this.debug('Destination room name is ' + destinationRoomName);
-        this.warn('Call to findExit has high CPU cost');
-        let direction = Game.map.findExit(this.pos.roomName, destinationRoomName);
-        this.debug('The direction to room ' + destinationRoomName + ' is ' + direction);
+        let worldManager = new WorldManagerClass();
+        let direction = worldManager.findExit(this.pos.roomName, destinationRoomName);
 
         let terrain = new Room.Terrain(this.pos.roomName);
         let roomExits = [];
