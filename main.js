@@ -1,3 +1,9 @@
+for (let name in Memory.creeps) {
+    if (Game.creeps[name] === undefined) {
+        delete Memory.creeps[name];
+    }
+}
+
 let RoomManagerClass = require('RoomManager');
 let roomManager = new RoomManagerClass('E3S18');
 
