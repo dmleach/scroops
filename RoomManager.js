@@ -1,6 +1,10 @@
-class RoomManager
+let ScroopsObjectClass = require('ScroopsObject');
+
+class RoomManager extends ScroopsObjectClass
 {
     constructor(roomName) {
+        super();
+
         this.roomName = roomName;
         this.room = Game.rooms[roomName];
         this.findResults = {};
@@ -82,6 +86,7 @@ class RoomManager
 
     _getFindResults(findType) {
         if (this.findResults.hasOwnProperty(findType) === false) {
+            this.warn('Call to find has high CPU cost');
             this.findResults[findType] = this.room.find(findType);
         }
 
@@ -158,7 +163,9 @@ class RoomManager
         return this._getStructuresByType(STRUCTURE_TOWER);
     }
 
-
+    get name() {
+        return 'RoomManager';
+    }
 }
 
 module.exports = RoomManager;

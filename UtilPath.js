@@ -28,7 +28,7 @@ class UtilPath extends MemoryAccessorClass
             return this._getPathFromPathString(pathString);
         }
 
-        console.log('Could not find path between ' + startPosition + ' and ' + endPosition + ' in cache');
+        this.warn('Could not find path between ' + startPosition + ' and ' + endPosition + ' in cache');
         let path = startPosition.findPathTo(endPosition, { ignoreCreeps: true });
         this._cachePath(startPosition, endPosition, path);
         // let pathfindingResult = PathFinder.search(startPosition, endPosition);
@@ -58,6 +58,10 @@ class UtilPath extends MemoryAccessorClass
         }
 
         return pathString;
+    }
+
+    get name() {
+        return 'UtilPath';
     }
 }
 

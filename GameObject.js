@@ -1,6 +1,10 @@
-class GameObject
+let ScroopsObjectClass = require('ScroopsObject');
+
+class GameObject extends ScroopsObjectClass
 {
     constructor(id) {
+        super();
+
         if (id === undefined) {
             console.log('[ERROR] GameObject constructor requires an id');
             return;
@@ -9,45 +13,12 @@ class GameObject
         this.gameObject = Game.getObjectById(id);
     }
 
-    debug(message) {
-        if (this.isShowingDebugMessages === false) {
-            return;
-        }
-
-        console.log('[DEBUG] ' + this.name + ': ' + message);
-    }
-
-    directionName(direction) {
-        let directionNames = {};
-        directionNames[TOP_LEFT] = 'top left';
-        directionNames[TOP] = 'top';
-        directionNames[TOP_RIGHT] = 'top right';
-        directionNames[LEFT] = 'left';
-        directionNames[RIGHT] = 'right';
-        directionNames[BOTTOM_LEFT] = 'bottom left';
-        directionNames[BOTTOM] = 'bottom';
-        directionNames[BOTTOM_RIGHT] = 'bottom right';
-
-        return (direction in directionNames) ? directionNames[direction] : 'unknown';
-    }
-
     get energy() {
         if ('store' in this.gameObject) {
             return this.gameObject.store.getUsedCapacity(RESOURCE_ENERGY);
         }
 
         return undefined;
-    }
-
-    error(errorCode, message = '') {
-        if (this.isShowingErrorMessages === false) {
-            return;
-        }
-
-        let UtilErrorClass = require('UtilError');
-        message = '[ERROR ' + errorCode + ': ' + UtilErrorClass.getMessageFromCode(errorCode)  + '] ' + this.name + ': ' + message;
-
-        console.log(message.replace(/:$/, ''));
     }
 
     get full() {
@@ -64,18 +35,6 @@ class GameObject
 
     get id() {
         return this.gameObject.id;
-    }
-
-    get isShowingDebugMessages() {
-        return false;
-    }
-
-    get isShowingErrorMessages() {
-        return true;
-    }
-
-    get isShowingWarningMessages() {
-        return true;
     }
 
     get name() {
@@ -171,16 +130,6 @@ class GameObject
     get roomName() {
         return this.gameObject.pos.roomName;
     }
-
-    warn(message) {
-        if (this.isShowingWarningMessages === false) {
-            return;
-        }
-
-        console.log('[WARNING] ' + this.name + ': ' + message);
-    }
-
-
 }
 
 module.exports = GameObject;

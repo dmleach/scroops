@@ -1,8 +1,12 @@
-class MemoryAccessor
+let ScroopsObjectClass = require('ScroopsObject');
+
+class MemoryAccessor extends ScroopsObjectClass
 {
     constructor() {
+        super();
+
         if (this.memoryKey === undefined) {
-            console.log("Memory accessor must define a memory key value");
+            this.error("Memory accessor must define a memory key value");
             return;
         }
 

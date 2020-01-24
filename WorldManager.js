@@ -10,7 +10,7 @@ class WorldManager extends MemoryAccessorClass
             return cachedExit;
         }
 
-        console.log('Call to findExit has high CPU cost');
+        this.warn('Call to findExit has high CPU cost');
         let direction = Game.map.findExit(startRoomName, endRoomName);
         this.putIntoMemory(exitKey, direction);
         return direction;
@@ -43,6 +43,10 @@ class WorldManager extends MemoryAccessorClass
 
     get memoryKey() {
         return 'worldCache';
+    }
+
+    get name() {
+        return 'WorldManager';
     }
 
 }
