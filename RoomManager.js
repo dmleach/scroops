@@ -1,6 +1,6 @@
-let ScroopsObjectClass = require('ScroopsObject');
+let MemoryAccessorClass = require('MemoryAccessor');
 
-class RoomManager extends ScroopsObjectClass
+class RoomManager extends MemoryAccessorClass
 {
     constructor(roomName) {
         super();
@@ -10,16 +10,16 @@ class RoomManager extends ScroopsObjectClass
         this.findResults = {};
     }
 
-    get isFullEnergy() {
-        return this.energyAvailable === this.energyCapacityAvailable;
-    }
-
     get energyAvailable() {
         return this.room.energyAvailable;
     }
 
     get energyCapacityAvailable() {
         return this.room.energyCapacityAvailable;
+    }
+
+    _getCacheKey(findType) {
+        return findType.toString().padStart(4, '0') + this.roomName;
     }
 
     getConstructionSites() {
@@ -85,12 +85,52 @@ class RoomManager extends ScroopsObjectClass
     }
 
     _getFindResults(findType) {
-        if (this.findResults.hasOwnProperty(findType) === false) {
-            this.warn('Call to find has high CPU cost');
-            this.findResults[findType] = this.room.find(findType);
+        if (this._getIsCached(findType)) {
+            let cacheKey = this._getCacheKey(findType);
+            let cachedResults = this.getFromMemory(cacheKey);
+
+            if (cachedResults !== undefined) {
+                return this._getFindResultsFromFindString(cachedResults);
+            }
         }
 
+        if (this.findResults.hasOwnProperty(findType) === false) {
+            this.warn('Call to find ' + this.findName(findType) + ' has high CPU cost');
+            let findResults = this.room.find(findType);
+            this.findResults[findType] = findResults;
+
+            if (this._getIsCached(findType)) {
+                this.putIntoMemory(this._getCacheKey(findType), this._getFindStringFromFindResults(findResults))
+            }
+        }
+
+        // console.log('Find ' + this.findName(findType) + ' returning ' + this.findResults[findType]);
         return this.findResults[findType];
+    }
+
+    _getFindResultsFromFindString(findString) {
+        let findStringIds = findString.toString().split(',');
+        let findResult = [];
+
+        findStringIds.forEach(function(findStringId) {
+            findResult.push(Game.getObjectById(findStringId));
+        });
+
+        return findResult;
+    }
+
+    _getFindStringFromFindResults(findResults) {
+        if (findResults instanceof Array === false) {
+            return undefined;
+        }
+
+        let findResultIds = [];
+
+        findResults.forEach(function(findResult) {
+            findResultIds.push(findResult.id);
+        });
+
+        return findResultIds.join(',');
     }
 
     getFriendlySpawns() {
@@ -113,6 +153,12 @@ class RoomManager extends ScroopsObjectClass
 
     getHostileCreeps() {
         return this._getFindResults(FIND_HOSTILE_CREEPS);
+    }
+
+    _getIsCached(findType) {
+        let cachedFindTypes = [FIND_SOURCES];
+        // let cachedFindTypes = [];
+        return cachedFindTypes.indexOf(findType) !== -1;
     }
 
     getRangeToNearest(position, findType) {
@@ -161,6 +207,18 @@ class RoomManager extends ScroopsObjectClass
 
     getTowers() {
         return this._getStructuresByType(STRUCTURE_TOWER);
+    }
+
+    get isFullEnergy() {
+        return this.energyAvailable === this.energyCapacityAvailable;
+    }
+
+    get isShowingDebugMessages() {
+        return true;
+    }
+
+    get memoryKey() {
+        return this.name;
     }
 
     get name() {

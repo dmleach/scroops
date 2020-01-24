@@ -33,6 +33,41 @@ class ScroopsObject
         console.log(message.replace(/:$/, ''));
     }
 
+    findName(findCode) {
+        let findNames = {};
+        findNames[FIND_EXIT_TOP] = 'Exit top';
+        findNames[FIND_EXIT_RIGHT] = 'Exit right';
+        findNames[FIND_EXIT_BOTTOM] = 'Exit bottom';
+        findNames[FIND_EXIT_LEFT] = 'Exit left';
+        findNames[FIND_EXIT] = 'Exit';
+        findNames[FIND_CREEPS] = 'Creeps';
+        findNames[FIND_MY_CREEPS] = 'My creeps';
+        findNames[FIND_HOSTILE_CREEPS] = 'Hostile creeps';
+        findNames[FIND_SOURCES_ACTIVE] = 'Active sources';
+        findNames[FIND_SOURCES] = 'Sources';
+        findNames[FIND_DROPPED_RESOURCES] = 'Dropped resources';
+        findNames[FIND_STRUCTURES] = 'Structures';
+        findNames[FIND_MY_STRUCTURES] = 'My structures';
+        findNames[FIND_HOSTILE_STRUCTURES] = 'Hostile structures';
+        findNames[FIND_FLAGS] = 'Flags';
+        findNames[FIND_CONSTRUCTION_SITES] = 'Construction sites';
+        findNames[FIND_MY_SPAWNS] = 'My spawns';
+        findNames[FIND_HOSTILE_SPAWNS] = 'Hostile spawns';
+        findNames[FIND_MY_CONSTRUCTION_SITES] = 'My construction sites';
+        findNames[FIND_HOSTILE_CONSTRUCTION_SITES] = 'Hostile construction sites';
+        findNames[FIND_MINERALS] = 'Minerals';
+        findNames[FIND_NUKES] = 'Nukes';
+        findNames[FIND_TOMBSTONES] = 'Tombstones';
+        findNames[FIND_POWER_CREEPS] = 'Power creeps';
+        findNames[FIND_MY_POWER_CREEPS] = 'My power creeps';
+        findNames[FIND_HOSTILE_POWER_CREEPS] = 'Hostile power creeps';
+        findNames[FIND_DEPOSITS] = 'Deposits';
+        findNames[FIND_RUINS] = 'Ruins';
+
+        return (findCode in findNames) ? findNames[findCode] : 'unknown';
+    }
+
+
     get isShowingDebugMessages() {
         return false;
     }

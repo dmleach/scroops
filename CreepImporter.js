@@ -48,11 +48,16 @@ class CreepImporter extends CreepHarvesterClass
         }
 
         let roomSources;
+        let RoomManagerClass = require('RoomManager');
+        let roomManagerInstance;
 
         for (let visibleRoomName in Game.rooms) {
             if (Game.rooms[visibleRoomName].controller.my) {
                 continue;
             }
+
+            roomManagerInstance = new RoomManagerClass(visibleRoomName);
+            roomSources = roomManager.getSources();
 
             roomSources = Game.rooms[visibleRoomName].find(FIND_SOURCES);
 

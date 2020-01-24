@@ -1,3 +1,5 @@
+console.log('======= Beginning tick ' + Game.time + ' =======');
+
 for (let name in Memory.creeps) {
     if (Game.creeps[name] === undefined) {
         delete Memory.creeps[name];
@@ -81,6 +83,4 @@ for (let idxTower = 0; idxTower < roomManager.getTowers().length; idxTower++) {
     tower.debug('giveEnergyTargetId is ' + tower.giveEnergyTargetId);
     tower.work();
     tower.debug('------- Ending turn for tick ' + Game.time + ' -------');
-
 }
-
