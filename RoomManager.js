@@ -95,7 +95,7 @@ class RoomManager extends MemoryAccessorClass
         }
 
         if (this.findResults.hasOwnProperty(findType) === false) {
-            this.warn('Call to find ' + this.findName(findType) + ' has high CPU cost');
+            this.warn('Call to find ' + this.findName(findType) + ' in room ' + this.room.name + ' has high CPU cost');
             let findResults = this.room.find(findType);
             this.findResults[findType] = findResults;
 

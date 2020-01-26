@@ -2,6 +2,12 @@ let MemoryAccessorClass = require('MemoryAccessor');
 
 class WorldManager extends MemoryAccessorClass
 {
+    constructor() {
+        super();
+
+        this.roomManagers = {};
+    }
+
     findExit(startRoomName, endRoomName) {
         let exitKey = startRoomName + endRoomName;
         let cachedExit = this.getFromMemory(exitKey);
@@ -39,6 +45,20 @@ class WorldManager extends MemoryAccessorClass
         });
 
         return neighboringRoomNames;
+    }
+
+    getRoomManager(roomName) {
+        let roomManager;
+
+        if (this.roomManagers.hasOwnProperty(roomName)) {
+            roomManager = this.roomManagers[roomName];
+        } else {
+            let RoomManagerClass = require('RoomManager');
+            roomManager = new RoomManagerClass(roomName);
+            this.roomManagers[roomName] = roomManager;
+        }
+
+        return roomManager;
     }
 
     get memoryKey() {

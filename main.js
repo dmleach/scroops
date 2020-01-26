@@ -1,20 +1,31 @@
 console.log('======= Beginning tick ' + Game.time + ' =======');
 
+// Clear memory allocated for dead creeps
 for (let name in Memory.creeps) {
     if (Game.creeps[name] === undefined) {
         delete Memory.creeps[name];
     }
 }
 
-let RoomManagerClass = require('RoomManager');
-let roomManager = new RoomManagerClass('E3S18');
+// Iterate through the player's spawns and spawn creeps
+let spawns = Game.spawns;
+
+let WorldManagerClass = require('WorldManager');
+let worldManager = new WorldManagerClass();
+
+let roomManager;
 
 let UtilCreepClass = require('UtilCreep');
 let utilCreep = new UtilCreepClass(Game.creeps);
 
 let UtilSpawnClass = require('UtilSpawn');
-let utilSpawn = new UtilSpawnClass(roomManager.getFriendlySpawns()[0]);
-utilSpawn.spawnCreep(roomManager, utilCreep);
+let utilSpawn;
+
+for (let idxSpawn = 0; idxSpawn < spawns.length; idxSpawn++) {
+    roomManager = worldManager.getRoomManager(spawns[idxSpawn].pos.roomName);
+    utilSpawn = new UtilSpawnClass(spawns[idxSpawn]);
+    utilSpawn.spawnCreep(roomManager, utilCreep);
+}
 
 let UtilPathClass = require('UtilPath');
 let utilPath = new UtilPathClass();
@@ -43,6 +54,8 @@ for (let idxCreep = 0; idxCreep < utilCreep.creepIds.length; idxCreep++) {
 
     creep = new roleClass(creepId);
     creep.debug('******* Beginning turn for tick ' + Game.time + ' *******');
+
+    roomManager = worldManager.getRoomManager(creep.pos.roomName);
 
     creep.takeEnergyTargetId = creep.getTakeEnergyTargetId(roomManager);
 
