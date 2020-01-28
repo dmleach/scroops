@@ -1,7 +1,7 @@
 class UtilSpawn
 {
-    constructor(roomName) {
-        this.roomName = roomName;
+    constructor(spawnName) {
+        this.spawnName = spawnName;
 
         let UtilCreepClass = require('UtilCreep');
         this.utilCreep = new UtilCreepClass(Game.creeps);
@@ -17,14 +17,15 @@ class UtilSpawn
         return cost;
     }
 
-    getRoleToSpawn(roomManager, utilCreep) {
+    getRoleToSpawn(worldManager) {
         let Role = require('Role');
         let roleClass;
+        let spawn = Game.spawns[this.spawnName];
 
         for (let role of Role) {
             roleClass = Role.getCreepClassByRole(role);
 
-            if (roleClass.canSpawn(roomManager, utilCreep) && this.utilCreep.countByRole(role) < roleClass.numberToSpawn(this.utilCreep)) {
+            if (roleClass.canSpawn(spawn.pos.roomName, worldManager, this.utilCreep) && this.utilCreep.countByRole(role) < roleClass.numberToSpawn(worldManager, this.utilCreep)) {
                 return role;
             }
         }
@@ -32,12 +33,12 @@ class UtilSpawn
         return undefined;
     }
 
-    spawnCreep(roomManager, utilCreep) {
-        if (roomManager === undefined) {
+    spawnCreep(worldManager, utilCreep) {
+        if (worldManager === undefined) {
             return;
         }
 
-        let roleToSpawn = this.getRoleToSpawn(roomManager, utilCreep);
+        let roleToSpawn = this.getRoleToSpawn(worldManager, utilCreep);
 
         if (roleToSpawn === undefined) {
             return;
@@ -45,8 +46,9 @@ class UtilSpawn
 
         let Role = require('Role');
         let roleClass = require(Role.getModuleByRole(roleToSpawn));
-        let spawn = roomManager.getFriendlySpawns()[0];
-        spawn.spawnCreep(roleClass.getBodyByEnergy(roomManager.energyAvailable), roleToSpawn + Game.time.toString());
+        console.log('UtilSpawn spawn name is ' + this.spawnName);
+        let spawn = Game.spawns[this.spawnName];
+        spawn.spawnCreep(roleClass.getBodyByEnergy(worldManager.getEnergyAvailable(spawn.pos.roomName)), roleToSpawn + Game.time.toString());
     }
 }
 

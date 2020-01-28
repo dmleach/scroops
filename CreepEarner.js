@@ -2,7 +2,7 @@ let creepAncestorClass = require('CreepAncestor');
 
 class creepEarner extends creepAncestorClass
 {
-    static canSpawn(roomManager, utilCreep) {
+    static canSpawn(roomName, worldManager, utilCreep) {
         let Role = require('Role');
         let distributorIds = utilCreep.getCreepIdsByRole(Role.DISTRIBUTOR);
         let distributor;
@@ -10,7 +10,7 @@ class creepEarner extends creepAncestorClass
         for (let idxDistributorId = 0; idxDistributorId < distributorIds.length; idxDistributorId++) {
             distributor = utilCreep.getCreep(distributorIds[idxDistributorId]);
 
-            if (distributor.energyAvailable > 0) {
+            if (distributor.energy > 0) {
                 return false;
             }
         }

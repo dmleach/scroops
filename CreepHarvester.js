@@ -15,14 +15,12 @@ class CreepHarvester extends CreepEarnerClass
         return [WORK];
     }
 
-    getGiveEnergyTargetId(roomManager) {
-        let container;
+    getGiveEnergyTargetId(worldManager) {
+        let containers = worldManager.getContainers(this.roomName);
 
-        for (let idxContainer = 0; idxContainer < roomManager.getContainers().length; idxContainer++) {
-            container = roomManager.getContainers()[idxContainer];
-
-            if (container.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.pos.getRangeTo(container) <= 1) {
-                return roomManager.getContainers()[idxContainer].id;
+        for (let idxContainer = 0; idxContainer < containers.length; idxContainer++) {
+            if (containers[idxContainer].store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.pos.getRangeTo(containers[idxContainer]) <= 1) {
+                return containers[idxContainer].id;
             }
         }
 
@@ -34,19 +32,23 @@ class CreepHarvester extends CreepEarnerClass
             return this.id;
         }
 
-        for (let idxSpawn = 0; idxSpawn < roomManager.getFriendlySpawns().length; idxSpawn++) {
-            if (roomManager.getFriendlySpawns()[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                return roomManager.getFriendlySpawns()[idxSpawn].id;
+        let spawns = worldManager.getFriendlySpawns(this.roomName);
+
+        for (let idxSpawn = 0; idxSpawn < spawns.length; idxSpawn++) {
+            if (spawns[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                return spawns[idxSpawn].id;
             }
         }
 
         return undefined;
     }
 
-    getTakeEnergyTargetId(roomManager) {
-        for (let idxSource = 0; idxSource < roomManager.getSources().length; idxSource++) {
-            if (roomManager.getSources()[idxSource].energy > 0) {
-                return roomManager.getSources()[idxSource].id;
+    getTakeEnergyTargetId(worldManager) {
+        let sources = worldManager.getSources(this.roomName);
+
+        for (let idxSource = 0; idxSource < sources.length; idxSource++) {
+            if (sources[idxSource].energy > 0) {
+                return sources[idxSource].id;
             }
         }
     }
@@ -63,6 +65,10 @@ class CreepHarvester extends CreepEarnerClass
 
     giveEnergyToCreep(creep) {
         this.gameObject.drop(RESOURCE_ENERGY);
+    }
+
+    get isShowingDebugMessages() {
+        return false;
     }
 
     get mode() {

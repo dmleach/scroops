@@ -10,56 +10,68 @@ class CreepImporter extends CreepHarvesterClass
         return [WORK, MOVE, CARRY, MOVE];
     }
 
-    getGiveEnergyTargetId(roomManager) {
-        // if (this.mode === this.MODE_TAKE_ENERGY) {
-        //     return undefined;
-        // }
+    getGiveEnergyTargetId(worldManager) {
+        for (let visibleRoomName in Game.rooms) {
+            this.debug('Looking for object to give energy to in room ' + visibleRoomName);
 
-        let containers = roomManager.getContainers();
+            if (Game.rooms[visibleRoomName].controller.my === false) {
+                this.debug('My player does not control ' + visibleRoomName + ', so dismissing this room');
+                continue;
+            }
 
-        if (containers !== undefined && containers.length > 0) {
-            return containers[0].id;
-        }
+            let containers = worldManager.getContainers(visibleRoomName);
 
-        let spawns = roomManager.getFriendlySpawns();
+            for (let idxContainer = 0; idxContainer < containers.length; idxContainer++) {
+                this.debug('Examining ' + containers[idxContainer]);
 
-        if (spawns !== undefined && spawns.length > 0) {
-            return spawns[0].id;
-        }
+                if (containers[idxContainer].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    return containers[idxContainer].id;
+                }
+            }
 
-        let extensions = roomManager.getExtensions();
+            let spawns = worldManager.getFriendlySpawns(visibleRoomName);
 
-        if (extensions !== undefined && extensions.length > 0) {
-            return extensions[0].id;
-        }
+            for (let idxSpawn = 0; idxSpawn < spawns.length; idxSpawn++) {
+                this.debug('Examining ' + spawns[idxSpawn] + ', with free capacity ' + spawns[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY));
 
-        let towers = roomManager.getTowers();
+                if (spawns[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    return spawns[idxSpawn].id;
+                }
+            }
 
-        if (towers !== undefined && towers.length > 0) {
-            return towers[0].id;
+            let extensions = worldManager.getExtensions(visibleRoomName);
+
+            for (let idxExtension = 0; idxExtension < extensions.length; idxExtension++) {
+                if (extensions[idxExtension].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    return extensions[idxExtension].id;
+                }
+            }
+
+            let towers = worldManager.getTowers(visibleRoomName);
+
+            for (let idxTower = 0; idxTower < towers.length; idxTower++) {
+                if (towers[idxTower].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    return towers[idxTower].id;
+                }
+            }
         }
 
         return undefined;
     }
 
-    getTakeEnergyTargetId(roomManager) {
+    getTakeEnergyTargetId(worldManager) {
         if (this.mode === this.MODE_GIVE_ENERGY) {
             return undefined;
         }
 
         let roomSources;
-        let RoomManagerClass = require('RoomManager');
-        let roomManagerInstance;
 
         for (let visibleRoomName in Game.rooms) {
             if (Game.rooms[visibleRoomName].controller.my) {
                 continue;
             }
 
-            roomManagerInstance = new RoomManagerClass(visibleRoomName);
-            roomSources = roomManager.getSources();
-
-            roomSources = Game.rooms[visibleRoomName].find(FIND_SOURCES);
+            roomSources = worldManager.getSources(visibleRoomName);
 
             if (roomSources !== undefined && roomSources.length > 0) {
                 return roomSources[0].id;
@@ -70,10 +82,20 @@ class CreepImporter extends CreepHarvesterClass
     }
 
     get isShowingDebugMessages() {
-        return this.name === 'importer14915164';
+        return this.name === 'foo';
     }
 
-    static numberToSpawn(utilCreep) {
+    get mode() {
+        let mode = this.MODE_TAKE_ENERGY;
+
+        if (Game.rooms[this.roomName].controller.my && this.energy > 0) {
+            mode = this.MODE_GIVE_ENERGY;
+        }
+
+        return mode;
+    }
+
+    static numberToSpawn(worldManager, utilCreep) {
         let Role = require('Role');
         return utilCreep.countByRole(Role.SCOUT) * 2;
     }

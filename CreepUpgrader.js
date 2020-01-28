@@ -10,14 +10,14 @@ class CreepUpgrader extends CreepSpenderClass
         return [WORK, CARRY];
     }
 
-    getGiveEnergyTargetId(roomManager) {
-        let giveEnergyTargetId = super.getGiveEnergyTargetId(roomManager);
+    getGiveEnergyTargetId(worldManager) {
+        let giveEnergyTargetId = super.getGiveEnergyTargetId(worldManager);
 
         if (giveEnergyTargetId !== undefined) {
             return giveEnergyTargetId;
         }
 
-        return Game.rooms[roomManager.roomName].controller.id;
+        return Game.rooms[this.roomName].controller.id;
     }
 
     getInteractionRange(objectId) {

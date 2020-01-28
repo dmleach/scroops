@@ -1,7 +1,19 @@
-class UtilPosition
+let MemoryAccessorClass = require('MemoryAccessor')
+
+class UtilPosition extends MemoryAccessorClass
 {
-    static _getPositionsInRange(position, range) {
+    constructor() {
+        super();
+
+        this.obstacles = {};
+    }
+
+    _getPositionsInRange(position, range) {
         let positions = [];
+
+        if (position === undefined) {
+            return positions;
+        }
 
         for (let idxX = position.x - range; idxX <= position.x + range; idxX++) {
             if (idxX < 0 || idxX > 49) {
@@ -20,7 +32,7 @@ class UtilPosition
         return positions;
     }
 
-    static getClosestPositionInRange(startPosition, endPosition, range) {
+    getClosestPositionInRange(startPosition, endPosition, range, worldManager) {
         let positionsInRange = this._getPositionsInRange(endPosition, range);
         let closestPosition = undefined;
         let positionInRange;
@@ -32,7 +44,7 @@ class UtilPosition
                 return startPosition;
             }
 
-            if (this.isWalkable(positionInRange, [])) {
+            if (worldManager.isWalkable(positionInRange)) {
                 if (closestPosition === undefined) {
                     closestPosition = positionInRange;
                 } else if (this.getRange(startPosition, positionInRange) < this.getRange(startPosition, closestPosition)) {
@@ -44,7 +56,7 @@ class UtilPosition
         return closestPosition;
     }
 
-    static getClosestInteractionPosition(position, id) {
+    getClosestInteractionPosition(position, id) {
         if (position === undefined || id === undefined) {
             return undefined;
         }
@@ -62,7 +74,7 @@ class UtilPosition
         return this.getClosestPositionInRange(position, gameObject.pos, 1);
     }
 
-    static getClosestInteractionPositionByCreepAndObject(creepId, gameObjectId) {
+    getClosestInteractionPositionByCreepAndObject(creepId, gameObjectId) {
         if (creepId === undefined || gameObjectId === undefined) {
             return undefined;
         }
@@ -94,50 +106,110 @@ class UtilPosition
         return this.getClosestPositionInRange(creep.pos, gameObject.pos, creep.getInteractionRange(gameObject.id));
     }
 
-    static getCreepIdByPosition(position) {
-        let seenObjects = position.look();
+    getCreepIdByPosition(position) {
+        let creepId = undefined;
 
-        for (let idxObject = 0; idxObject < seenObjects.length; idxObject++) {
-            if (seenObjects[idxObject].type === 'creep') {
-                return seenObjects[idxObject].creep.id;
+        for (let creepName in Game.creeps) {
+            if (Game.creeps[creepName].pos.isEqualTo(position)) {
+                creepId = Game.creeps[creepName].id;
             }
         }
 
-        return undefined;
+        return creepId;
+
+        // this.warn('Call to look in getCreepIdByPosition has high CPU cost');
+        // let seenObjects = position.look();
+        //
+        // for (let idxObject = 0; idxObject < seenObjects.length; idxObject++) {
+        //     if (seenObjects[idxObject].type === 'creep') {
+        //         return seenObjects[idxObject].creep.id;
+        //     }
+        // }
+        //
+        // return undefined;
     }
 
-    static isWalkable(position, unwalkableTypes = ['Creep'], walkableStructures = ['road']) {
-        let room = Game.rooms[position.roomName];
+    _getObstacles(roomName) {
+        if (this.obstacles.hasOwnProperty(roomName) === false) {
+            this.obstacles[roomName] = [];
 
-        if (room.getTerrain().get(position.x, position.y) === TERRAIN_MASK_WALL) {
-            return false;
+            let RoomManagerClass = require('RoomManager');
+            let roomManager = new RoomManagerClass(roomName);
+            this.debug('Getting structures from room manager');
+            let roomStructures = roomManager.getStructures();
+
+            for (let idxStructure = 0; idxStructure < roomStructures.length; idxStructure++) {
+                this.debug('Examining ' + roomStructures[idxStructure] + ' to see if it is walkable');
+
+                if (this.walkableStructureTypes.indexOf(roomStructures[idxStructure].structureType) === -1) {
+                    this.debug(roomStructures[idxStructure] + ' is not walkable');
+                    this.obstacles[roomName].push(roomStructures[idxStructure]);
+                }
+            }
         }
 
-        let seenObjects = position.look();
-        // let unwalkableTypes = ['creep'];
-        // let walkableStructures = ['road'];
+        return this.obstacles[roomName];
+    }
 
-        for (let idxObject = 0; idxObject < seenObjects.length; idxObject++) {
-            if (seenObjects[idxObject].type === 'structure') {
-                if (walkableStructures.indexOf(seenObjects[idxObject].structure.structureType) === -1) {
-                    return false;
-                }
-            } else {
-                if (unwalkableTypes.indexOf(seenObjects[idxObject].type) !== -1) {
-                    return false;
-                }
+    get isShowingDebugMessages() {
+        return false;
+    }
+
+    isWalkable(position) {
+        let obstacles = this._getObstacles(position.roomName);
+
+        for (let idxObstacle = 0; idxObstacle < obstacles.length; idxObstacle++) {
+            if (obstacles[idxObstacle].pos.isEqualTo(position)) {
+                return false;
             }
         }
 
         return true;
+
+        // let room = Game.rooms[position.roomName];
+        //
+        // if (room.getTerrain().get(position.x, position.y) === TERRAIN_MASK_WALL) {
+        //     return false;
+        // }
+        //
+        // this.warn('Call to look in isWalkable has high CPU cost');
+        // let seenObjects = position.look();
+        // // let unwalkableTypes = ['creep'];
+        // // let walkableStructures = ['road'];
+        //
+        // for (let idxObject = 0; idxObject < seenObjects.length; idxObject++) {
+        //     if (seenObjects[idxObject].type === 'structure') {
+        //         if (walkableStructures.indexOf(seenObjects[idxObject].structure.structureType) === -1) {
+        //             return false;
+        //         }
+        //     } else {
+        //         if (unwalkableTypes.indexOf(seenObjects[idxObject].type) !== -1) {
+        //             return false;
+        //         }
+        //     }
+        // }
+        //
+        // return true;
     }
 
-    static getRange(startPosition, endPosition) {
+    getRange(startPosition, endPosition) {
         if (startPosition.roomName === endPosition.roomName) {
             return startPosition.getRangeTo(endPosition);
         } else {
             return 100;
         }
+    }
+
+    get memoryKey() {
+        return this.name;
+    }
+
+    get name() {
+        return 'UtilPosition';
+    }
+
+    get walkableStructureTypes() {
+        return ['road'];
     }
 }
 

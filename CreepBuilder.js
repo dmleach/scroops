@@ -10,7 +10,7 @@ class CreepBuilder extends CreepSpenderClass
         return [WORK, MOVE, CARRY, MOVE];
     }
 
-    getGiveEnergyTargetId(roomManager) {
+    getGiveEnergyTargetId(worldManager) {
         this.debug('Finding what I should give energy to');
         // let giveEnergyTargetId = super.getGiveEnergyTargetId(roomManager);
         //
@@ -25,7 +25,7 @@ class CreepBuilder extends CreepSpenderClass
 
         let GameObjectClass = require('GameObject');
 
-        let constructionSites = roomManager.getConstructionSites();
+        let constructionSites = worldManager.getConstructionSites(this.roomName);
 
         for (let idxSite = 0; idxSite < constructionSites.length; idxSite++) {
             if (constructionSites[idxSite].progress < constructionSites[idxSite].progressTotal) {
@@ -37,12 +37,13 @@ class CreepBuilder extends CreepSpenderClass
 
         let lowestHitsId = undefined;
         let lowestHits = 10000000;
+        let structures = worldManager.getStructures(this.roomName);
 
-        for (let idxStructure = 0; idxStructure < roomManager.getStructures().length; idxStructure++) {
-            if (roomManager.getStructures()[idxStructure].hits < roomManager.getStructures()[idxStructure].hitsMax) {
-                if (roomManager.getStructures()[idxStructure].hits < lowestHits) {
-                    lowestHitsId = roomManager.getStructures()[idxStructure].id;
-                    lowestHits = roomManager.getStructures()[idxStructure].hits;
+        for (let idxStructure = 0; idxStructure < structures.length; idxStructure++) {
+            if (structures[idxStructure].hits < structures[idxStructure].hitsMax) {
+                if (structures[idxStructure].hits < lowestHits) {
+                    lowestHitsId = structures[idxStructure].id;
+                    lowestHits = structures[idxStructure].hits;
                 }
             }
         }
@@ -54,7 +55,7 @@ class CreepBuilder extends CreepSpenderClass
         let Role = require('Role');
         let CreepUpgraderClass = Role.getCreepClassByRole(Role.UPGRADER);
         let creepUpgrader = new CreepUpgraderClass(this.id);
-        return creepUpgrader.getGiveEnergyTargetId(roomManager);
+        return creepUpgrader.getGiveEnergyTargetId(worldManager);
     }
 
     getInteractionRange(objectId) {

@@ -10,7 +10,7 @@ class CreepDistributor extends CreepSpenderClass
         return [CARRY, MOVE];
     }
 
-    static canSpawn(roomManager, utilCreep) {
+    static canSpawn(roomName, worldManager, utilCreep) {
         let Role = require('Role');
         let distributorIds = utilCreep.getCreepIdsByRole(Role.DISTRIBUTOR);
         let distributor;
@@ -18,7 +18,7 @@ class CreepDistributor extends CreepSpenderClass
         for (let idxDistributorId = 0; idxDistributorId < distributorIds.length; idxDistributorId++) {
             distributor = utilCreep.getCreep(distributorIds[idxDistributorId]);
 
-            if (distributor.energyAvailable > 0) {
+            if (distributor.energy > 0) {
                 return false;
             }
         }
@@ -26,16 +26,18 @@ class CreepDistributor extends CreepSpenderClass
         return true;
     }
 
-    getGiveEnergyTargetId(roomManager) {
+    getGiveEnergyTargetId(worldManager) {
         // Distributors should first fill the room's spawn and extensions
-        if (roomManager.isFullEnergy === false) {
-            for (let idxSpawn = 0; idxSpawn < roomManager.getFriendlySpawns().length; idxSpawn++) {
-                if (roomManager.getFriendlySpawns()[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                    return roomManager.getFriendlySpawns()[idxSpawn].id;
+        if (worldManager.isFullEnergy(this.roomName) === false) {
+            let spawns = worldManager.getFriendlySpawns(this.roomName);
+
+            for (let idxSpawn = 0; idxSpawn <spawns.length; idxSpawn++) {
+                if (spawns[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    return spawns[idxSpawn].id;
                 }
             }
 
-            let extensions = roomManager.getExtensionsByPosition(this.pos);
+            let extensions = worldManager.getExtensionsByPosition(this.pos);
 
             for (let idxExtension = 0; idxExtension < extensions.length; idxExtension++) {
                 if ( ('store' in extensions[idxExtension]) === false) {
@@ -53,10 +55,12 @@ class CreepDistributor extends CreepSpenderClass
         let emptiestContainerEnergy = 10000000;
         let container;
         let containerEnergy;
-        let harvestContainers = roomManager.getHarvestContainers();
 
-        for (let idxContainer = 0; idxContainer < roomManager.getContainers().length; idxContainer++) {
-            container = roomManager.getContainers()[idxContainer];
+        let containers = worldManager.getContainers(this.roomName);
+        let harvestContainers = worldManager.getHarvestContainers(this.roomName);
+
+        for (let idxContainer = 0; idxContainer < containers.length; idxContainer++) {
+            container = containers[idxContainer];
 
             if (harvestContainers.indexOf(container) !== -1) {
                 continue;
@@ -70,13 +74,15 @@ class CreepDistributor extends CreepSpenderClass
             }
         }
 
-        for (let idxTower = 0; idxTower < roomManager.getTowers().length; idxTower++) {
-            this.debug('Considering tower ' + roomManager.getTowers()[idxTower]);
-            containerEnergy = roomManager.getTowers()[idxTower].store.getUsedCapacity(RESOURCE_ENERGY);
+        let towers = worldManager.getTowers(this.roomName);
+
+        for (let idxTower = 0; idxTower < towers.length; idxTower++) {
+            this.debug('Considering tower ' + towers[idxTower]);
+            containerEnergy = towers[idxTower].store.getUsedCapacity(RESOURCE_ENERGY);
             this.debug('Tower energy is ' + containerEnergy);
 
             if (emptiestContainerId === undefined || emptiestContainerEnergy > containerEnergy) {
-                emptiestContainerId = roomManager.getTowers()[idxTower].id;
+                emptiestContainerId = towers[idxTower].id;
                 emptiestContainerEnergy = containerEnergy;
                 this.debug('Emptiest container id is now ' + emptiestContainerId);
             }
@@ -89,9 +95,9 @@ class CreepDistributor extends CreepSpenderClass
         return 90;
     }
 
-    getTakeEnergyTargetId(roomManager) {
+    getTakeEnergyTargetId(worldManager) {
         // Distributors should first pull from harvest containers
-        let harvestContainers = roomManager.getHarvestContainers();
+        let harvestContainers = worldManager.getHarvestContainers(this.roomName);
         let container;
 
         for (let idxContainer = 0; idxContainer < harvestContainers.length; idxContainer++) {
@@ -106,19 +112,36 @@ class CreepDistributor extends CreepSpenderClass
         let fullestContainerId = undefined;
         let fullestContainerEnergy = 0;
         let containerEnergy;
+        let containers = worldManager.getContainers(this.roomName);
 
-        for (let idxContainer = 0; idxContainer < roomManager.getContainers().length; idxContainer++) {
-            containerEnergy = roomManager.getContainers()[idxContainer].store.getUsedCapacity(RESOURCE_ENERGY);
+        for (let idxContainer = 0; idxContainer < containers.length; idxContainer++) {
+            containerEnergy = containers[idxContainer].store.getUsedCapacity(RESOURCE_ENERGY);
 
             if (containerEnergy > 0) {
                 if (fullestContainerId === undefined || fullestContainerEnergy < containerEnergy) {
-                    fullestContainerId = roomManager.getContainers()[idxContainer].id;
+                    fullestContainerId = containers[idxContainer].id;
                     fullestContainerEnergy = containerEnergy;
                 }
             }
         }
 
-        return fullestContainerId;
+        if (fullestContainerId !== undefined) {
+            return fullestContainerId;
+        }
+
+        let resources = worldManager.getDroppedResources(this.roomName);
+
+        if (resources !== undefined && resources[0] !== undefined) {
+            return resources[0].id;
+        }
+
+        let tombstones = worldManager.getTombstones(this.roomName);
+
+        for (let idxTombstone = 0; idxTombstone < tombstones.length; idxTombstone++) {
+            if (tombstones[idxTombstone].store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                return tombstones[idxTombstone].id;
+            }
+        }
     }
 
     get isShowingDebugMessages() {
