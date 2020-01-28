@@ -17,12 +17,20 @@ class CreepAncestor extends GameObjectClass
         return undefined;
     }
 
-    static canSpawn(roomManager, utilCreep) {
+    static canSpawn(roomName, worldManager, utilCreep) {
         return false;
     }
 
     get canTakeEnergyWhenRoomNotFull() {
         return false;
+    }
+
+    get energy() {
+        if (this.gameObject.store === undefined) {
+            return 0;
+        }
+
+        return this.gameObject.store[RESOURCE_ENERGY];
     }
 
     static getBodyByEnergy(energy) {
@@ -47,7 +55,7 @@ class CreepAncestor extends GameObjectClass
         return body;
     }
 
-    getClosestInteractionPositionById(objectId) {
+    getClosestInteractionPositionById(objectId, worldManager) {
         if (objectId === undefined || objectId === null) {
             this.error(ERR_INVALID_ARGS, 'Object id given to getClosestInteractionPositionById is undefined');
             return undefined;
@@ -58,10 +66,11 @@ class CreepAncestor extends GameObjectClass
         this.debug('Getting closest interaction position for ' + interactionObject.name);
 
         let UtilPositionClass = require('UtilPosition');
-        return UtilPositionClass.getClosestPositionInRange(this.pos, interactionObject.pos, this.getInteractionRange(objectId));
+        let utilPosition = new UtilPositionClass();
+        return utilPosition.getClosestPositionInRange(this.pos, interactionObject.pos, this.getInteractionRange(objectId), worldManager);
     }
 
-    getGiveEnergyTargetId(roomManager) {
+    getGiveEnergyTargetId(worldManager) {
         return undefined;
     }
 
@@ -69,7 +78,7 @@ class CreepAncestor extends GameObjectClass
         return 1;
     }
 
-    getTakeEnergyTargetId(roomManager) {
+    getTakeEnergyTargetId(worldManager) {
         return undefined;
     }
 
@@ -122,7 +131,7 @@ class CreepAncestor extends GameObjectClass
         return this.gameObject.transfer(structure, RESOURCE_ENERGY);
     }
 
-    giveEnergyWithUndefinedTarget(roomManager) {
+    giveEnergyWithUndefinedTarget(worldManager) {
         // let UtilError = require('UtilError');
         //
         // if (this.getGiveEnergyTargetId === undefined) {
@@ -138,7 +147,7 @@ class CreepAncestor extends GameObjectClass
         return undefined;
     }
 
-    move(direction) {
+    move(direction, worldManager) {
         if (this.tired) {
             this.debug('Too tired to move');
             return false;
@@ -173,6 +182,7 @@ class CreepAncestor extends GameObjectClass
 
         let destination;
         let UtilPositionClass = require('UtilPosition');
+        let utilPosition = new UtilPositionClass();
         let creepInTheWay;
         let creepInTheWayId;
         let creepInTheWayClass;
@@ -211,7 +221,7 @@ class CreepAncestor extends GameObjectClass
                 continue;
             }
 
-            creepInTheWayId = UtilPositionClass.getCreepIdByPosition(destination);
+            creepInTheWayId = utilPosition.getCreepIdByPosition(destination);
 
             if (creepInTheWayId !== undefined) {
                 let GameObjectClass = require('GameObject');
@@ -221,7 +231,7 @@ class CreepAncestor extends GameObjectClass
                 continue;
             }
 
-            if (UtilPositionClass.isWalkable(destination) === false) {
+            if (worldManager.isWalkable(destination) === false) {
                 this.debug(destination + ' is not currently walkable');
                 continue;
             }
@@ -245,18 +255,18 @@ class CreepAncestor extends GameObjectClass
             this.debug('Moving ' + creepInTheWay.name + ' out of the way');
 
             if (this.movePriority > creepInTheWay.movePriority) {
-                creepInTheWay.moveAway();
+                creepInTheWay.moveAway(worldManager);
             }
         }
 
         return ERR_NO_PATH;
     }
 
-    moveAway() {
+    moveAway(worldManager) {
         let moveOptions = [TOP, RIGHT, BOTTOM, LEFT];
 
         for (let moveOption of moveOptions) {
-            if (this.move(moveOption) === OK) {
+            if (this.move(moveOption, worldManager) === OK) {
                 return;
             }
         }
@@ -264,22 +274,22 @@ class CreepAncestor extends GameObjectClass
 
     _moveOffExit() {
         if (this.pos.x === 0) {
-            this.move(RIGHT);
+            this.gameObject.move(RIGHT);
             return;
         }
 
         if (this.pos.x === 49) {
-            this.move(LEFT);
+            this.gameObject.move(LEFT);
             return;
         }
 
         if (this.pos.y === 0) {
-            this.move(BOTTOM);
+            this.gameObject.move(BOTTOM);
             return;
         }
 
         if (this.pos.y === 49) {
-            this.move(TOP);
+            this.gameObject.move(TOP);
         }
     }
 
@@ -287,7 +297,7 @@ class CreepAncestor extends GameObjectClass
         return 0;
     }
 
-    static numberToSpawn(utilCreep) {
+    static numberToSpawn(worldManager, utilCreep) {
         return 1;
     }
 
@@ -351,7 +361,7 @@ class CreepAncestor extends GameObjectClass
         return this.gameObject.fatigue > 0;
     }
 
-    work(roomManager, utilPath) {
+    work(worldManager, utilPath) {
         this.debug('Beginning work');
 
         if (this.spawning) {
@@ -364,18 +374,18 @@ class CreepAncestor extends GameObjectClass
 
         if (this.mode === this.MODE_TAKE_ENERGY && (this.takeEnergyTargetId === undefined || this.takeEnergyPos === undefined) ) {
             this.debug('In take mode, but either the target id or position is undefined');
-            return this.takeEnergyWithUndefinedTarget();
+            return this.takeEnergyWithUndefinedTarget(worldManager);
         }
 
         if (this.mode === this.MODE_GIVE_ENERGY && (this.giveEnergyTargetId === undefined || this.giveEnergyPos === undefined) ) {
-            return this.giveEnergyWithUndefinedTarget(roomManager);
+            return this.giveEnergyWithUndefinedTarget(worldManager);
         }
 
         if (this.mode === this.MODE_TAKE_ENERGY && this.pos.isEqualTo(this.takeEnergyPos) === false) {
             path = utilPath.getPath(this.pos, this.takeEnergyPos);
 
             if (path !== undefined && path.length > 0) {
-                return this.move(path[0].direction);
+                return this.move(path[0].direction, worldManager);
             } else {
                 return ERR_NO_PATH;
             }
@@ -389,7 +399,7 @@ class CreepAncestor extends GameObjectClass
             path = utilPath.getPath(this.pos, this.giveEnergyPos);
 
             if (path !== undefined && path.length > 0) {
-                return this.move(path[0].direction);
+                return this.move(path[0].direction, worldManager);
             } else {
                 return ERR_NO_PATH;
             }

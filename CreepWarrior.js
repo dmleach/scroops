@@ -14,32 +14,26 @@ class CreepWarrior extends CreepSpenderClass
         return true;
     }
 
-    getGiveEnergyTargetId(roomManager) {
-        let hostileCreeps = roomManager.getHostileCreeps();
+    getGiveEnergyTargetId(worldManager) {
+        let hostileCreeps = worldManager.getHostileCreeps(this.roomName);
 
         if (hostileCreeps !== undefined && hostileCreeps.length > 0) {
             return hostileCreeps[0].id;
         }
 
-        let GameObjectClass = require('GameObject');
+        let towers = worldManager.getTowers(this.roomName);
 
-        let towers = roomManager.getTowers();
-        let towerObject;
-
-        if (towers !== undefined) {
-            for (let idxTower = 0; idxTower < towers.length; idxTower++) {
-                towerObject = new GameObjectClass(towers[idxTower].id);
-
-                if (towerObject.full === false) {
-                    return towers[idxTower].id;
-                }
+        for (let idxTower = 0; idxTower < towers.length; idxTower++) {
+            if (towers[idxTower].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                return towers[idxTower].id;
             }
         }
 
         return undefined;
     }
 
-    getTakeEnergyTargetId(roomManager) {
+    getTakeEnergyTargetId(worldManager) {
+        let roomManager = worldManager.getRoomManager(this.roomName);
         let hostileCreeps = roomManager.getHostileCreeps();
 
         if (hostileCreeps !== undefined && hostileCreeps.length > 0) {
@@ -50,7 +44,7 @@ class CreepWarrior extends CreepSpenderClass
             }
         }
 
-        return super.getTakeEnergyTargetId(roomManager);
+        return super.getTakeEnergyTargetId(worldManager);
     }
 
     getInteractionRange(objectId) {

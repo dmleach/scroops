@@ -28,7 +28,8 @@ class UtilPath extends MemoryAccessorClass
             return this._getPathFromPathString(pathString);
         }
 
-        this.warn('Could not find path between ' + startPosition + ' and ' + endPosition + ' in cache');
+        this.debug('Could not find path between ' + startPosition + ' and ' + endPosition + ' in cache');
+        this.warn('Call to findPathTo has high CPU cost');
         let path = startPosition.findPathTo(endPosition, { ignoreCreeps: true });
         this._cachePath(startPosition, endPosition, path);
         // let pathfindingResult = PathFinder.search(startPosition, endPosition);

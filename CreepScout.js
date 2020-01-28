@@ -6,11 +6,11 @@ class CreepScout extends CreepAncestorClass
         return [MOVE];
     }
 
-    static canSpawn(roomManager, utilCreep) {
+    static canSpawn(roomName, worldManager, utilCreep) {
         return true;
     }
 
-    getTakeEnergyTargetId(roomManager) {
+    getTakeEnergyTargetId(worldManager) {
         return undefined;
     }
 
@@ -22,9 +22,8 @@ class CreepScout extends CreepAncestorClass
         return this.MODE_TAKE_ENERGY;
     }
 
-    static numberToSpawn(utilCreep) {
-        let WorldManagerClass = require('WorldManager');
-        let neighboringRoomNames = WorldManagerClass.getNeighboringRoomNames();
+    static numberToSpawn(worldManager, utilCreep) {
+        let neighboringRoomNames = worldManager.getNeighboringRoomNames();
 
         if (neighboringRoomNames === undefined) {
             return 1;
@@ -33,9 +32,10 @@ class CreepScout extends CreepAncestorClass
         return neighboringRoomNames.length;
     }
 
-    takeEnergyWithUndefinedTarget() {
-        let WorldManagerClass = require('WorldManager');
-        let neighboringRoomNames = WorldManagerClass.getNeighboringRoomNames();
+    takeEnergyWithUndefinedTarget(worldManager) {
+        // let WorldManagerClass = require('WorldManager');
+        // let neighboringRoomNames = WorldManagerClass.getNeighboringRoomNames();
+        let neighboringRoomNames = worldManager.getNeighboringRoomNames();
         let destinationRoomName = undefined;
 
         for (let idxNeighboringRoomName = 0; idxNeighboringRoomName < neighboringRoomNames.length; idxNeighboringRoomName++) {
@@ -49,7 +49,7 @@ class CreepScout extends CreepAncestorClass
             return;
         }
 
-        let worldManager = new WorldManagerClass();
+        // let worldManager = new WorldManagerClass();
         let direction = worldManager.findExit(this.pos.roomName, destinationRoomName);
 
         let terrain = new Room.Terrain(this.pos.roomName);
@@ -99,7 +99,7 @@ class CreepScout extends CreepAncestorClass
         }
 
         this.debug('The first step in the path is ' + shortestPath[0]);
-        this.move(shortestPath[0].direction);
+        this.move(shortestPath[0].direction, worldManager);
     }
 }
 

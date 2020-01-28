@@ -21,6 +21,8 @@ TO-DO
 * Creeps that cannot take energy because the spawns and extensions are not full should move to where they'll take energy from when they can
 * Don't spawn a scout for a neighboring room that can't be reached
 * Use PathFinder to find paths
+* Teach importers to drop energy into links
+* Teach distributors to get energy from links
 
 DONE
 1. Harvest energy and deposit it into the spawn
@@ -81,3 +83,4 @@ DONE
 1. Make one code improvement: Create a memory accessor ancestor object
 1. Reduce costly calls to findExit
 1. Make one code improvement: Abstract debug/error/warn to its own ancestor class so non-game objects can use them
+1. Reduce costly calls to find

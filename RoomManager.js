@@ -6,7 +6,6 @@ class RoomManager extends MemoryAccessorClass
         super();
 
         this.roomName = roomName;
-        this.room = Game.rooms[roomName];
         this.findResults = {};
     }
 
@@ -16,6 +15,20 @@ class RoomManager extends MemoryAccessorClass
 
     get energyCapacityAvailable() {
         return this.room.energyCapacityAvailable;
+    }
+
+    _getCacheExpiration(findType) {
+        if (findType === FIND_DROPPED_RESOURCES) {
+            return 3;
+        } else if (findType === FIND_MY_SPAWNS) {
+            return 10000;
+        } else if (findType === FIND_SOURCES) {
+            return 100000;
+        } else if (findType === FIND_STRUCTURES) {
+            return 50;
+        }
+
+        return 10;
     }
 
     _getCacheKey(findType) {
@@ -85,23 +98,45 @@ class RoomManager extends MemoryAccessorClass
     }
 
     _getFindResults(findType) {
-        if (this._getIsCached(findType)) {
-            let cacheKey = this._getCacheKey(findType);
-            let cachedResults = this.getFromMemory(cacheKey);
+        let cacheKey = this._getCacheKey(findType);
+        let cachedSearch = this.getFromMemory(cacheKey);
 
-            if (cachedResults !== undefined) {
-                return this._getFindResultsFromFindString(cachedResults);
+        if (cachedSearch !== undefined) {
+            if (cachedSearch.time !== undefined) {
+                let elapsedTime = Game.time - cachedSearch.time;
+
+                if (findType === FIND_DROPPED_RESOURCES) {
+                    this.debug('Cached search time is ' + cachedSearch.time);
+                    this.debug('Elapsed time for find type ' + findType + ' is ' + elapsedTime);
+                    this.debug('Cache expiration is ' + this._getCacheExpiration(findType));
+                }
+
+                if (elapsedTime < this._getCacheExpiration(findType)) {
+                    let findResults = this._getFindResultsFromFindString(cachedSearch.results);
+
+                    if (findType === FIND_DROPPED_RESOURCES) {
+                        this.debug('Returning cached result for ' + findType + ' in ' + this.roomName + ': ' + findResults)
+                    }
+
+                    return findResults;
+                }
             }
         }
 
         if (this.findResults.hasOwnProperty(findType) === false) {
-            this.warn('Call to find ' + this.findName(findType) + ' has high CPU cost');
-            let findResults = this.room.find(findType);
-            this.findResults[findType] = findResults;
+            this.warn('Call to find ' + this.findName(findType) + ' in room ' + this.roomName + ' has high CPU cost');
+            let room = Game.rooms[this.roomName];
 
-            if (this._getIsCached(findType)) {
-                this.putIntoMemory(this._getCacheKey(findType), this._getFindStringFromFindResults(findResults))
+            if (room === undefined) {
+                this.error('Cannot see room ' + this.roomName);
+                return [];
             }
+
+            let findResults = room.find(findType);
+            this.findResults[findType] = findResults;
+            this.putIntoMemory(this._getCacheKey(findType), { time: Game.time, results: this._getFindStringFromFindResults(findResults) });
+        } else {
+            this.debug('Retrieving ' + this.findName(findType) + ' in room ' + this.roomName + ' from memory');
         }
 
         // console.log('Find ' + this.findName(findType) + ' returning ' + this.findResults[findType]);
@@ -109,11 +144,21 @@ class RoomManager extends MemoryAccessorClass
     }
 
     _getFindResultsFromFindString(findString) {
-        let findStringIds = findString.toString().split(',');
         let findResult = [];
 
+        if (findString === undefined || findString === '') {
+            return findResult;
+        }
+
+        let findStringIds = findString.toString().split(',');
+        let gameObject;
+
         findStringIds.forEach(function(findStringId) {
-            findResult.push(Game.getObjectById(findStringId));
+            gameObject = Game.getObjectById(findStringId);
+
+            if (gameObject !== null) {
+                findResult.push(gameObject);
+            }
         });
 
         return findResult;
@@ -121,7 +166,7 @@ class RoomManager extends MemoryAccessorClass
 
     _getFindStringFromFindResults(findResults) {
         if (findResults instanceof Array === false) {
-            return undefined;
+            return '';
         }
 
         let findResultIds = [];
@@ -159,6 +204,19 @@ class RoomManager extends MemoryAccessorClass
         let cachedFindTypes = [FIND_SOURCES];
         // let cachedFindTypes = [];
         return cachedFindTypes.indexOf(findType) !== -1;
+    }
+
+    getObstacles(position) {
+        let obstacles = [];
+        let structures = this.getStructures();
+
+        for (let idxStructure = 0; idxStructure < structures.length; idxStructure++) {
+            if (structures[idxStructure].structureType !== STRUCTURE_ROAD && structures[idxStructure].pos.isEqualTo(position)) {
+                obstacles.push(structures[idxStructure]);
+            }
+        }
+
+        return obstacles;
     }
 
     getRangeToNearest(position, findType) {
@@ -214,7 +272,7 @@ class RoomManager extends MemoryAccessorClass
     }
 
     get isShowingDebugMessages() {
-        return true;
+        return false;
     }
 
     get memoryKey() {
@@ -223,6 +281,10 @@ class RoomManager extends MemoryAccessorClass
 
     get name() {
         return 'RoomManager';
+    }
+
+    get room() {
+        return Game.rooms[this.roomName];
     }
 }
 

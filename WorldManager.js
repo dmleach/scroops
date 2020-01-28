@@ -2,6 +2,12 @@ let MemoryAccessorClass = require('MemoryAccessor');
 
 class WorldManager extends MemoryAccessorClass
 {
+    constructor() {
+        super();
+
+        this.roomManagers = {};
+    }
+
     findExit(startRoomName, endRoomName) {
         let exitKey = startRoomName + endRoomName;
         let cachedExit = this.getFromMemory(exitKey);
@@ -16,7 +22,52 @@ class WorldManager extends MemoryAccessorClass
         return direction;
     }
 
-    static getNeighboringRoomNames() {
+    getConstructionSites(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getConstructionSites();
+    }
+
+    getContainers(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getContainers();
+    }
+
+    getDroppedResources(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getDroppedResources();
+    }
+
+    getEnergyAvailable(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.energyAvailable;
+    }
+
+    getExtensions(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getExtensions(roomName);
+    }
+
+    getExtensionsByPosition(position) {
+        let roomManager = this.getRoomManager(position.roomName);
+        return roomManager.getExtensionsByPosition(position);
+    }
+
+    getFriendlySpawns(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getFriendlySpawns();
+    }
+
+    getHarvestContainers(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getHarvestContainers();
+    }
+
+    getHostileCreeps(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getHostileCreeps();
+    }
+
+    getNeighboringRoomNames() {
         let controlledRoomNames = [];
 
         for (let visibleRoomName in Game.rooms) {
@@ -39,6 +90,72 @@ class WorldManager extends MemoryAccessorClass
         });
 
         return neighboringRoomNames;
+    }
+
+    getObstacles(position) {
+        let roomManager = this.getRoomManager(position.roomName);
+        let obstacles = roomManager.getObstacles(position);
+
+        for (let creepName in Game.creeps) {
+            if (Game.creeps[creepName].pos.isEqualTo(position)) {
+                obstacles.push(Game.creeps[creepName]);
+            }
+        }
+
+        this.debug('Obstacles at ' + position + ': ' + obstacles);
+        return obstacles;
+    }
+
+    getRoomManager(roomName) {
+        if (this.roomManagers.hasOwnProperty(roomName)) {
+            this.debug('Retrieving previously instantiated room manager for ' + roomName);
+            return this.roomManagers[roomName];
+        } else {
+            this.debug('Instantiating new room manager for ' + roomName);
+            let RoomManagerClass = require('RoomManager');
+            this.roomManagers[roomName] = new RoomManagerClass(roomName);
+            return this.roomManagers[roomName];
+        }
+    }
+
+    getSources(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getSources();
+    }
+
+    getStructures(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getStructures();
+    }
+
+    getTombstones(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getTombstones();
+    }
+
+    getTowers(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getTowers();
+    }
+
+    isFullEnergy(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.isFullEnergy;
+    }
+
+    isWalkable(position) {
+        let terrain = new Room.Terrain(position.roomName);
+
+        if (terrain.get(position.x, position.y) === TERRAIN_MASK_WALL) {
+            return false;
+        }
+
+        let obstacles = this.getObstacles(position);
+        return obstacles.length === 0;
+    }
+
+    get isShowingDebugMessages() {
+        return false;
     }
 
     get memoryKey() {

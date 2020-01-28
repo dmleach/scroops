@@ -10,7 +10,7 @@ class CreepScavenger extends CreepSpenderClass
         return [CARRY, MOVE];
     }
 
-    static canSpawn(roomManager, utilCreep) {
+    static canSpawn(roomName, worldManager, utilCreep) {
         let Role = require('Role');
         let distributorIds = utilCreep.getCreepIdsByRole(Role.DISTRIBUTOR);
         let distributor;
@@ -18,7 +18,7 @@ class CreepScavenger extends CreepSpenderClass
         for (let idxDistributorId = 0; idxDistributorId < distributorIds.length; idxDistributorId++) {
             distributor = utilCreep.getCreep(distributorIds[idxDistributorId]);
 
-            if (distributor.energyAvailable > 0) {
+            if (distributor.energy > 0) {
                 return false;
             }
         }
@@ -26,22 +26,22 @@ class CreepScavenger extends CreepSpenderClass
         return true;
     }
 
-    getGiveEnergyTargetId(roomManager) {
+    getGiveEnergyTargetId(worldManager) {
         let Role = require('Role');
         let CreepDistributorClass = Role.getCreepClassByRole(Role.DISTRIBUTOR);
         let creep = new CreepDistributorClass(this.id);
         creep.takeEnergyTargetId = this.takeEnergyTargetId;
-        return creep.getGiveEnergyTargetId(roomManager);
+        return creep.getGiveEnergyTargetId(worldManager);
     }
 
-    getTakeEnergyTargetId(roomManager) {
-        let resources = roomManager.getDroppedResources();
+    getTakeEnergyTargetId(worldManager) {
+        let resources = worldManager.getDroppedResources(this.roomName);
 
         if (resources !== undefined && resources.length > 0) {
             return resources[0].id;
         }
 
-        let tombstones = roomManager.getTombstones();
+        let tombstones = worldManager.getTombstones(this.roomName);
 
         for (let idxTombstone = 0; idxTombstone < tombstones.length; idxTombstone++) {
             if (tombstones[idxTombstone].store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
@@ -52,7 +52,7 @@ class CreepScavenger extends CreepSpenderClass
         let Role = require('Role');
         let CreepDistributorClass = Role.getCreepClassByRole(Role.DISTRIBUTOR);
         let creep = new CreepDistributorClass(this.id);
-        return creep.getTakeEnergyTargetId(roomManager);
+        return creep.getTakeEnergyTargetId(worldManager);
     }
 
     get isShowingDebugMessages() {
