@@ -88,6 +88,10 @@ class CreepImporter extends CreepHarvesterClass
     get mode() {
         let mode = this.MODE_TAKE_ENERGY;
 
+        if (this.full) {
+            mode = this.MODE_GIVE_ENERGY;
+        }
+
         if (Game.rooms[this.roomName].controller.my && this.energy > 0) {
             mode = this.MODE_GIVE_ENERGY;
         }
