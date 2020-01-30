@@ -21,6 +21,45 @@ class MemoryAccessor extends ScroopsObjectClass
         return (cachedValue === undefined) ? defaultValue : cachedValue;
     }
 
+    getFromMemoryUsingArray(keyArray) {
+        return this._getFromMemoryUsingArray(Memory, keyArray);
+    }
+
+    _getFromMemoryUsingArray(memoryObject, keyArray) {
+        this.debug('Getting from memory: ' + keyArray);
+
+        if (memoryObject === undefined) {
+            return undefined;
+        }
+
+        if (!(keyArray instanceof Array)) {
+            return undefined;
+        }
+
+        let firstKey = keyArray.shift();
+
+        if (firstKey === undefined) {
+            return undefined;
+        }
+
+        if (keyArray.length === 0) {
+            this.debug('Returning value ' + memoryObject[firstKey]);
+            return memoryObject[firstKey];
+        }
+
+        let memoryObjectProperty = memoryObject[firstKey];
+
+        if (memoryObjectProperty === undefined) {
+            return undefined;
+        }
+
+        this._getFromMemoryUsingArray(memoryObjectProperty, keyArray);
+    }
+
+    get isShowingDebugMessages() {
+        return false;
+    }
+
     get memoryKey() {
         return undefined;
     }
@@ -28,6 +67,42 @@ class MemoryAccessor extends ScroopsObjectClass
     putIntoMemory(key, value) {
         let memoryRoot = Memory[this.memoryKey];
         memoryRoot[key] = value;
+    }
+
+    putIntoMemoryUsingArray(keyArray, value) {
+        return this._putIntoMemoryUsingObjectAndArray(Memory, keyArray, value);
+    }
+
+    _putIntoMemoryUsingObjectAndArray(memoryObject, keyArray, value) {
+        this.debug('Putting into memory: ' + keyArray + ', value ' + value);
+
+        if (memoryObject === undefined) {
+            return undefined;
+        }
+
+        if (!(keyArray instanceof Array)) {
+            return undefined;
+        }
+
+        let firstKey = keyArray.shift();
+
+        if (firstKey === undefined) {
+            return undefined;
+        }
+
+        if (keyArray.length === 0) {
+            this.debug('Setting value of ' + firstKey + ' to ' + value);
+            memoryObject[firstKey] = value;
+            return;
+        }
+
+        let memoryObjectProperty = memoryObject[firstKey];
+
+        if (memoryObjectProperty === undefined) {
+            memoryObject[firstKey] = {};
+        }
+
+        this._putIntoMemoryUsingObjectAndArray(memoryObject[firstKey], keyArray, value);
     }
 }
 
