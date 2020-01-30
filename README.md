@@ -23,6 +23,11 @@ TO-DO
 * Use PathFinder to find paths
 * Teach importers to drop energy into links
 * Teach distributors to get energy from links
+* Add expirations to cached paths
+* Builders should clear the structure cache for a room when they complete a construction
+* Importers should deliver their energy when their source is depleted
+* Distributors are putting energy into containers and taking it right back out again
+* Teach creeps to remember the route to their target rather than looking it up from UtilPath again and again
 
 DONE
 1. Harvest energy and deposit it into the spawn
@@ -84,3 +89,4 @@ DONE
 1. Reduce costly calls to findExit
 1. Make one code improvement: Abstract debug/error/warn to its own ancestor class so non-game objects can use them
 1. Reduce costly calls to find
+1. Organize path cache better
