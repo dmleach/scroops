@@ -38,13 +38,24 @@ class CreepDistributor extends CreepSpenderClass
             }
 
             let extensions = worldManager.getExtensionsByPosition(this.pos);
+            let extensionStore;
 
             for (let idxExtension = 0; idxExtension < extensions.length; idxExtension++) {
-                if ( ('store' in extensions[idxExtension]) === false) {
+                if (extensions[idxExtension] === undefined) {
                     continue;
                 }
 
-                if (extensions[idxExtension].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                if ('store' in extensions[idxExtension] === false) {
+                    continue;
+                }
+
+                extensionStore = extensions[idxExtension].store;
+
+                if (extensionStore === undefined) {
+                    continue;
+                }
+
+                if (extensionStore.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                     return extensions[idxExtension].id;
                 }
             }
