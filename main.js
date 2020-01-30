@@ -53,18 +53,28 @@ for (let idxCreep = 0; idxCreep < utilCreep.creepIds.length; idxCreep++) {
 
     // roomManager = worldManager.getRoomManager(creep.pos.roomName);
 
-    creep.takeEnergyTargetId = creep.getTakeEnergyTargetId(worldManager);
+    // creep.takeEnergyTargetId = creep.getTakeEnergyTargetId(worldManager);
+    creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager));
 
-    if (creep.takeEnergyTargetId !== undefined) {
-        gameObject = new GameObjectClass(creep.takeEnergyTargetId);
-        creep.debug('Taking energy from ' + gameObject.name);
-        creep.takeEnergyPos = creep.getClosestInteractionPositionById(creep.takeEnergyTargetId, worldManager);
-        creep.debug('Take energy position is ' + creep.takeEnergyPos);
-    } else {
-        creep.debug('Object to take energy from is undefined');
-    }
+    // gameObject = new GameObjectClass(creep.takeEnergyTargetId);
+    // creep.debug('Taking energy from ' + gameObject.name);
 
-    creep.giveEnergyTargetId = creep.getGiveEnergyTargetId(worldManager);
+    creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
+
+    // creep.debug('Take energy position is ' + creep.takeEnergyPos);
+
+    // if (creep.takeEnergyTargetId !== undefined) {
+    //     gameObject = new GameObjectClass(creep.takeEnergyTargetId);
+    //     creep.debug('Taking energy from ' + gameObject.name);
+    //     creep.takeEnergyPos = creep.getClosestInteractionPositionById(creep.takeEnergyTargetId, worldManager);
+    //     creep.debug('Take energy position is ' + creep.takeEnergyPos);
+    // } else {
+    //     creep.debug('Object to take energy from is undefined');
+    // }
+
+    // creep.giveEnergyTargetId = creep.getGiveEnergyTargetId(worldManager);
+    creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager));
+
 
     if (creep.giveEnergyTargetId !== undefined) {
         gameObject = new GameObjectClass(creep.giveEnergyTargetId);
