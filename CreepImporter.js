@@ -64,6 +64,17 @@ class CreepImporter extends CreepHarvesterClass
             return undefined;
         }
 
+        let cachedId = this.readFromCache(this.KEY_TAKE_ENERGY_TARGET_ID);
+
+        if (cachedId !== undefined) {
+            let gameObject = Game.getObjectById(cachedId);
+
+            if (gameObject instanceof Source && Game.rooms[gameObject.pos.roomName].controller.my === false) {
+                this.debug('Returning take energy target id ' + cachedId + ' from cache');
+                return cachedId;
+            }
+        }
+
         let roomSources;
 
         for (let visibleRoomName in Game.rooms) {

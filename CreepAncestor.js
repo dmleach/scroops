@@ -7,6 +7,9 @@ class CreepAncestor extends GameObjectClass
 
         this.MODE_TAKE_ENERGY = 'takeEnergy';
         this.MODE_GIVE_ENERGY = 'giveEnergy';
+
+        this.KEY_TAKE_ENERGY_TARGET_ID = 'takeEnergyTargetId';
+        this.KEY_GIVE_ENERGY_TARGET_ID = 'giveEnergyTargetId';
     }
 
     static get basicBody() {
@@ -78,6 +81,14 @@ class CreepAncestor extends GameObjectClass
         return 1;
     }
 
+    getTakeEnergyPos(worldManager) {
+        if (this.takeEnergyTargetId === undefined) {
+            return undefined;
+        }
+
+        return this.getClosestInteractionPositionById(this.takeEnergyTargetId, worldManager);
+    }
+
     getTakeEnergyTargetId(worldManager) {
         return undefined;
     }
@@ -104,7 +115,9 @@ class CreepAncestor extends GameObjectClass
             giveResult = this.gameObject.transfer(giveEnergyTarget.gameObject, RESOURCE_ENERGY);
         }
 
-        if (giveResult !== OK) {
+        if (giveResult === OK) {
+            this.setGiveEnergyTargetId(undefined);
+        } else {
             this.error(giveResult, 'Could not give energy to ' + giveEnergyTarget.name);
         }
 
@@ -301,9 +314,42 @@ class CreepAncestor extends GameObjectClass
         return 1;
     }
 
+    readFromCache(key) {
+        let creepMemory = Memory.creeps[this.name];
+        return creepMemory[key];
+    }
+
     get role() {
         let Role = require('Role');
         return Role.getRoleByCreepId(this.id);
+    }
+
+    setGiveEnergyTargetId(id) {
+        this.debug('Setting give energy target id to ' + id);
+        this.giveEnergyTargetId = id;
+        this.writeToCache(this.KEY_GIVE_ENERGY_TARGET_ID, id);
+
+        if (id === undefined || this.isShowingDebugMessages === false) {
+            return;
+        }
+
+        let GameObjectClass = require('GameObject');
+        let gameObject = new GameObjectClass(id);
+        this.debug('Giving energy to ' + gameObject.name);
+    }
+
+    setTakeEnergyTargetId(id) {
+        this.debug('Setting take energy target id to ' + id);
+        this.takeEnergyTargetId = id;
+        this.writeToCache(this.KEY_TAKE_ENERGY_TARGET_ID, id);
+
+        if (id === undefined || this.isShowingDebugMessages === false) {
+            return;
+        }
+
+        let GameObjectClass = require('GameObject');
+        let gameObject = new GameObjectClass(id);
+        this.debug('Taking energy from ' + gameObject.name);
     }
 
     get spawning() {
@@ -330,6 +376,7 @@ class CreepAncestor extends GameObjectClass
             this.error(takeResult, 'Could not take energy from ' + takeEnergyTarget.name);
         }
 
+        this.setTakeEnergyTargetId(undefined);
         return takeResult;
     }
 
@@ -411,6 +458,11 @@ class CreepAncestor extends GameObjectClass
         }
 
         return undefined;
+    }
+
+    writeToCache(key, value) {
+        let creepMemory = Memory.creeps[this.name];
+        creepMemory[key] = value;
     }
 }
 

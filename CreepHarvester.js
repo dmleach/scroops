@@ -16,6 +16,18 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     getGiveEnergyTargetId(worldManager) {
+        let cachedId = this.readFromCache(this.KEY_GIVE_ENERGY_TARGET_ID);
+        let GameObjectClass = require('GameObject');
+
+        if (cachedId !== undefined) {
+            let gameObject = new GameObjectClass(cachedId);
+
+            if (gameObject.structureType === STRUCTURE_CONTAINER && gameObject.full === false) {
+                this.debug('Returning give energy target id ' + cachedId + ' from cache');
+                return cachedId;
+            }
+        }
+
         let containers = worldManager.getContainers(this.roomName);
 
         for (let idxContainer = 0; idxContainer < containers.length; idxContainer++) {
@@ -44,10 +56,22 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     getTakeEnergyTargetId(worldManager) {
+        let cachedId = this.readFromCache(this.KEY_TAKE_ENERGY_TARGET_ID);
+
+        if (cachedId !== undefined) {
+            let gameObject = Game.getObjectById(cachedId);
+
+            if (gameObject instanceof Source) {
+                this.debug('Returning take energy target id ' + cachedId + ' from cache');
+                return cachedId;
+            }
+        }
+
         let sources = worldManager.getSources(this.roomName);
 
         for (let idxSource = 0; idxSource < sources.length; idxSource++) {
             if (sources[idxSource].energy > 0) {
+                this.writeToCache(this.KEY_TAKE_ENERGY_TARGET_ID, sources[idxSource].id);
                 return sources[idxSource].id;
             }
         }
@@ -95,6 +119,8 @@ class CreepHarvester extends CreepEarnerClass
     get movePriority() {
         return 100;
     }
+
+
 }
 
 module.exports = CreepHarvester;

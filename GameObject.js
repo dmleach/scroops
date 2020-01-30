@@ -11,6 +11,10 @@ class GameObject extends ScroopsObjectClass
         }
 
         this.gameObject = Game.getObjectById(id);
+
+        if (this.gameObject === null) {
+            this.gameObject = undefined;
+        }
     }
 
     get energy() {
@@ -129,6 +133,18 @@ class GameObject extends ScroopsObjectClass
 
     get roomName() {
         return this.gameObject.pos.roomName;
+    }
+
+    get structureType() {
+        if (this.gameObject instanceof Structure === false) {
+            return undefined;
+        }
+
+        return this.gameObject.structureType;
+    }
+
+    get type() {
+        return this.gameObject.type;
     }
 }
 

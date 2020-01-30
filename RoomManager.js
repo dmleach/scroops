@@ -78,6 +78,12 @@ class RoomManager extends MemoryAccessorClass
 
             for (idxExtension = 0; idxExtension < extensions.length; idxExtension++) {
                 extensionObject = new GameObjectClass(extensions[idxExtension].id);
+
+                // This can happen when the id of a destroyed extension is pulled from the cache
+                if (extensionObject.gameObject === undefined) {
+                    continue;
+                }
+
                 path = utilPath.getPath(position, extensionObject.pos);
 
                 if (path === undefined) {
