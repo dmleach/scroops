@@ -15,7 +15,7 @@ class CreepScout extends CreepAncestorClass
     }
 
     get isShowingDebugMessages() {
-        return false;
+        return this.name === 'scout15186360';
     }
 
     get mode() {
@@ -36,6 +36,12 @@ class CreepScout extends CreepAncestorClass
         // let WorldManagerClass = require('WorldManager');
         // let neighboringRoomNames = WorldManagerClass.getNeighboringRoomNames();
         let neighboringRoomNames = worldManager.getNeighboringRoomNames();
+
+        // If the creep is already in a neighboring room, there's no need to find a new position
+        if (neighboringRoomNames.indexOf(this.pos.roomName) !== -1) {
+            return undefined;
+        }
+
         let destinationRoomName = undefined;
 
         for (let idxNeighboringRoomName = 0; idxNeighboringRoomName < neighboringRoomNames.length; idxNeighboringRoomName++) {
