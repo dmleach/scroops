@@ -49,6 +49,14 @@ class CreepScavenger extends CreepSpenderClass
             }
         }
 
+        let ruins = worldManager.getRuins(this.roomName);
+
+        for (let idxRuin = 0; idxRuin < ruins.length; idxRuin++) {
+            if (ruins[idxRuin].store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                return ruins[idxRuin].id;
+            }
+        }
+
         let Role = require('Role');
         let CreepDistributorClass = Role.getCreepClassByRole(Role.DISTRIBUTOR);
         let creep = new CreepDistributorClass(this.id);
