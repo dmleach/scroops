@@ -118,6 +118,11 @@ class WorldManager extends MemoryAccessorClass
         }
     }
 
+    getRuins(roomName) {
+        let roomManager = this.getRoomManager(roomName);
+        return roomManager.getRuins();
+    }
+
     getSources(roomName) {
         let roomManager = this.getRoomManager(roomName);
         return roomManager.getSources();
