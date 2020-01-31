@@ -184,6 +184,10 @@ class RoomManager extends MemoryAccessorClass
         return this._getFindResults(FIND_HOSTILE_CREEPS);
     }
 
+    getInvaderCores() {
+        return this._getStructuresByType(STRUCTURE_INVADER_CORE);
+    }
+
     _getIsCached(findType) {
         let cachedFindTypes = [FIND_SOURCES];
         // let cachedFindTypes = [];

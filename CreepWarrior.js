@@ -7,7 +7,7 @@ class CreepWarrior extends CreepSpenderClass
     }
 
     static get bodyIncrement() {
-        return [RANGED_ATTACK, MOVE, CARRY, MOVE];
+        return [ATTACK, MOVE, CARRY, MOVE];
     }
 
     get canTakeEnergyWhenRoomNotFull() {
@@ -19,6 +19,12 @@ class CreepWarrior extends CreepSpenderClass
 
         if (hostileCreeps !== undefined && hostileCreeps.length > 0) {
             return hostileCreeps[0].id;
+        }
+
+        let invaderCores = worldManager.getInvaderCores();
+
+        if (invaderCores !== undefined && invaderCores.length > 0) {
+            return invaderCores[0].id;
         }
 
         let towers = worldManager.getTowers(this.roomName);
@@ -55,6 +61,18 @@ class CreepWarrior extends CreepSpenderClass
         }
 
         return 1;
+    }
+
+    giveEnergyToStructure(structure) {
+        if (structure instanceof StructureInvaderCore) {
+            return this.gameObject.attack(structure);
+        }
+
+        return super.giveEnergyToStructure(structure);
+    }
+
+    get isShowingDebugMessages() {
+        return this.name === 'warrior15185887';
     }
 }
 

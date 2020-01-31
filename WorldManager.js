@@ -67,6 +67,21 @@ class WorldManager extends MemoryAccessorClass
         return roomManager.getHostileCreeps();
     }
 
+    getInvaderCores() {
+        let cores = [];
+        let neighboringRoomNames = this.getNeighboringRoomNames();
+        let roomManager;
+        let neighboringCores;
+
+        for (let idxRoom = 0; idxRoom < neighboringRoomNames.length; idxRoom++) {
+            roomManager = this.getRoomManager(neighboringRoomNames[idxRoom]);
+            neighboringCores = roomManager.getInvaderCores();
+            cores = cores.concat(neighboringCores);
+        }
+
+        return cores;
+    }
+
     getNeighboringRoomNames() {
         let controlledRoomNames = [];
 
