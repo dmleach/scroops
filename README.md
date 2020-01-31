@@ -5,15 +5,13 @@ TO-DO
 * Teach builders to repair structures before they collapse, even when build sites are available
 * Implement maximum body for creeps
 * Teach builders not to repair if there's a tower with energy
-* Cache WorldManager results in memory
 * Create a base configuration file from which structures are built and defined
 * Distribute the importers among different neighboring sources
 * Scouts need to go into neighboring rooms even if they're visible
-* Respawn harvesters if the room is full of energy and it would make a better harvester
+* Respawn harvesters, distributors, and scavengers if the available energy represents a significant upgrade
 * Teach creep with no target to move to a space with nothing around it
 * Stop distributors from freaking out and dancing around the spawn when a new creep is spawning
 * Figure out why distributors aren't dropping energy into containers, but standing next to them holding energy instead
-* Make one code improvement: Create a sorted values class for returning search results in a particular order
 * Make one code improvement: Move give energy and take energy logic by class out of the creep ancestor
 * Explicitly define the order in which creeps should spawn
 * Explicitly define the order in which creeps should work
@@ -28,6 +26,7 @@ TO-DO
 * Importers should deliver their energy when their source is depleted
 * Distributors are putting energy into containers and taking it right back out again
 * Teach creeps to remember the route to their target rather than looking it up from UtilPath again and again
+
 
 DONE
 1. Harvest energy and deposit it into the spawn
@@ -90,3 +89,8 @@ DONE
 1. Make one code improvement: Abstract debug/error/warn to its own ancestor class so non-game objects can use them
 1. Reduce costly calls to find
 1. Organize path cache better
+1. Cache WorldManager results in memory
+1. Finding the closest extension is eating up a ton of calls to findPathTo
+1. Teach warriors to attack invader cores
+1. Make one code improvement: Create a sorted values class for returning search results in a particular order
+1. Creeps with energy should move before creeps with no energy

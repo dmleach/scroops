@@ -251,11 +251,10 @@ class CreepAncestor extends GameObjectClass
             creepInTheWayId = utilPosition.getCreepIdByPosition(destination);
 
             if (creepInTheWayId !== undefined) {
-                let GameObjectClass = require('GameObject');
-                creepInTheWay = new GameObjectClass(creepInTheWayId);
-                this.debug(creepInTheWay.name + ' is in the way');
-                creepsInTheWayIds.push(creepInTheWayId);
-                continue;
+                creepInTheWayClass = Role.getCreepClassByCreepId(creepInTheWayId);
+                creepInTheWay = new creepInTheWayClass(creepInTheWayId);
+                this.debug('Moving ' + creepInTheWay.name + ' out of the way');
+                creepInTheWay.moveAway(worldManager);
             }
 
             if (worldManager.isWalkable(destination) === false) {
@@ -272,18 +271,6 @@ class CreepAncestor extends GameObjectClass
             }
 
             return moveResult;
-        }
-
-        this.debug('Creeps in the way: ' + creepsInTheWayIds);
-
-        for (let idxCreepInTheWay = 0; idxCreepInTheWay < creepsInTheWayIds.length; idxCreepInTheWay++) {
-            creepInTheWayClass = Role.getCreepClassByCreepId(creepsInTheWayIds[idxCreepInTheWay]);
-            creepInTheWay = new creepInTheWayClass(creepsInTheWayIds[idxCreepInTheWay]);
-            this.debug('Moving ' + creepInTheWay.name + ' out of the way');
-
-            if (this.movePriority > creepInTheWay.movePriority) {
-                creepInTheWay.moveAway(worldManager);
-            }
         }
 
         return ERR_NO_PATH;
@@ -451,7 +438,7 @@ class CreepAncestor extends GameObjectClass
         }
 
         if (this.mode === this.MODE_TAKE_ENERGY && this.pos.isEqualTo(this.takeEnergyPos) === false) {
-            path = utilPath.getPath(this.pos, this.takeEnergyPos);
+            path = utilPath.getPath(this.pos, this.takeEnergyPos, worldManager);
 
             if (path !== undefined && path.length > 0) {
                 return this.move(path[0].direction, worldManager);
@@ -465,7 +452,7 @@ class CreepAncestor extends GameObjectClass
         }
 
         if (this.mode === this.MODE_GIVE_ENERGY && this.pos.isEqualTo(this.giveEnergyPos) === false) {
-            path = utilPath.getPath(this.pos, this.giveEnergyPos);
+            path = utilPath.getPath(this.pos, this.giveEnergyPos, worldManager);
 
             if (path !== undefined && path.length > 0) {
                 return this.move(path[0].direction, worldManager);
