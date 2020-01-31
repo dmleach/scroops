@@ -12,6 +12,18 @@ class CreepAncestor extends GameObjectClass
         this.KEY_GIVE_ENERGY_TARGET_ID = 'giveEnergyTargetId';
     }
 
+    get attackPower() {
+        let attackPower = 0;
+
+        for (let idxBody = 0; idxBody < this.gameObject.body.length; idxBody++) {
+            if (this.gameObject.body[idxBody].type === ATTACK) {
+                attackPower += 30;
+            }
+        }
+
+        return attackPower;
+    }
+
     static get basicBody() {
         return [];
     }
@@ -116,7 +128,9 @@ class CreepAncestor extends GameObjectClass
         }
 
         if (giveResult === OK) {
-            this.setGiveEnergyTargetId(undefined);
+            if (this.shouldClearCacheAfterGiveEnergy) {
+                this.setGiveEnergyTargetId(undefined);
+            }
         } else {
             this.error(giveResult, 'Could not give energy to ' + giveEnergyTarget.name);
         }
@@ -352,6 +366,10 @@ class CreepAncestor extends GameObjectClass
         this.debug('Taking energy from ' + gameObject.name);
     }
 
+    get shouldClearCacheAfterGiveEnergy() {
+        return true;
+    }
+
     get spawning() {
         return this.gameObject.spawning;
     }
@@ -398,6 +416,10 @@ class CreepAncestor extends GameObjectClass
         // if (this.takeEnergyPos === undefined) {
         //     this.error(UtilError.ERR_NO_TAKE_POSITION);
         // }
+    }
+
+    get ticksToLive() {
+        return this.gameObject.ticksToLive;
     }
 
     get tired() {

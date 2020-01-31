@@ -72,11 +72,17 @@ class WorldManager extends MemoryAccessorClass
         let neighboringRoomNames = this.getNeighboringRoomNames();
         let roomManager;
         let neighboringCores;
+        let idxNeighboringCore;
 
         for (let idxRoom = 0; idxRoom < neighboringRoomNames.length; idxRoom++) {
+            this.debug('Looking for invader cores in room ' + neighboringRoomNames[idxRoom]);
             roomManager = this.getRoomManager(neighboringRoomNames[idxRoom]);
             neighboringCores = roomManager.getInvaderCores();
-            cores = cores.concat(neighboringCores);
+            this.debug('Found invader cores ' + neighboringCores);
+
+            for (idxNeighboringCore = 0; idxNeighboringCore < neighboringCores.length; idxNeighboringCore++) {
+                cores.push(neighboringCores[idxNeighboringCore]);
+            }
         }
 
         return cores;
@@ -117,16 +123,16 @@ class WorldManager extends MemoryAccessorClass
             }
         }
 
-        this.debug('Obstacles at ' + position + ': ' + obstacles);
+        // this.debug('Obstacles at ' + position + ': ' + obstacles);
         return obstacles;
     }
 
     getRoomManager(roomName) {
         if (this.roomManagers.hasOwnProperty(roomName)) {
-            this.debug('Retrieving previously instantiated room manager for ' + roomName);
+            // this.debug('Retrieving previously instantiated room manager for ' + roomName);
             return this.roomManagers[roomName];
         } else {
-            this.debug('Instantiating new room manager for ' + roomName);
+            // this.debug('Instantiating new room manager for ' + roomName);
             let RoomManagerClass = require('RoomManager');
             this.roomManagers[roomName] = new RoomManagerClass(roomName);
             return this.roomManagers[roomName];
@@ -175,7 +181,7 @@ class WorldManager extends MemoryAccessorClass
     }
 
     get isShowingDebugMessages() {
-        return false;
+        return true;
     }
 
     get memoryKey() {
