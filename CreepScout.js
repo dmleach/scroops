@@ -68,6 +68,18 @@ class CreepScout extends CreepAncestorClass
                     roomExits.push(new RoomPosition(49, idxRoomPosition, this.pos.roomName));
                 }
             }
+        } else if (direction === BOTTOM) {
+            for (idxRoomPosition = 0; idxRoomPosition < 50; idxRoomPosition++) {
+                if (terrain.get(idxRoomPosition, 49) !== TERRAIN_MASK_WALL) {
+                    roomExits.push(new RoomPosition(idxRoomPosition, 49, this.pos.roomName));
+                }
+            }
+        } else if (direction === LEFT) {
+            for (idxRoomPosition = 0; idxRoomPosition < 50; idxRoomPosition++) {
+                if (terrain.get(0, idxRoomPosition) !== TERRAIN_MASK_WALL) {
+                    roomExits.push(new RoomPosition(0, idxRoomPosition, this.pos.roomName));
+                }
+            }
         }
 
         this.debug('Exits from this room are ' + roomExits);
