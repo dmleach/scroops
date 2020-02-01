@@ -65,27 +65,23 @@ class CreepImporter extends CreepHarvesterClass
         }
 
         let cachedId = this.readFromCache(this.KEY_TAKE_ENERGY_TARGET_ID);
+        this.debug('Read cached take energy target id ' + cachedId);
+        let gameObject = Game.getObjectById(cachedId);
 
-        if (cachedId !== undefined) {
-            let gameObject = Game.getObjectById(cachedId);
-
-            if (gameObject instanceof Source && Game.rooms[gameObject.pos.roomName].controller.my === false) {
-                this.debug('Returning take energy target id ' + cachedId + ' from cache');
-                return cachedId;
-            }
+        if (this.validateSource(gameObject)) {
+            this.debug('Returning take energy target id ' + cachedId + ' from cache');
+            return cachedId;
         }
 
         let roomSources;
 
         for (let visibleRoomName in Game.rooms) {
-            if (Game.rooms[visibleRoomName].controller.my) {
-                continue;
-            }
-
             roomSources = worldManager.getSources(visibleRoomName);
 
-            if (roomSources !== undefined && roomSources.length > 0) {
-                return roomSources[0].id;
+            for (let idxSource = 0; idxSource < roomSources.length; idxSource++) {
+                if (this.validateSource(roomSources[idxSource])) {
+                    return roomSources[idxSource].id;
+                }
             }
         }
 
@@ -93,7 +89,7 @@ class CreepImporter extends CreepHarvesterClass
     }
 
     get isShowingDebugMessages() {
-        return this.name === 'foo';
+        return this.name === 'importer15184922';
     }
 
     get mode() {
@@ -113,6 +109,36 @@ class CreepImporter extends CreepHarvesterClass
     static numberToSpawn(worldManager, utilCreep) {
         let Role = require('Role');
         return utilCreep.countByRole(Role.SCOUT) * 2;
+    }
+
+    validateSource(source) {
+        this.debug('Validating source ' + source);
+
+        if (source instanceof Source === false) {
+            this.debug('Invalid because ' + source + ' is not a source');
+            return false;
+        }
+
+        let room = Game.rooms[source.pos.roomName];
+
+        if (room === undefined) {
+            this.debug('Invalid because source room ' + source.pos.roomName + ' is not visible');
+            return false;
+        }
+
+        if (room.controller.owner !== undefined) {
+            this.debug('Invalid because ' + room.controller.owner + ' is the owner of room ' + source.pos.roomName);
+            return false;
+        }
+
+        this.debug('Room reservation is ' + room.controller.reservation);
+
+        if (room.controller.reservation !== undefined) {
+            this.debug('Invalid because ' + source.pos.roomName + ' is reserved by ' + room.controller.reservation.username);
+            return false;
+        }
+
+        return true;
     }
 }
 

@@ -169,21 +169,21 @@ class CreepAncestor extends GameObjectClass
         let alternatives = [direction];
 
         if (direction === TOP) {
-            alternatives.push(TOP_LEFT, TOP_RIGHT);
+            alternatives.push(TOP_LEFT, TOP_RIGHT, LEFT, RIGHT);
         } else if (direction === TOP_RIGHT) {
-            alternatives.push(TOP, RIGHT);
+            alternatives.push(TOP, RIGHT, TOP_LEFT, BOTTOM_RIGHT);
         } else if (direction === RIGHT) {
-            alternatives.push(TOP_RIGHT, BOTTOM_RIGHT);
+            alternatives.push(TOP_RIGHT, BOTTOM_RIGHT, TOP, BOTTOM);
         } else if (direction === BOTTOM_RIGHT) {
-            alternatives.push(RIGHT, BOTTOM);
+            alternatives.push(RIGHT, BOTTOM, TOP_RIGHT, BOTTOM_LEFT);
         } else if (direction === BOTTOM) {
-            alternatives.push(BOTTOM_RIGHT, BOTTOM_LEFT);
+            alternatives.push(BOTTOM_RIGHT, BOTTOM_LEFT, RIGHT, LEFT);
         } else if (direction === BOTTOM_LEFT) {
-            alternatives.push(BOTTOM, LEFT);
+            alternatives.push(BOTTOM, LEFT, BOTTOM_RIGHT, TOP_LEFT);
         } else if (direction === LEFT) {
-            alternatives.push(BOTTOM_LEFT, TOP_LEFT);
+            alternatives.push(BOTTOM_LEFT, TOP_LEFT, BOTTOM, TOP);
         } else if (direction === TOP_LEFT) {
-            alternatives.push(LEFT, TOP);
+            alternatives.push(LEFT, TOP, TOP_RIGHT, BOTTOM_LEFT);
         }
 
         if (Math.random() < 0.5) {

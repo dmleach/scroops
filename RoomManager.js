@@ -62,45 +62,23 @@ class RoomManager extends MemoryAccessorClass
             return [];
         }
 
-        let sortedExtensions = [];
-        let GameObjectClass = require('GameObject');
-        let extensionObject;
-        let idxExtension;
-        let idxClosestExtension;
-        let closestExtensionRange;
-        let UtilPathClass = require('UtilPath');
-        let utilPath = new UtilPathClass();
-        let path;
+        let extensionIds = [];
 
-        while (extensions.length > 0) {
-            idxClosestExtension = undefined;
-            closestExtensionRange = 10000;
-
-            for (idxExtension = 0; idxExtension < extensions.length; idxExtension++) {
-                extensionObject = new GameObjectClass(extensions[idxExtension].id);
-
-                // This can happen when the id of a destroyed extension is pulled from the cache
-                if (extensionObject.gameObject === undefined) {
-                    continue;
-                }
-
-                path = utilPath.getPath(position, extensionObject.pos);
-
-                if (path === undefined) {
-                    continue;
-                }
-
-                if (idxClosestExtension === undefined || path.length < closestExtensionRange) {
-                    idxClosestExtension = idxExtension;
-                    closestExtensionRange = path.length;
-                }
-            }
-
-            sortedExtensions.push(extensions[idxClosestExtension]);
-            extensions.splice(idxClosestExtension, 1);
+        for (let idxExtension = 0; idxExtension < extensions.length; idxExtension++) {
+            extensionIds.push(extensions[idxExtension].id);
         }
 
-        return sortedExtensions;
+        let UtilPositionClass = require('UtilPosition');
+        let utilPosition = new UtilPositionClass();
+        let sortedExtensionIds = utilPosition.sortIdsByRange(extensionIds, position);
+
+        extensions = [];
+
+        for (let idxExtensionId = 0; idxExtensionId < sortedExtensionIds.length; idxExtensionId++) {
+            extensions.push(Game.getObjectById([sortedExtensionIds[idxExtensionId]]));
+        }
+
+        return extensions;
     }
 
     _getFindResults(findType) {
@@ -242,6 +220,10 @@ class RoomManager extends MemoryAccessorClass
         });
 
         return nearestObjectRange;
+    }
+
+    getRuins() {
+        return this._getFindResults(FIND_RUINS);
     }
 
     getStructures() {

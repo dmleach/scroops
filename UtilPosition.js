@@ -208,6 +208,62 @@ class UtilPosition extends MemoryAccessorClass
         return 'UtilPosition';
     }
 
+    sortIdsByRange(objectIds, position) {
+        if (objectIds instanceof Array === false) {
+            return undefined;
+        }
+
+        if (position instanceof RoomPosition === false) {
+            return undefined;
+        }
+
+        let ranges = [];
+        let gameObject;
+
+        for (let idxObject = 0; idxObject < objectIds.length; idxObject++) {
+            gameObject = Game.getObjectById(objectIds[idxObject]);
+
+            if (gameObject === undefined) {
+                continue;
+            }
+
+            ranges.push({ id: gameObject.id, range: this.getRange(position, gameObject.pos), sorted: false });
+        }
+
+        let sortedObjectIds = [];
+        let allSorted = true;
+        let objectInfo;
+        let lowestRange;
+        let lowestRangeObjectIndex;
+        let idxRange;
+
+        do {
+            allSorted = true;
+            lowestRange = 1000000;
+            lowestRangeObjectIndex = undefined;
+
+            for (idxRange = 0; idxRange < ranges.length; idxRange++) {
+                if (ranges[idxRange].sorted) {
+                    continue;
+                }
+
+                allSorted = false;
+
+                if (ranges[idxRange].range < lowestRange) {
+                    lowestRange = ranges[idxRange].range;
+                    lowestRangeObjectIndex = idxRange;
+                }
+            }
+
+            if (allSorted === false) {
+                sortedObjectIds.push(ranges[lowestRangeObjectIndex].id);
+                ranges[lowestRangeObjectIndex].sorted = true;
+            }
+        } while (allSorted === false);
+
+        return sortedObjectIds;
+    }
+
     get walkableStructureTypes() {
         return ['road'];
     }
