@@ -15,7 +15,6 @@ TO-DO
 * Make one code improvement: Move give energy and take energy logic by class out of the creep ancestor
 * Explicitly define the order in which creeps should spawn
 * Explicitly define the order in which creeps should work
-* Creeps should not shove other creeps out of the way until all their move alternatives are examined
 * Creeps that cannot take energy because the spawns and extensions are not full should move to where they'll take energy from when they can
 * Don't spawn a scout for a neighboring room that can't be reached
 * Use PathFinder to find paths
@@ -25,7 +24,7 @@ TO-DO
 * Builders should clear the structure cache for a room when they complete a construction
 * Importers should deliver their energy when their source is depleted
 * Distributors are putting energy into containers and taking it right back out again
-* Teach creeps to remember the route to their target rather than looking it up from UtilPath again and again
+* Allow spenders access to energy if there's a harvester / there's a minimum amount of spawning energy
 
 
 DONE
@@ -94,3 +93,5 @@ DONE
 1. Teach warriors to attack invader cores
 1. Make one code improvement: Create a sorted values class for returning search results in a particular order
 1. Creeps with energy should move before creeps with no energy
+1. Creeps should not shove other creeps out of the way until all their move alternatives are examined (briefly implemented, then removed)
+1. Teach creeps to remember the route to their target rather than looking it up from UtilPath again and again
