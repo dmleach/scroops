@@ -26,8 +26,6 @@ class MemoryAccessor extends ScroopsObjectClass
     }
 
     _getFromMemoryUsingArray(memoryObject, keyArray) {
-        this.debug('Getting from memory: ' + keyArray);
-
         if (memoryObject === undefined) {
             return undefined;
         }
@@ -43,7 +41,6 @@ class MemoryAccessor extends ScroopsObjectClass
         }
 
         if (keyArray.length === 0) {
-            this.debug('Returning value ' + memoryObject[firstKey]);
             return memoryObject[firstKey];
         }
 
@@ -74,8 +71,6 @@ class MemoryAccessor extends ScroopsObjectClass
     }
 
     _putIntoMemoryUsingObjectAndArray(memoryObject, keyArray, value) {
-        this.debug('Putting into memory: ' + keyArray + ', value ' + value);
-
         if (memoryObject === undefined) {
             return undefined;
         }
@@ -91,7 +86,6 @@ class MemoryAccessor extends ScroopsObjectClass
         }
 
         if (keyArray.length === 0) {
-            this.debug('Setting value of ' + firstKey + ' to ' + value);
             memoryObject[firstKey] = value;
             return;
         }

@@ -30,7 +30,7 @@ class UtilSort extends ScroopsObjectClass
             return [];
         }
 
-        if (property !== undefined && property instanceof String === false && typeof property !== 'string') {
+        if (property !== undefined && typeof property !== 'string') {
             this.debug('Returning undefined because given property ' + property + ' is not a string');
             return undefined;
         }
