@@ -65,19 +65,35 @@ while (creeps.length > 0) {
     for (let idxCreep = 0; idxCreep < workGroup.length; idxCreep++) {
         creep = workGroup[idxCreep];
         creep.debug('******* Beginning turn for tick ' + Game.time + ' *******');
-        creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager));
-        creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
 
-        creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager));
-
-
-        if (creep.giveEnergyTargetId !== undefined) {
-            gameObject = new GameObjectClass(creep.giveEnergyTargetId);
-            creep.debug('Giving energy to ' + gameObject.name);
-            creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId, worldManager);
-            creep.debug('Give energy position is ' + creep.giveEnergyPos);
+        if (creep.isUsingUpdateTakeEnergyFunction) {
+            // creep.debug('CACHE VALUES BEFORE UPDATE TAKE');
+            // creep.debugCache();
+            creep.updateTakeEnergyTarget(worldManager, utilPath);
         } else {
-            creep.debug('Object to give energy to is undefined');
+            creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager), worldManager);
+        }
+
+        // creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
+
+        if (creep.isUsingUpdateGiveEnergyFunction) {
+            // creep.debug('CACHE VALUES BEFORE UPDATE GIVE');
+            // creep.debugCache();
+            creep.updateGiveEnergyTarget(worldManager, utilPath);
+
+            // creep.debug('CACHE VALUES AFTER UPDATES');
+            // creep.debugCache();
+        } else {
+            creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager));
+
+            if (creep.giveEnergyTargetId !== undefined) {
+                gameObject = new GameObjectClass(creep.giveEnergyTargetId);
+                // creep.debug('Giving energy to ' + gameObject.name);
+                creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId, worldManager);
+                creep.debug('Give energy position is ' + creep.giveEnergyPos);
+            } else {
+                creep.debug('Object to give energy to is undefined');
+            }
         }
 
         creep.work(worldManager, utilPath);

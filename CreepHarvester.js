@@ -16,22 +16,18 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     getGiveEnergyTargetId(worldManager) {
-        let cachedId = this.readFromCache(this.KEY_GIVE_ENERGY_TARGET_ID);
-        let GameObjectClass = require('GameObject');
+        let cachedId = super.getGiveEnergyTargetId(worldManager);
 
-        if (cachedId !== undefined) {
-            let gameObject = new GameObjectClass(cachedId);
-
-            if (gameObject.structureType === STRUCTURE_CONTAINER && gameObject.full === false) {
-                this.debug('Returning give energy target id ' + cachedId + ' from cache');
-                return cachedId;
-            }
+        if (this.isValidGiveEnergyTargetId(cachedId)) {
+            this.debug('Returning give energy target id ' + cachedId + ' from cache');
+            return cachedId;
         }
 
         let containers = worldManager.getContainers(this.roomName);
 
         for (let idxContainer = 0; idxContainer < containers.length; idxContainer++) {
             if (containers[idxContainer].store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.pos.getRangeTo(containers[idxContainer]) <= 1) {
+                this.debug('Returning calculated give energy target id ' + containers[idxContainer].id);
                 return containers[idxContainer].id;
             }
         }
@@ -40,7 +36,7 @@ class CreepHarvester extends CreepEarnerClass
         let utilCreep = new UtilCreepClass(this.pos.roomName);
 
         if (utilCreep.count > 1) {
-            this.debug('Returning own id');
+            this.debug('Returning own id as give energy target id');
             return this.id;
         }
 
@@ -48,6 +44,7 @@ class CreepHarvester extends CreepEarnerClass
 
         for (let idxSpawn = 0; idxSpawn < spawns.length; idxSpawn++) {
             if (spawns[idxSpawn].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                this.debug('Returning calculated give energy target id ' + spawns[idxSpawn].id);
                 return spawns[idxSpawn].id;
             }
         }
@@ -56,25 +53,24 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     getTakeEnergyTargetId(worldManager) {
-        let cachedId = this.readFromCache(this.KEY_TAKE_ENERGY_TARGET_ID);
+        let cachedId = super.getTakeEnergyTargetId(worldManager);
 
-        if (cachedId !== undefined) {
-            let gameObject = Game.getObjectById(cachedId);
-
-            if (gameObject instanceof Source) {
-                this.debug('Returning take energy target id ' + cachedId + ' from cache');
-                return cachedId;
-            }
+        if (this.isValidTakeEnergyTargetId(cachedId)) {
+            this.debug('Returning take energy target id ' + cachedId + ' from cache');
+            return cachedId;
         }
 
         let sources = worldManager.getSources(this.roomName);
 
         for (let idxSource = 0; idxSource < sources.length; idxSource++) {
-            if (sources[idxSource].energy > 0) {
-                this.writeToCache(this.KEY_TAKE_ENERGY_TARGET_ID, sources[idxSource].id);
+            if (this.isValidTakeEnergyTargetId(sources[idxSource].id)) {
+                this.debug('Returning calculated take energy target id ' + sources[idxSource].id);
                 return sources[idxSource].id;
             }
         }
+
+        this.debug('Cannot find a valid take energy target, returning undefined');
+        return undefined;
     }
 
     giveEnergy() {
@@ -92,7 +88,53 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     get isShowingDebugMessages() {
+        return true;
+    }
+
+    get isUsingUpdateGiveEnergyFunction() {
+        return true;
+    }
+
+    get isUsingUpdateTakeEnergyFunction() {
+        return true;
+    }
+
+    isValidGiveEnergyTargetId(id) {
+        if (id === undefined) {
+            return false;
+        }
+
+        let gameObject = Game.getObjectById(id);
+
+        if (gameObject instanceof StructureContainer) {
+            if (gameObject.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && this.pos.getRangeTo(gameObject.pos) <= 1) {
+                return true;
+            }
+        } else if (id === this.id) {
+            return true;
+        } else if (gameObject instanceof StructureSpawn) {
+            if (gameObject.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    isValidTakeEnergyTargetId(id) {
+        if (id === undefined) {
+            return false;
+        }
+
+        let gameObject = Game.getObjectById(id);
+
+        if (gameObject instanceof Source === false) {
+            return false;
+        }
+
+        let GameObjectClass = require('GameObject');
+        gameObject = new GameObjectClass(id);
+        return gameObject.isInFriendlyRoom;
     }
 
     get mode() {
@@ -120,7 +162,9 @@ class CreepHarvester extends CreepEarnerClass
         return 100;
     }
 
-
+    get shouldClearCacheAfterTakeEnergy() {
+        return false;
+    }
 }
 
 module.exports = CreepHarvester;
