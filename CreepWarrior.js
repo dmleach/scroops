@@ -3,14 +3,14 @@ let CreepSpenderClass = require('CreepSpender');
 class CreepWarrior extends CreepSpenderClass
 {
     static get basicBody() {
-        return [ATTACK, MOVE, CARRY, MOVE];
+        return [ATTACK, MOVE];
     }
 
     static get bodyIncrement() {
-        return [ATTACK, MOVE, CARRY, MOVE];
+        return [ATTACK, MOVE];
     }
 
-    get canTakeEnergyWhenRoomNotFull() {
+    static canSpawn(roomName, worldManager, utilCreep) {
         return true;
     }
 
@@ -36,7 +36,7 @@ class CreepWarrior extends CreepSpenderClass
             }
         }
 
-        let hostileCreeps = worldManager.getHostileCreeps(this.roomName);
+        let hostileCreeps = worldManager.getHostileCreepsWorldwide();
 
         if (hostileCreeps !== undefined && hostileCreeps.length > 0) {
             return hostileCreeps[0].id;
@@ -59,19 +59,8 @@ class CreepWarrior extends CreepSpenderClass
         return undefined;
     }
 
-    getTakeEnergyTargetId(worldManager) {
-        let roomManager = worldManager.getRoomManager(this.roomName);
-        let hostileCreeps = roomManager.getHostileCreeps();
-
-        if (hostileCreeps !== undefined && hostileCreeps.length > 0) {
-            let towers = roomManager.getTowers();
-
-            if (towers !== undefined && towers.length > 0) {
-                return towers[0].id;
-            }
-        }
-
-        return super.getTakeEnergyTargetId(worldManager);
+    get mode() {
+        return this.MODE_GIVE_ENERGY;
     }
 
     getInteractionRange(objectId) {
