@@ -89,7 +89,11 @@ class CreepImporter extends CreepHarvesterClass
     }
 
     get isShowingDebugMessages() {
-        return this.name === 'importer15184922';
+        return this.name === 'foo';
+    }
+
+    get isUsingUpdateTakeEnergyFunction() {
+        return false;
     }
 
     get mode() {
@@ -108,7 +112,7 @@ class CreepImporter extends CreepHarvesterClass
 
     static numberToSpawn(worldManager, utilCreep) {
         let Role = require('Role');
-        return utilCreep.countByRole(Role.SCOUT) * 2;
+        return utilCreep.countByRole(Role.SCOUT);
     }
 
     validateSource(source) {

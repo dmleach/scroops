@@ -67,6 +67,44 @@ class WorldManager extends MemoryAccessorClass
         return roomManager.getHostileCreeps();
     }
 
+    getHostileCreepsWorldwide() {
+        let creeps = [];
+        let neighboringRoomNames = this.getNeighboringRoomNames();
+        let roomManager;
+        let neighboringCreeps;
+        let idxNeighboringCreep;
+
+        for (let idxRoom = 0; idxRoom < neighboringRoomNames.length; idxRoom++) {
+            roomManager = this.getRoomManager(neighboringRoomNames[idxRoom]);
+            neighboringCreeps = roomManager.getHostileCreeps();
+
+            for (idxNeighboringCreep = 0; idxNeighboringCreep < neighboringCreeps.length; idxNeighboringCreep++) {
+                creeps.push(neighboringCreeps[idxNeighboringCreep]);
+            }
+        }
+
+        return creeps;
+    }
+
+    getInvaderCores() {
+        let cores = [];
+        let neighboringRoomNames = this.getNeighboringRoomNames();
+        let roomManager;
+        let neighboringCores;
+        let idxNeighboringCore;
+
+        for (let idxRoom = 0; idxRoom < neighboringRoomNames.length; idxRoom++) {
+            roomManager = this.getRoomManager(neighboringRoomNames[idxRoom]);
+            neighboringCores = roomManager.getInvaderCores();
+
+            for (idxNeighboringCore = 0; idxNeighboringCore < neighboringCores.length; idxNeighboringCore++) {
+                cores.push(neighboringCores[idxNeighboringCore]);
+            }
+        }
+
+        return cores;
+    }
+
     getNeighboringRoomNames() {
         let controlledRoomNames = [];
 
@@ -96,22 +134,22 @@ class WorldManager extends MemoryAccessorClass
         let roomManager = this.getRoomManager(position.roomName);
         let obstacles = roomManager.getObstacles(position);
 
-        for (let creepName in Game.creeps) {
-            if (Game.creeps[creepName].pos.isEqualTo(position)) {
-                obstacles.push(Game.creeps[creepName]);
-            }
-        }
+        // for (let creepName in Game.creeps) {
+        //     if (Game.creeps[creepName].pos.isEqualTo(position)) {
+        //         obstacles.push(Game.creeps[creepName]);
+        //     }
+        // }
 
-        this.debug('Obstacles at ' + position + ': ' + obstacles);
+        // this.debug('Obstacles at ' + position + ': ' + obstacles);
         return obstacles;
     }
 
     getRoomManager(roomName) {
         if (this.roomManagers.hasOwnProperty(roomName)) {
-            this.debug('Retrieving previously instantiated room manager for ' + roomName);
+            // this.debug('Retrieving previously instantiated room manager for ' + roomName);
             return this.roomManagers[roomName];
         } else {
-            this.debug('Instantiating new room manager for ' + roomName);
+            // this.debug('Instantiating new room manager for ' + roomName);
             let RoomManagerClass = require('RoomManager');
             this.roomManagers[roomName] = new RoomManagerClass(roomName);
             return this.roomManagers[roomName];
@@ -156,6 +194,11 @@ class WorldManager extends MemoryAccessorClass
         }
 
         let obstacles = this.getObstacles(position);
+
+        if (obstacles.length > 0) {
+            this.debug(position + ' is not walkable because of these obstacles: ' + obstacles);
+        }
+
         return obstacles.length === 0;
     }
 

@@ -30,65 +30,76 @@ let Role = require('Role');
 let GameObjectClass = require('GameObject');
 let gameObject;
 
-let creepId;
 let roleClass;
-let creep;
+let creeps = [];
 
-// Iterate through each of the game's creeps
-for (let idxCreep = 0; idxCreep < utilCreep.creepIds.length; idxCreep++) {
-    creepId = utilCreep.creepIds[idxCreep];
-
-    if (creepId === undefined || creepId === null) {
-        continue;
-    }
-
-    roleClass = Role.getCreepClassByCreepId(creepId);
+for (let creepName in Game.creeps) {
+    roleClass = Role.getCreepClassByCreepId(Game.creeps[creepName].id);
 
     if (roleClass === undefined) {
         continue;
     }
 
-    creep = new roleClass(creepId);
-    creep.debug('******* Beginning turn for tick ' + Game.time + ' *******');
+    creeps.push(new roleClass(Game.creeps[creepName].id));
+}
 
-    // roomManager = worldManager.getRoomManager(creep.pos.roomName);
+let UtilSortClass = require('UtilSort');
+let utilSort = new UtilSortClass();
+utilSort.sort(creeps, 'movePriority', utilSort.SORT_DESCENDING);
 
-    // creep.takeEnergyTargetId = creep.getTakeEnergyTargetId(worldManager);
-    creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager));
+let workGroup;
+let creep;
 
-    // gameObject = new GameObjectClass(creep.takeEnergyTargetId);
-    // creep.debug('Taking energy from ' + gameObject.name);
+while (creeps.length > 0) {
+    creep = creeps.shift();
 
-    creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
+    workGroup = [creep];
 
-    // creep.debug('Take energy position is ' + creep.takeEnergyPos);
-
-    // if (creep.takeEnergyTargetId !== undefined) {
-    //     gameObject = new GameObjectClass(creep.takeEnergyTargetId);
-    //     creep.debug('Taking energy from ' + gameObject.name);
-    //     creep.takeEnergyPos = creep.getClosestInteractionPositionById(creep.takeEnergyTargetId, worldManager);
-    //     creep.debug('Take energy position is ' + creep.takeEnergyPos);
-    // } else {
-    //     creep.debug('Object to take energy from is undefined');
-    // }
-
-    // creep.giveEnergyTargetId = creep.getGiveEnergyTargetId(worldManager);
-    creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager));
-
-
-    if (creep.giveEnergyTargetId !== undefined) {
-        gameObject = new GameObjectClass(creep.giveEnergyTargetId);
-        creep.debug('Giving energy to ' + gameObject.name);
-        creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId, worldManager);
-        creep.debug('Give energy position is ' + creep.giveEnergyPos);
-    } else {
-        creep.debug('Object to give energy to is undefined');
+    while (creeps.length > 0 && creeps[0].movePriority === workGroup[0].movePriority) {
+        creep = creeps.shift();
+        workGroup.push(creep);
     }
 
-    creep.work(worldManager, utilPath);
+    utilSort.sort(workGroup, 'energy', utilSort.SORT_DESCENDING);
 
-    creep.debug('------- Ending turn for tick ' + Game.time + ' -------');
+    for (let idxCreep = 0; idxCreep < workGroup.length; idxCreep++) {
+        creep = workGroup[idxCreep];
+        creep.debug('******* Beginning turn for tick ' + Game.time + ' *******');
 
+        if (creep.isUsingUpdateTakeEnergyFunction) {
+            // creep.debug('CACHE VALUES BEFORE UPDATE TAKE');
+            // creep.debugCache();
+            creep.updateTakeEnergyTarget(worldManager, utilPath);
+        } else {
+            creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager), worldManager);
+        }
+
+        // creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
+
+        if (creep.isUsingUpdateGiveEnergyFunction) {
+            // creep.debug('CACHE VALUES BEFORE UPDATE GIVE');
+            // creep.debugCache();
+            creep.updateGiveEnergyTarget(worldManager, utilPath);
+
+            // creep.debug('CACHE VALUES AFTER UPDATES');
+            // creep.debugCache();
+        } else {
+            creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager));
+
+            if (creep.giveEnergyTargetId !== undefined) {
+                gameObject = new GameObjectClass(creep.giveEnergyTargetId);
+                // creep.debug('Giving energy to ' + gameObject.name);
+                creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId, worldManager);
+                creep.debug('Give energy position is ' + creep.giveEnergyPos);
+            } else {
+                creep.debug('Object to give energy to is undefined');
+            }
+        }
+
+        creep.work(worldManager, utilPath);
+
+        creep.debug('------- Ending turn for tick ' + Game.time + ' -------');
+    }
 }
 
 // Iterate through each of the game's towers

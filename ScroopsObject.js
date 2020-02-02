@@ -67,6 +67,64 @@ class ScroopsObject
         return (findCode in findNames) ? findNames[findCode] : 'unknown';
     }
 
+    getDirectionsOutFrom(direction) {
+        let directions = [direction, direction - 1, direction + 1, direction - 2, direction + 2, direction - 3, direction + 3, direction - 4];
+
+        for (let idxDirection = 0; idxDirection < directions.length; idxDirection++) {
+            if (directions[idxDirection] < 1) {
+                directions[idxDirection] = directions[idxDirection] + 8;
+            } else if (directions[idxDirection] > 8) {
+                directions[idxDirection] = directions[idxDirection] - 8;
+            }
+        }
+
+        return directions;
+    }
+
+    getPathDestination(position, path) {
+        if ( (position instanceof RoomPosition) === false) {
+            return undefined;
+        }
+
+        if ( (path instanceof Array) === false) {
+            return undefined;
+        }
+
+        if (path.length === 0) {
+            return position;
+        }
+
+        let deltaX = 0;
+        let deltaY = 0;
+
+        for (let idxPath = 0; idxPath < path; idxPath++) {
+            if ([LEFT, TOP_LEFT, BOTTOM_LEFT].indexOf(path[idxPath]) !== -1) {
+                deltaX -= 1;
+            }
+
+            if ([RIGHT, TOP_RIGHT, BOTTOM_RIGHT].indexOf(path[idxPath]) !== -1) {
+                deltaX += 1;
+            }
+
+            if ([TOP, TOP_LEFT, TOP_RIGHT].indexOf(path[idxPath]) !== -1) {
+                deltaY -= 1;
+            }
+
+            if ([BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT].indexOf(path[idxPath]) !== -1) {
+                deltaY += 1;
+            }
+
+            if (position.x + deltaX < 0 || position.x + deltaX > 49) {
+                return undefined;
+            }
+
+            if (position.y + deltaY < 0 || position.y + deltaY > 49) {
+                return undefined;
+            }
+        }
+
+        return new RoomPosition(position.x + deltaX, position.y + deltaY, position.roomName);
+    }
 
     get isShowingDebugMessages() {
         return false;

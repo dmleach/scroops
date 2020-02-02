@@ -25,10 +25,10 @@ class RoomManager extends MemoryAccessorClass
         } else if (findType === FIND_SOURCES) {
             return 100000;
         } else if (findType === FIND_STRUCTURES) {
-            return 50;
+            return 53;
         }
 
-        return 10;
+        return 11;
     }
 
     _getCacheKey(findType) {
@@ -184,6 +184,10 @@ class RoomManager extends MemoryAccessorClass
         return this._getFindResults(FIND_HOSTILE_CREEPS);
     }
 
+    getInvaderCores() {
+        return this._getStructuresByType(STRUCTURE_INVADER_CORE);
+    }
+
     _getIsCached(findType) {
         let cachedFindTypes = [FIND_SOURCES];
         // let cachedFindTypes = [];
@@ -192,6 +196,15 @@ class RoomManager extends MemoryAccessorClass
 
     getObstacles(position) {
         let obstacles = [];
+
+        let constructionSites = this.getConstructionSites();
+
+        for (let idxSite = 0; idxSite < constructionSites.length; idxSite++) {
+            if (constructionSites[idxSite].pos.isEqualTo(position)) {
+                obstacles.push(constructionSites[idxSite]);
+            }
+        }
+
         let structures = this.getStructures();
 
         for (let idxStructure = 0; idxStructure < structures.length; idxStructure++) {

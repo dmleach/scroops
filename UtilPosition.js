@@ -33,6 +33,8 @@ class UtilPosition extends MemoryAccessorClass
     }
 
     getClosestPositionInRange(startPosition, endPosition, range, worldManager) {
+        this.debug('Getting closest position to ' + startPosition + ' that is within ' + range + ' spaces of ' + endPosition);
+
         let positionsInRange = this._getPositionsInRange(endPosition, range);
         let closestPosition = undefined;
         let positionInRange;
@@ -41,15 +43,20 @@ class UtilPosition extends MemoryAccessorClass
             positionInRange = positionsInRange[idxPosition];
 
             if (positionInRange.isEqualTo(startPosition)) {
+                this.debug(positionInRange + ' is the start position, so it is the closest');
                 return startPosition;
             }
 
             if (worldManager.isWalkable(positionInRange)) {
+                this.debug(positionInRange + ' is walkable');
+
                 if (closestPosition === undefined) {
                     closestPosition = positionInRange;
                 } else if (this.getRange(startPosition, positionInRange) < this.getRange(startPosition, closestPosition)) {
                     closestPosition = positionInRange;
                 }
+            } else {
+                this.debug(positionInRange + ' is not walkable');
             }
         }
 

@@ -41,6 +41,22 @@ class GameObject extends ScroopsObjectClass
         return this.gameObject.id;
     }
 
+    get isInFriendlyRoom() {
+        let room = Game.rooms[this.roomName];
+
+        if (room === undefined || room === null) {
+            return false;
+        }
+
+        let controller = room.controller;
+
+        if (controller === undefined) {
+            return false;
+        }
+
+        return controller.my;
+    }
+
     get name() {
         if (this.gameObject === undefined) {
             return 'Undefined object';
@@ -68,10 +84,10 @@ class GameObject extends ScroopsObjectClass
         //     return 'Nuke target at ' + this.pos;
         // } else if (this.gameObject instanceof PowerCreep) {
         //     return this.gameObject.name + ' (power)';
-        // } else if (this.gameObject instanceof Resource) {
-        //     return 'Dropped resource at ' + this.pos;
-        // } else if (this.gameObject instanceof Ruin) {
-        //     return 'Ruin at ' + this.pos;
+        } else if (this.gameObject instanceof Resource) {
+            return 'Dropped resource at ' + this.pos;
+        } else if (this.gameObject instanceof Ruin) {
+            return 'Ruin at ' + this.pos;
         } else if (this.gameObject instanceof Source) {
             return 'Source at ' + this.pos;
         // } else if (this.gameObject instanceof StructureContainer) {

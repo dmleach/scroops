@@ -15,7 +15,7 @@ class CreepScout extends CreepAncestorClass
     }
 
     get isShowingDebugMessages() {
-        return false;
+        return this.name === 'foo';
     }
 
     get mode() {
@@ -36,6 +36,12 @@ class CreepScout extends CreepAncestorClass
         // let WorldManagerClass = require('WorldManager');
         // let neighboringRoomNames = WorldManagerClass.getNeighboringRoomNames();
         let neighboringRoomNames = worldManager.getNeighboringRoomNames();
+
+        // If the creep is already in a neighboring room, there's no need to find a new position
+        if (neighboringRoomNames.indexOf(this.pos.roomName) !== -1) {
+            return undefined;
+        }
+
         let destinationRoomName = undefined;
 
         for (let idxNeighboringRoomName = 0; idxNeighboringRoomName < neighboringRoomNames.length; idxNeighboringRoomName++) {
@@ -54,18 +60,43 @@ class CreepScout extends CreepAncestorClass
 
         let terrain = new Room.Terrain(this.pos.roomName);
         let roomExits = [];
+        let idxRoomSection;
         let idxRoomPosition;
 
         if (direction === TOP) {
-            for (idxRoomPosition = 0; idxRoomPosition < 50; idxRoomPosition++) {
-                if (terrain.get(idxRoomPosition, 0) !== TERRAIN_MASK_WALL) {
-                    roomExits.push(new RoomPosition(idxRoomPosition, 0, this.pos.roomName));
+            for (idxRoomSection = 0; idxRoomSection < 50; idxRoomSection = idxRoomSection + 10) {
+                for (idxRoomPosition = 0; idxRoomPosition < 10; idxRoomPosition++) {
+                    if (terrain.get(idxRoomSection + idxRoomPosition, 0) !== TERRAIN_MASK_WALL) {
+                        roomExits.push(new RoomPosition(idxRoomSection + idxRoomPosition, 0, this.pos.roomName));
+                        break;
+                    }
                 }
             }
         } else if (direction === RIGHT) {
-            for (idxRoomPosition = 0; idxRoomPosition < 50; idxRoomPosition++) {
-                if (terrain.get(49, idxRoomPosition) !== TERRAIN_MASK_WALL) {
-                    roomExits.push(new RoomPosition(49, idxRoomPosition, this.pos.roomName));
+            for (idxRoomSection = 0; idxRoomSection < 50; idxRoomSection = idxRoomSection + 10) {
+                for (idxRoomPosition = 0; idxRoomPosition < 10; idxRoomPosition++) {
+                    if (terrain.get(49, idxRoomSection + idxRoomPosition) !== TERRAIN_MASK_WALL) {
+                        roomExits.push(new RoomPosition(49, idxRoomSection + idxRoomPosition, this.pos.roomName));
+                        break;
+                    }
+                }
+            }
+        } else if (direction === BOTTOM) {
+            for (idxRoomSection = 0; idxRoomSection < 50; idxRoomSection = idxRoomSection + 10) {
+                for (idxRoomPosition = 0; idxRoomPosition < 10; idxRoomPosition++) {
+                    if (terrain.get(idxRoomSection + idxRoomPosition, 49) !== TERRAIN_MASK_WALL) {
+                        roomExits.push(new RoomPosition(idxRoomSection + idxRoomPosition, 49, this.pos.roomName));
+                        break;
+                    }
+                }
+            }
+        } else if (direction === LEFT) {
+            for (idxRoomSection = 0; idxRoomSection < 50; idxRoomSection = idxRoomSection + 10) {
+                for (idxRoomPosition = 0; idxRoomPosition < 10; idxRoomPosition++) {
+                    if (terrain.get(0, idxRoomSection + idxRoomPosition) !== TERRAIN_MASK_WALL) {
+                        roomExits.push(new RoomPosition(0, idxRoomSection + idxRoomPosition, this.pos.roomName));
+                        break;
+                    }
                 }
             }
         }
@@ -79,7 +110,7 @@ class CreepScout extends CreepAncestorClass
 
         for (let idxExit = 0; idxExit < roomExits.length; idxExit++) {
             // path = this.pos.findPathTo(roomExits[idxExit]);
-            path = utilPath.getPath(this.pos, roomExits[idxExit]);
+            path = utilPath.getPath(this.pos, roomExits[idxExit], worldManager);
 
             if (path === undefined || path.length === 0) {
                 continue;
