@@ -66,9 +66,9 @@ const Role = {
         yield Role.DISTRIBUTOR;
         yield Role.SCAVENGER;
         yield Role.SCOUT;
+        yield Role.WARRIOR;
         yield Role.IMPORTER;
         yield Role.UPGRADER;
-        yield Role.WARRIOR;
         yield Role.BUILDER;
     }
 };
