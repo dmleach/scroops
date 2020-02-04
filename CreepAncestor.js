@@ -169,7 +169,18 @@ class CreepAncestor extends GameObjectClass
             this.debug('No cached give energy position found');
         }
 
-        if (this.isValidGiveEnergyPos(this.giveEnergyTargetId, worldManager) === false) {
+        if (this.isValidGiveEnergyPos(this.pos, worldManager)) {
+            this.debug('Creep is already at a valid take energy position; returning current position');
+            return this.pos;
+        }
+
+        let gameObject = Game.getObjectById(this.giveEnergyTargetId);
+
+        if (gameObject === undefined) {
+            return undefined;
+        }
+
+        if (this.isValidGiveEnergyPos(this.gameObject.pos, worldManager) === false) {
             this.debug('Give energy target id ' + this.giveEnergyTargetId + ' is invalid, so give energy position is undefined');
             return undefined;
         }
@@ -288,7 +299,18 @@ class CreepAncestor extends GameObjectClass
             this.debug('No cached take energy position found');
         }
 
-        if (this.isValidTakeEnergyPos(this.takeEnergyTargetId, worldManager) === false) {
+        if (this.isValidTakeEnergyPos(this.pos, worldManager)) {
+            this.debug('Creep is already at a valid take energy position; returning current position');
+            return this.pos;
+        }
+
+        let gameObject = Game.getObjectById(this.takeEnergyTargetId);
+
+        if (gameObject === undefined) {
+            return undefined;
+        }
+
+        if (this.isValidTakeEnergyPos(gameObject.pos, worldManager) === false) {
             this.debug('Take energy target id ' + this.takeEnergyTargetId + ' is invalid, so take energy position is undefined');
             return undefined;
         }
@@ -431,7 +453,7 @@ class CreepAncestor extends GameObjectClass
 
     isValidPath(path) {
         if ( (path instanceof Array) === false) {
-            this.debug('Path is not valid because it is not an array');
+            this.debug('Path is not valid because it is not an array; value is: ' + path);
             return false;
         }
 
@@ -588,8 +610,11 @@ class CreepAncestor extends GameObjectClass
             if (creepInTheWayId !== undefined) {
                 creepInTheWayClass = Role.getCreepClassByCreepId(creepInTheWayId);
                 creepInTheWay = new creepInTheWayClass(creepInTheWayId);
-                this.debug('Moving ' + creepInTheWay.name + ' out of the way');
-                creepInTheWay.moveAway(worldManager, alternative);
+
+                if (creepInTheWay.movePriority < this.movePriority) {
+                    this.debug('Moving ' + creepInTheWay.name + ' out of the way');
+                    creepInTheWay.moveAway(worldManager, alternative);
+                }
             } else if (worldManager.isWalkable(destination) === false) {
                 this.debug(destination + ' is not currently walkable');
                 continue;
