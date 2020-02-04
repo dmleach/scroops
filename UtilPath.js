@@ -3,7 +3,7 @@ let MemoryAccessorClass = require('MemoryAccessor');
 class UtilPath extends MemoryAccessorClass
 {
     _cachePathUsingArrays(startPosition, endPosition, path) {
-        let cacheKeyArray = [this.memoryKeyUsingArrays].concat(this._getCacheKeyArray(startPosition).concat(this._getCacheKeyArray(endPosition)));
+        let cacheKeyArray = this._getCacheKeyArray(startPosition).concat(this._getCacheKeyArray(endPosition));
         let pathString = this.getPathStringFromPath(path);
         this.putIntoMemory(cacheKeyArray, pathString);
     }
@@ -13,7 +13,7 @@ class UtilPath extends MemoryAccessorClass
     }
 
     _getPathStringFromCacheUsingArrays(startPosition, endPosition) {
-        let cacheKeyArray = [this.memoryKeyUsingArrays].concat(this._getCacheKeyArray(startPosition).concat(this._getCacheKeyArray(endPosition)));
+        let cacheKeyArray = this._getCacheKeyArray(startPosition).concat(this._getCacheKeyArray(endPosition));
         return this.getFromMemory(cacheKeyArray);
     }
 

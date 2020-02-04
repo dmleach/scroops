@@ -35,37 +35,44 @@ class MemoryAccessor extends ScroopsObjectClass
 
             // this.debug('Getting from memory at key ' + keyCopy);
             cachedValue = this._getFromMemoryUsingArray(Memory, keyCopy);
-            // this.debug('Found at key: ' + cachedValue);
-            return cachedValue;
+            // this.debug('Found at key ' + key + ': ' + cachedValue);
+        } else {
+            let memoryRoot = Memory[this.memoryKey];
+            cachedValue = memoryRoot[key];
         }
 
-        let memoryRoot = Memory[this.memoryKey];
-        cachedValue = memoryRoot[key];
         return (cachedValue === undefined) ? defaultValue : cachedValue;
     }
 
     _getFromMemoryUsingArray(memoryObject, keyArray) {
+        // this.debug('Getting value from memory at key ' + keyArray);
+
         if (memoryObject === undefined) {
+            this.debug('Returning undefined because given memory object is undefined');
             return undefined;
         }
 
         if (!(keyArray instanceof Array)) {
+            this.debug('Returning undefined because given key array is not an array');
             return undefined;
         }
 
         let firstKey = keyArray.shift();
 
         if (firstKey === undefined) {
+            this.debug('Returning undefined because the value shifted off the key array is undefined');
             return undefined;
         }
 
         let memoryObjectProperty = memoryObject[firstKey];
 
         if (memoryObjectProperty === undefined) {
+            this.debug('Returning undefined because value at ' + firstKey + ' is undefined');
             return undefined;
         }
 
         if (keyArray.length === 0) {
+            // this.debug('Returning value ' + memoryObjectProperty);
             return memoryObjectProperty;
         }
 

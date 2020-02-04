@@ -47,10 +47,12 @@ class RoomManager extends MemoryAccessorClass
     _getCacheExpiration(findType) {
         if (findType === FIND_DROPPED_RESOURCES) {
             return 3;
-        } else if (findType === this.FIND_OBSTACLES) {
+        } else if (findType === FIND_CONSTRUCTION_SITES) {
             return 53;
         } else if (findType === FIND_MY_SPAWNS) {
             return 10000;
+        } else if (findType === this.FIND_OBSTACLES) {
+            return 53;
         } else if (findType === FIND_SOURCES) {
             return 100000;
         } else if (findType === FIND_STRUCTURES) {
