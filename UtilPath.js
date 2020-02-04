@@ -5,7 +5,7 @@ class UtilPath extends MemoryAccessorClass
     _cachePathUsingArrays(startPosition, endPosition, path) {
         let cacheKeyArray = [this.memoryKeyUsingArrays].concat(this._getCacheKeyArray(startPosition).concat(this._getCacheKeyArray(endPosition)));
         let pathString = this.getPathStringFromPath(path);
-        this.putIntoMemoryUsingArray(cacheKeyArray, pathString);
+        this.putIntoMemory(cacheKeyArray, pathString);
     }
 
     _getCacheKeyArray(position) {
@@ -14,7 +14,7 @@ class UtilPath extends MemoryAccessorClass
 
     _getPathStringFromCacheUsingArrays(startPosition, endPosition) {
         let cacheKeyArray = [this.memoryKeyUsingArrays].concat(this._getCacheKeyArray(startPosition).concat(this._getCacheKeyArray(endPosition)));
-        return this.getFromMemoryUsingArray(cacheKeyArray);
+        return this.getFromMemory(cacheKeyArray);
     }
 
     get isShowingDebugMessages() {
@@ -22,7 +22,7 @@ class UtilPath extends MemoryAccessorClass
     }
 
     get memoryKey() {
-        return 'pathCache';
+        return this.name;
     }
 
     get memoryKeyUsingArrays() {
@@ -52,7 +52,8 @@ class UtilPath extends MemoryAccessorClass
         let pathString = this.getPathString(startPosition, endPosition);
 
         if (pathString !== undefined) {
-            return this.getPathFromPathString(pathString);
+            let path = this.getPathFromPathString(pathString);
+            return path;
         }
 
         this.warn('Call to findPathTo has high CPU cost (' + startPosition + ' to ' + endPosition + ')');
@@ -63,7 +64,8 @@ class UtilPath extends MemoryAccessorClass
     }
 
     getPathFromPathString(pathString) {
-        if (typeof pathString === 'string') {
+        if (typeof pathString !== 'string') {
+            this.warn('getPathFromPathString requires a string; received a ' + typeof pathString);
             return undefined;
         }
 

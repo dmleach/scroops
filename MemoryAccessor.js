@@ -16,13 +16,32 @@ class MemoryAccessor extends ScroopsObjectClass
     }
 
     getFromMemory(key, defaultValue = undefined) {
-        let memoryRoot = Memory[this.memoryKey];
-        let cachedValue = memoryRoot[key];
-        return (cachedValue === undefined) ? defaultValue : cachedValue;
-    }
+        let cachedValue;
 
-    getFromMemoryUsingArray(keyArray) {
-        return this._getFromMemoryUsingArray(Memory, keyArray);
+        if (key instanceof Array) {
+            if (key.length === 0) {
+                return undefined;
+            }
+
+            let keyCopy = [];
+
+            for (let keyValue of key) {
+                keyCopy.push(keyValue);
+            }
+
+            if (keyCopy[0] !== this.memoryKey) {
+                keyCopy.unshift(this.memoryKey);
+            }
+
+            // this.debug('Getting from memory at key ' + keyCopy);
+            cachedValue = this._getFromMemoryUsingArray(Memory, keyCopy);
+            // this.debug('Found at key: ' + cachedValue);
+            return cachedValue;
+        }
+
+        let memoryRoot = Memory[this.memoryKey];
+        cachedValue = memoryRoot[key];
+        return (cachedValue === undefined) ? defaultValue : cachedValue;
     }
 
     _getFromMemoryUsingArray(memoryObject, keyArray) {
@@ -40,17 +59,17 @@ class MemoryAccessor extends ScroopsObjectClass
             return undefined;
         }
 
-        if (keyArray.length === 0) {
-            return memoryObject[firstKey];
-        }
-
         let memoryObjectProperty = memoryObject[firstKey];
 
         if (memoryObjectProperty === undefined) {
             return undefined;
         }
 
-        this._getFromMemoryUsingArray(memoryObjectProperty, keyArray);
+        if (keyArray.length === 0) {
+            return memoryObjectProperty;
+        }
+
+        return this._getFromMemoryUsingArray(memoryObjectProperty, keyArray);
     }
 
     get isShowingDebugMessages() {
@@ -62,12 +81,27 @@ class MemoryAccessor extends ScroopsObjectClass
     }
 
     putIntoMemory(key, value) {
+        if (key instanceof Array) {
+            if (key.length === 0) {
+                return undefined;
+            }
+
+            let keyCopy = [];
+
+            for (let keyValue of key) {
+                keyCopy.push(keyValue);
+            }
+
+            if (keyCopy[0] !== this.memoryKey) {
+                keyCopy.unshift(this.memoryKey);
+            }
+
+            this.debug('Putting into memory at key ' + keyCopy + ' value ' + value);
+            return this._putIntoMemoryUsingObjectAndArray(Memory, keyCopy, value);
+        }
+
         let memoryRoot = Memory[this.memoryKey];
         memoryRoot[key] = value;
-    }
-
-    putIntoMemoryUsingArray(keyArray, value) {
-        return this._putIntoMemoryUsingObjectAndArray(Memory, keyArray, value);
     }
 
     _putIntoMemoryUsingObjectAndArray(memoryObject, keyArray, value) {
