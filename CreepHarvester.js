@@ -87,8 +87,16 @@ class CreepHarvester extends CreepEarnerClass
         this.gameObject.drop(RESOURCE_ENERGY);
     }
 
+    getGiveEnergyPos(worldManager) {
+        if (this.giveEnergyTargetId === this.id) {
+            return this.pos;
+        }
+
+        return super.getGiveEnergyPos(worldManager);
+    }
+
     get isShowingDebugMessages() {
-        return true;
+        return this.name === 'harvester15296372';
     }
 
     get isUsingUpdateGiveEnergyFunction() {
@@ -163,7 +171,7 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     get shouldClearCacheAfterTakeEnergy() {
-        return false;
+        return this.giveEnergyTargetId === this.id;
     }
 }
 
