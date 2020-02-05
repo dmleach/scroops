@@ -32,8 +32,28 @@ class UtilPosition extends MemoryAccessorClass
         return positions;
     }
 
+    get cacheExpiration() {
+        return 500;
+    }
+
     getClosestPositionInRange(startPosition, endPosition, range, worldManager) {
-        this.debug('Getting closest position to ' + startPosition + ' that is within ' + range + ' spaces of ' + endPosition);
+        if (startPosition === undefined || endPosition === undefined || range === undefined) {
+            return undefined;
+        }
+
+        let cacheKey = [startPosition.roomName, startPosition.x, startPosition.y, endPosition.roomName, endPosition.x, endPosition.y, range];
+        let cachedValue = this.getFromMemory(cacheKey);
+
+        if (cachedValue !== undefined) {
+            if (cachedValue.time !== undefined && cachedValue.value !== undefined) {
+                if (Game.time - cachedValue.time < this.cacheExpiration) {
+                    this.debug('Fetched closest position in range from memory cache');
+                    return cachedValue.value;
+                }
+            }
+        }
+
+        this.debug('Computing closest position to ' + startPosition + ' that is within ' + range + ' spaces of ' + endPosition);
 
         let positionsInRange = this._getPositionsInRange(endPosition, range);
         let closestPosition = undefined;
@@ -44,6 +64,7 @@ class UtilPosition extends MemoryAccessorClass
 
             if (positionInRange.isEqualTo(startPosition)) {
                 this.debug(positionInRange + ' is the start position, so it is the closest');
+                this.putIntoMemory(cacheKey, { time: Game.time, value: startPosition });
                 return startPosition;
             }
 
@@ -60,6 +81,7 @@ class UtilPosition extends MemoryAccessorClass
             }
         }
 
+        this.putIntoMemory(cacheKey, { time: Game.time, value: closestPosition });
         return closestPosition;
     }
 
