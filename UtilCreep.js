@@ -2,6 +2,8 @@ class UtilCreep
 {
     constructor(creeps) {
         this.creepIds = this.getCreepIds(creeps);
+        this.cachedCountByRole = {};
+        this.cachedCreepIdsByRole = {};
     }
 
     get count() {
@@ -9,6 +11,10 @@ class UtilCreep
     }
 
     countByRole(role) {
+        if (this.cachedCountByRole[role] !== undefined) {
+            return this.cachedCountByRole[role];
+        }
+
         let roleCount = 0;
         let Role = require('Role');
 
@@ -18,6 +24,7 @@ class UtilCreep
             }
         });
 
+        this.cachedCountByRole[role] = roleCount;
         return roleCount;
     }
 
@@ -45,6 +52,13 @@ class UtilCreep
     }
 
     getCreepIdsByRole(role) {
+        console.log('Looking for ' + role + ' creep ids');
+
+        if (this.cachedCreepIdsByRole[role] !== undefined) {
+            console.log('Returned creep ids by role from cache');
+            return this.cachedCreepIdsByRole[role];
+        }
+
         let creepsOfRole = [];
         let Role = require('Role');
 
@@ -54,6 +68,7 @@ class UtilCreep
             }
         });
 
+        this.cachedCreepIdsByRole[role] = creepsOfRole;
         return creepsOfRole;
     }
 

@@ -7,8 +7,8 @@ let classesToProfile = [
     'CreepAncestor', 'CreepBuilder', 'CreepDistributor', 'CreepEarner', 'CreepHarvester',
     'CreepImporter', 'CreepScavenger', 'CreepScout', 'CreepSpender', 'CreepUpgrader',
     'CreepWarrior', 'GameObject', 'MemoryAccessor', 'Role', 'RoomManager',
-    'ScroopsObject', 'Tower', 'UtilPosition', 'UtilSort', 'UtilSpawn',
-    'WorldManager'
+    'ScroopsObject', 'Tower', 'UtilCreep', 'UtilError', 'UtilPath',
+    'UtilPosition', 'UtilSort', 'UtilSpawn', 'WorldManager'
 ];
 
 let classToProfile;
@@ -45,10 +45,12 @@ module.exports.loop = function() {
         let UtilSpawnClass = require('UtilSpawn');
         let utilSpawn;
 
-        for (let spawnName in Game.spawns) {
-            // roomManager = worldManager.getRoomManager(Game.spawns[spawnName].pos.roomName);
-            utilSpawn = new UtilSpawnClass(spawnName);
-            utilSpawn.spawnCreep(worldManager, utilCreep);
+        if (Game.time % 5 === 0) {
+            for (let spawnName in Game.spawns) {
+                // roomManager = worldManager.getRoomManager(Game.spawns[spawnName].pos.roomName);
+                utilSpawn = new UtilSpawnClass(spawnName);
+                utilSpawn.spawnCreep(worldManager, utilCreep);
+            }
         }
 
         let UtilPathClass = require('UtilPath');
@@ -99,7 +101,7 @@ module.exports.loop = function() {
                     // creep.debugCache();
                     creep.updateTakeEnergyTarget(worldManager, utilPath);
                 } else {
-                    creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager), worldManager);
+                    creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager, utilCreep), worldManager);
                 }
 
                 // creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
@@ -107,12 +109,12 @@ module.exports.loop = function() {
                 if (creep.isUsingUpdateGiveEnergyFunction) {
                     // creep.debug('CACHE VALUES BEFORE UPDATE GIVE');
                     // creep.debugCache();
-                    creep.updateGiveEnergyTarget(worldManager, utilPath);
+                    creep.updateGiveEnergyTarget(worldManager, utilPath, utilCreep);
 
                     // creep.debug('CACHE VALUES AFTER UPDATES');
                     // creep.debugCache();
                 } else {
-                    creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager));
+                    creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager, utilCreep));
 
                     if (creep.giveEnergyTargetId !== undefined) {
                         gameObject = new GameObjectClass(creep.giveEnergyTargetId);
@@ -141,7 +143,7 @@ module.exports.loop = function() {
                 tower = new TowerClass(towers[idxTower].id);
                 tower.debug('******* Beginning turn for tick ' + Game.time + ' *******');
 
-                tower.giveEnergyTargetId = tower.getGiveEnergyTargetId(worldManager);
+                tower.giveEnergyTargetId = tower.getGiveEnergyTargetId(worldManager, utilCreep);
                 tower.debug('giveEnergyTargetId is ' + tower.giveEnergyTargetId);
                 tower.work();
                 tower.debug('------- Ending turn for tick ' + Game.time + ' -------');

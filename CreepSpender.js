@@ -6,9 +6,7 @@ class CreepSpender extends CreepAncestorClass
         return worldManager.isFullEnergy(roomName);
     }
 
-    getGiveEnergyTargetId(worldManager) {
-        let UtilCreepClass = require('UtilCreep');
-        let utilCreep = new UtilCreepClass(Game.creeps);
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         let Role = require('Role');
 
         if (utilCreep.countByRole(Role.DISTRIBUTOR) > 0) {
@@ -36,11 +34,9 @@ class CreepSpender extends CreepAncestorClass
         return undefined;
     }
 
-    getTakeEnergyTargetId(worldManager) {
+    getTakeEnergyTargetId(worldManager, utilCreep) {
         this.debug('Finding what I should take energy from');
 
-        let UtilCreepClass = require('UtilCreep');
-        let utilCreep = new UtilCreepClass(Game.creeps);
         let Role = require('Role');
         let roomManager = worldManager.getRoomManager(this.roomName);
 

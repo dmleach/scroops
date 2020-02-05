@@ -26,7 +26,7 @@ class CreepDistributor extends CreepSpenderClass
         return true;
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         // Distributors should first fill the room's spawn and extensions
         if (worldManager.isFullEnergy(this.roomName) === false) {
             let spawns = worldManager.getFriendlySpawns(this.roomName);

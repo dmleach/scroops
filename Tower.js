@@ -2,7 +2,7 @@ let GameObjectClass = require('GameObject');
 
 class Tower extends GameObjectClass
 {
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         let hostileCreeps = worldManager.getHostileCreeps(this.roomName);
 
         if (hostileCreeps !== undefined && hostileCreeps.length > 0) {

@@ -190,7 +190,7 @@ class CreepAncestor extends GameObjectClass
         return giveEnergyPos;
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         let cachedId = this.readFromCache(this.KEY_GIVE_ENERGY_TARGET_ID);
 
         if (this.isValidGiveEnergyTargetId(cachedId)) {
@@ -844,7 +844,7 @@ class CreepAncestor extends GameObjectClass
         return this.gameObject.fatigue > 0;
     }
 
-    updateGiveEnergyTarget(worldManager, utilPath) {
+    updateGiveEnergyTarget(worldManager, utilPath, utilCreep) {
         if (this.isUsingUpdateGiveEnergyFunction === false) {
             this.debug('Not using updateGiveEnergyTarget');
             return undefined;
@@ -853,7 +853,7 @@ class CreepAncestor extends GameObjectClass
         this.debug('Using updateGiveEnergyTarget');
 
         // First get the creep's target id, which may be read from cache
-        let targetId = this.getGiveEnergyTargetId(worldManager);
+        let targetId = this.getGiveEnergyTargetId(worldManager, utilCreep);
 
         // If the give energy target is undefined, clear the cache and bail out
         if (targetId === undefined) {
