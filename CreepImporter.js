@@ -89,7 +89,11 @@ class CreepImporter extends CreepHarvesterClass
     }
 
     get isShowingDebugMessages() {
-        return this.name === 'foo';
+        return this.name === 'importer15344115';
+    }
+
+    get isUsingUpdateGiveEnergyFunction() {
+        return false;
     }
 
     get isUsingUpdateTakeEnergyFunction() {
