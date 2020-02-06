@@ -46,9 +46,11 @@ class UtilPosition extends MemoryAccessorClass
 
         if (cachedValue !== undefined) {
             if (cachedValue.time !== undefined && cachedValue.value !== undefined) {
-                if (Game.time - cachedValue.time < this.cacheExpiration) {
-                    this.debug('Fetched closest position in range from memory cache');
-                    return cachedValue.value;
+                if (cachedValue.value['x'] !== undefined && cachedValue.value['y'] !== undefined && cachedValue.value['roomName'] !== undefined) {
+                    if (Game.time - cachedValue.time < this.cacheExpiration) {
+                        this.debug('Fetched closest position in range from memory cache');
+                        return new RoomPosition(cachedValue.value.x, cachedValue.value.y, cachedValue.value.roomName);
+                    }
                 }
             }
         }
