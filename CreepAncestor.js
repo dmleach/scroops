@@ -142,14 +142,20 @@ class CreepAncestor extends GameObjectClass
             return undefined;
         }
 
-        let GameObjectClass = require('GameObject');
-        let interactionObject = new GameObjectClass(objectId);
-        this.debug('Getting closest interaction position for ' + interactionObject.name);
+        let interactionObject;
+
+        if (this.isShowingDebugMessages) {
+            let GameObjectClass = require('GameObject');
+            interactionObject = new GameObjectClass(objectId);
+            this.debug('Getting closest interaction position for ' + interactionObject.name);
+        } else {
+            interactionObject = Game.getObjectById(objectId);
+        }
 
         let UtilPositionClass = require('UtilPosition');
         let utilPosition = new UtilPositionClass();
         let closestPosition = utilPosition.getClosestPositionInRange(this.pos, interactionObject.pos, this.getInteractionRange(objectId), worldManager);
-        this.debug('Closest interation position is ' + closestPosition);
+        this.debug('Closest interaction position is ' + closestPosition);
         return closestPosition;
     }
 
