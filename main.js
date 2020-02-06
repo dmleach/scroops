@@ -96,33 +96,31 @@ module.exports.loop = function() {
                 creep = workGroup[idxCreep];
                 creep.debug('******* Beginning turn for tick ' + Game.time + ' *******');
 
-                if (creep.isUsingUpdateTakeEnergyFunction) {
-                    // creep.debug('CACHE VALUES BEFORE UPDATE TAKE');
-                    // creep.debugCache();
-                    creep.updateTakeEnergyTarget(worldManager, utilPath);
-                } else {
-                    creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager, utilCreep), worldManager);
-                }
-
-                // creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
-
-                if (creep.isUsingUpdateGiveEnergyFunction) {
-                    // creep.debug('CACHE VALUES BEFORE UPDATE GIVE');
-                    // creep.debugCache();
-                    creep.updateGiveEnergyTarget(worldManager, utilPath, utilCreep);
-
-                    // creep.debug('CACHE VALUES AFTER UPDATES');
-                    // creep.debugCache();
-                } else {
-                    creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager, utilCreep));
-
-                    if (creep.giveEnergyTargetId !== undefined) {
-                        gameObject = new GameObjectClass(creep.giveEnergyTargetId);
-                        // creep.debug('Giving energy to ' + gameObject.name);
-                        creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId, worldManager);
-                        creep.debug('Give energy position is ' + creep.giveEnergyPos);
+                if (creep.mode === creep.MODE_TAKE_ENERGY) {
+                    creep.debug('In take energy mode');
+                    if (creep.isUsingUpdateTakeEnergyFunction) {
+                        creep.updateTakeEnergyTarget(worldManager, utilPath);
                     } else {
-                        creep.debug('Object to give energy to is undefined');
+                        creep.setTakeEnergyTargetId(creep.getTakeEnergyTargetId(worldManager, utilCreep), worldManager);
+                    }
+                } else if (creep.mode === creep.MODE_GIVE_ENERGY) {
+                    creep.debug('In give energy mode');
+                    // creep.takeEnergyPos = creep.getTakeEnergyPos(worldManager);
+
+                    if (creep.isUsingUpdateGiveEnergyFunction) {
+                        creep.updateGiveEnergyTarget(worldManager, utilPath, utilCreep);
+
+                    } else {
+                        creep.setGiveEnergyTargetId(creep.getGiveEnergyTargetId(worldManager, utilCreep));
+
+                        if (creep.giveEnergyTargetId !== undefined) {
+                            gameObject = new GameObjectClass(creep.giveEnergyTargetId);
+                            // creep.debug('Giving energy to ' + gameObject.name);
+                            creep.giveEnergyPos = creep.getClosestInteractionPositionById(creep.giveEnergyTargetId, worldManager);
+                            creep.debug('Give energy position is ' + creep.giveEnergyPos);
+                        } else {
+                            creep.debug('Object to give energy to is undefined');
+                        }
                     }
                 }
 
