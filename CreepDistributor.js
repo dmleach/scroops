@@ -27,6 +27,15 @@ class CreepDistributor extends CreepSpenderClass
     }
 
     getGiveEnergyTargetId(worldManager, utilCreep) {
+        if (this.isInFriendlyRoom === false) {
+            for (let roomName in Game.rooms) {
+                if (Game.rooms[roomName].controller.my) {
+                    this.clearGiveEnergyCache();
+                    return Game.rooms[roomName].controller.id;
+                }
+            }
+        }
+
         // Distributors should first fill the room's spawn and extensions
         if (worldManager.isFullEnergy(this.roomName) === false) {
             let spawns = worldManager.getFriendlySpawns(this.roomName);
@@ -107,6 +116,12 @@ class CreepDistributor extends CreepSpenderClass
     }
 
     getTakeEnergyTargetId(worldManager) {
+        if (this.isInFriendlyRoom === false) {
+            for (let spawnName in Game.spawns) {
+                return Game.spawns[spawnName].id;
+            }
+        }
+
         // Distributors should first pull from harvest containers
         let harvestContainers = worldManager.getHarvestContainers(this.roomName);
         let container;
@@ -156,7 +171,7 @@ class CreepDistributor extends CreepSpenderClass
     }
 
     get isShowingDebugMessages() {
-        return false;
+        return this.name === 'foo';
     }
 
 
