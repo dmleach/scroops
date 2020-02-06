@@ -195,11 +195,12 @@ class WorldManager extends MemoryAccessorClass
 
         let obstacles = this.getObstacles(position);
 
-        if (obstacles.length > 0) {
-            this.debug(position + ' is not walkable because of these obstacles: ' + obstacles);
+        if (obstacles.length === 0) {
+            return true;
         }
 
-        return obstacles.length === 0;
+        this.debug(position + ' is not walkable because of these obstacles: ' + obstacles);
+        return false;
     }
 
     get isShowingDebugMessages() {

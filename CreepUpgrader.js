@@ -10,8 +10,8 @@ class CreepUpgrader extends CreepSpenderClass
         return [WORK, CARRY];
     }
 
-    getGiveEnergyTargetId(worldManager) {
-        let giveEnergyTargetId = super.getGiveEnergyTargetId(worldManager);
+    getGiveEnergyTargetId(worldManager, utilCreep) {
+        let giveEnergyTargetId = super.getGiveEnergyTargetId(worldManager, utilCreep);
 
         if (giveEnergyTargetId !== undefined) {
             return giveEnergyTargetId;

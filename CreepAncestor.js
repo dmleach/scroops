@@ -142,14 +142,20 @@ class CreepAncestor extends GameObjectClass
             return undefined;
         }
 
-        let GameObjectClass = require('GameObject');
-        let interactionObject = new GameObjectClass(objectId);
-        this.debug('Getting closest interaction position for ' + interactionObject.name);
+        let interactionObject;
+
+        if (this.isShowingDebugMessages) {
+            let GameObjectClass = require('GameObject');
+            interactionObject = new GameObjectClass(objectId);
+            this.debug('Getting closest interaction position for ' + interactionObject.name);
+        } else {
+            interactionObject = Game.getObjectById(objectId);
+        }
 
         let UtilPositionClass = require('UtilPosition');
         let utilPosition = new UtilPositionClass();
         let closestPosition = utilPosition.getClosestPositionInRange(this.pos, interactionObject.pos, this.getInteractionRange(objectId), worldManager);
-        this.debug('Closest interation position is ' + closestPosition);
+        this.debug('Closest interaction position is ' + closestPosition);
         return closestPosition;
     }
 
@@ -169,7 +175,18 @@ class CreepAncestor extends GameObjectClass
             this.debug('No cached give energy position found');
         }
 
-        if (this.isValidGiveEnergyPos(this.giveEnergyTargetId, worldManager) === false) {
+        if (this.isValidGiveEnergyPos(this.pos, worldManager)) {
+            this.debug('Creep is already at a valid take energy position; returning current position');
+            return this.pos;
+        }
+
+        let gameObject = Game.getObjectById(this.giveEnergyTargetId);
+
+        if (gameObject === undefined) {
+            return undefined;
+        }
+
+        if (this.isValidGiveEnergyPos(this.gameObject.pos, worldManager) === false) {
             this.debug('Give energy target id ' + this.giveEnergyTargetId + ' is invalid, so give energy position is undefined');
             return undefined;
         }
@@ -179,7 +196,7 @@ class CreepAncestor extends GameObjectClass
         return giveEnergyPos;
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         let cachedId = this.readFromCache(this.KEY_GIVE_ENERGY_TARGET_ID);
 
         if (this.isValidGiveEnergyTargetId(cachedId)) {
@@ -288,7 +305,18 @@ class CreepAncestor extends GameObjectClass
             this.debug('No cached take energy position found');
         }
 
-        if (this.isValidTakeEnergyPos(this.takeEnergyTargetId, worldManager) === false) {
+        if (this.isValidTakeEnergyPos(this.pos, worldManager)) {
+            this.debug('Creep is already at a valid take energy position; returning current position');
+            return this.pos;
+        }
+
+        let gameObject = Game.getObjectById(this.takeEnergyTargetId);
+
+        if (gameObject === undefined) {
+            return undefined;
+        }
+
+        if (this.isValidTakeEnergyPos(gameObject.pos, worldManager) === false) {
             this.debug('Take energy target id ' + this.takeEnergyTargetId + ' is invalid, so take energy position is undefined');
             return undefined;
         }
@@ -431,7 +459,7 @@ class CreepAncestor extends GameObjectClass
 
     isValidPath(path) {
         if ( (path instanceof Array) === false) {
-            this.debug('Path is not valid because it is not an array');
+            this.debug('Path is not valid because it is not an array; value is: ' + path);
             return false;
         }
 
@@ -588,8 +616,11 @@ class CreepAncestor extends GameObjectClass
             if (creepInTheWayId !== undefined) {
                 creepInTheWayClass = Role.getCreepClassByCreepId(creepInTheWayId);
                 creepInTheWay = new creepInTheWayClass(creepInTheWayId);
-                this.debug('Moving ' + creepInTheWay.name + ' out of the way');
-                creepInTheWay.moveAway(worldManager, alternative);
+
+                if (creepInTheWay.movePriority < this.movePriority) {
+                    this.debug('Moving ' + creepInTheWay.name + ' out of the way');
+                    creepInTheWay.moveAway(worldManager, alternative);
+                }
             } else if (worldManager.isWalkable(destination) === false) {
                 this.debug(destination + ' is not currently walkable');
                 continue;
@@ -819,7 +850,7 @@ class CreepAncestor extends GameObjectClass
         return this.gameObject.fatigue > 0;
     }
 
-    updateGiveEnergyTarget(worldManager, utilPath) {
+    updateGiveEnergyTarget(worldManager, utilPath, utilCreep) {
         if (this.isUsingUpdateGiveEnergyFunction === false) {
             this.debug('Not using updateGiveEnergyTarget');
             return undefined;
@@ -828,7 +859,7 @@ class CreepAncestor extends GameObjectClass
         this.debug('Using updateGiveEnergyTarget');
 
         // First get the creep's target id, which may be read from cache
-        let targetId = this.getGiveEnergyTargetId(worldManager);
+        let targetId = this.getGiveEnergyTargetId(worldManager, utilCreep);
 
         // If the give energy target is undefined, clear the cache and bail out
         if (targetId === undefined) {

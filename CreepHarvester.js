@@ -15,8 +15,8 @@ class CreepHarvester extends CreepEarnerClass
         return [WORK];
     }
 
-    getGiveEnergyTargetId(worldManager) {
-        let cachedId = super.getGiveEnergyTargetId(worldManager);
+    getGiveEnergyTargetId(worldManager, utilCreep) {
+        let cachedId = super.getGiveEnergyTargetId(worldManager, utilCreep);
 
         if (this.isValidGiveEnergyTargetId(cachedId)) {
             this.debug('Returning give energy target id ' + cachedId + ' from cache');
@@ -31,9 +31,6 @@ class CreepHarvester extends CreepEarnerClass
                 return containers[idxContainer].id;
             }
         }
-
-        let UtilCreepClass = require('UtilCreep');
-        let utilCreep = new UtilCreepClass(this.pos.roomName);
 
         if (utilCreep.count > 1) {
             this.debug('Returning own id as give energy target id');
@@ -76,10 +73,13 @@ class CreepHarvester extends CreepEarnerClass
     giveEnergy() {
         let giveEnergyTarget = Game.getObjectById(this.giveEnergyTargetId);
 
-        if (giveEnergyTarget instanceof StructureContainer && this.pos.getRangeTo(giveEnergyTarget) > 2) {
-            this.gameObject.drop(RESOURCE_ENERGY);
+        if (giveEnergyTarget instanceof StructureContainer && this.pos.getRangeTo(giveEnergyTarget) === 1) {
+            this.giveEnergyToContainer(giveEnergyTarget);
+            return;
         }
 
+        this.gameObject.drop(RESOURCE_ENERGY);
+        this.clearGiveEnergyCache();
         super.giveEnergy();
     }
 
@@ -87,8 +87,16 @@ class CreepHarvester extends CreepEarnerClass
         this.gameObject.drop(RESOURCE_ENERGY);
     }
 
+    getGiveEnergyPos(worldManager) {
+        if (this.giveEnergyTargetId === this.id) {
+            return this.pos;
+        }
+
+        return super.getGiveEnergyPos(worldManager);
+    }
+
     get isShowingDebugMessages() {
-        return true;
+        return this.name === 'harvester15296372';
     }
 
     get isUsingUpdateGiveEnergyFunction() {
@@ -163,7 +171,7 @@ class CreepHarvester extends CreepEarnerClass
     }
 
     get shouldClearCacheAfterTakeEnergy() {
-        return false;
+        return this.giveEnergyTargetId === this.id;
     }
 }
 

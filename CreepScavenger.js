@@ -26,12 +26,12 @@ class CreepScavenger extends CreepSpenderClass
         return true;
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         let Role = require('Role');
         let CreepDistributorClass = Role.getCreepClassByRole(Role.DISTRIBUTOR);
         let creep = new CreepDistributorClass(this.id);
         creep.takeEnergyTargetId = this.takeEnergyTargetId;
-        return creep.getGiveEnergyTargetId(worldManager);
+        return creep.getGiveEnergyTargetId(worldManager, utilCreep);
     }
 
     getTakeEnergyTargetId(worldManager) {

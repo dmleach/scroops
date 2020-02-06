@@ -10,7 +10,7 @@ class CreepBuilder extends CreepSpenderClass
         return [WORK, MOVE, CARRY, MOVE];
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         this.debug('Finding what I should give energy to');
         // let giveEnergyTargetId = super.getGiveEnergyTargetId(roomManager);
         //
@@ -55,7 +55,7 @@ class CreepBuilder extends CreepSpenderClass
         let Role = require('Role');
         let CreepUpgraderClass = Role.getCreepClassByRole(Role.UPGRADER);
         let creepUpgrader = new CreepUpgraderClass(this.id);
-        return creepUpgrader.getGiveEnergyTargetId(worldManager);
+        return creepUpgrader.getGiveEnergyTargetId(worldManager, utilCreep);
     }
 
     getInteractionRange(objectId) {

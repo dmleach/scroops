@@ -4,7 +4,6 @@ class UtilSpawn
         this.spawnName = spawnName;
 
         let UtilCreepClass = require('UtilCreep');
-        this.utilCreep = new UtilCreepClass(Game.creeps);
     }
 
     static getCostByBody(body) {
@@ -17,16 +16,27 @@ class UtilSpawn
         return cost;
     }
 
-    getRoleToSpawn(worldManager) {
-        let Role = require('Role');
-        let roleClass;
+    getRoleToSpawn(worldManager, utilCreep) {
         let spawn = Game.spawns[this.spawnName];
 
-        for (let role of Role) {
-            roleClass = Role.getCreepClassByRole(role);
+        let Role = require('Role');
+        let roles = [];
 
-            if (roleClass.canSpawn(spawn.pos.roomName, worldManager, this.utilCreep) && this.utilCreep.countByRole(role) < roleClass.numberToSpawn(worldManager, this.utilCreep)) {
-                return role;
+        for (let role of Role) {
+            roles.push(role);
+        }
+
+        let roleClass;
+
+        for (let idxRole = 0; idxRole < roles.length; idxRole++) {
+            roleClass = Role.getCreepClassByRole(roles[idxRole]);
+
+            if (utilCreep.countByRole(roles[idxRole]) >= roleClass.numberToSpawn(worldManager, utilCreep)) {
+                continue;
+            }
+
+            if (roleClass.canSpawn(spawn.pos.roomName, worldManager, utilCreep)) {
+                return roles[idxRole];
             }
         }
 

@@ -10,7 +10,7 @@ class CreepImporter extends CreepHarvesterClass
         return [WORK, MOVE, CARRY, MOVE];
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         for (let visibleRoomName in Game.rooms) {
             this.debug('Looking for object to give energy to in room ' + visibleRoomName);
 
@@ -89,7 +89,11 @@ class CreepImporter extends CreepHarvesterClass
     }
 
     get isShowingDebugMessages() {
-        return this.name === 'foo';
+        return this.name === 'importer15344115';
+    }
+
+    get isUsingUpdateGiveEnergyFunction() {
+        return false;
     }
 
     get isUsingUpdateTakeEnergyFunction() {

@@ -14,7 +14,7 @@ class CreepWarrior extends CreepSpenderClass
         return true;
     }
 
-    getGiveEnergyTargetId(worldManager) {
+    getGiveEnergyTargetId(worldManager, utilCreep) {
         let cachedId = this.readFromCache(this.KEY_GIVE_ENERGY_TARGET_ID);
         this.debug('Cached give energy target id is '+ cachedId);
 

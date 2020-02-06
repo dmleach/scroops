@@ -25,6 +25,7 @@ TO-DO
 * Importers should deliver their energy when their source is depleted
 * Distributors are putting energy into containers and taking it right back out again
 * Allow spenders access to energy if there's a harvester / there's a minimum amount of spawning energy
+* Cache results of getClosestInteractionPositionById
 
 
 DONE
